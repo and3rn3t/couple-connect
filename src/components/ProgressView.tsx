@@ -5,8 +5,10 @@ import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Slider } from '@/components/ui/slider'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Heart, TrendingUp, CheckCircle, Target, Calendar, BarChart3 } from '@phosphor-icons/react'
 import { Issue, Action, RelationshipHealth } from '@/App'
+import { Partner } from '@/components/PartnerSetup'
 import { toast } from 'sonner'
 
 interface ProgressViewProps {
@@ -14,15 +16,42 @@ interface ProgressViewProps {
   actions: Action[]
   healthScore: RelationshipHealth
   setHealthScore: (update: (current: RelationshipHealth) => RelationshipHealth) => void
+  currentPartner: Partner
+  otherPartner: Partner
+  viewingAsPartner: Partner
 }
 
-export default function ProgressView({ issues, actions, healthScore, setHealthScore }: ProgressViewProps) {
+export default function ProgressView({ 
+  issues, 
+  actions, 
+  healthScore, 
+  setHealthScore, 
+  currentPartner, 
+  otherPartner, 
+  viewingAsPartner 
+}: ProgressViewProps) {
   const [isHealthDialogOpen, setIsHealthDialogOpen] = useState(false)
   const [tempScores, setTempScores] = useState(healthScore.categories)
 
   const completedActions = actions.filter(a => a.status === 'completed')
   const totalActions = actions.length
   const completionRate = totalActions > 0 ? (completedActions.length / totalActions) * 100 : 0
+
+  // Partner-specific metrics
+  const myActions = actions.filter(a => 
+    a.assignedToId === currentPartner.id || 
+    (a.assignedTo === 'both' && viewingAsPartner.id === currentPartner.id)
+  )
+  const partnerActions = actions.filter(a => 
+    a.assignedToId === otherPartner.id || 
+    (a.assignedTo === 'both' && viewingAsPartner.id === otherPartner.id)
+  )
+
+  const myCompletedActions = myActions.filter(a => a.status === 'completed').length
+  const partnerCompletedActions = partnerActions.filter(a => a.status === 'completed').length
+  
+  const myCompletionRate = myActions.length > 0 ? (myCompletedActions / myActions.length) * 100 : 0
+  const partnerCompletionRate = partnerActions.length > 0 ? (partnerCompletedActions / partnerActions.length) * 100 : 0
 
   const issuesByCategory = issues.reduce((acc, issue) => {
     acc[issue.category] = (acc[issue.category] || 0) + 1
@@ -42,9 +71,13 @@ export default function ProgressView({ issues, actions, healthScore, setHealthSc
   }, {} as Record<string, { total: number; completed: number }>)
 
   const recentCompletions = completedActions
-    .filter(a => a.completedAt)
+    .filter(a => a.completedAt && a.completedBy)
     .sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime())
     .slice(0, 5)
+
+  const getPartnerName = (partnerId: string) => {
+    return partnerId === currentPartner.id ? currentPartner.name : otherPartner.name
+  }
 
   const upcomingActions = actions
     .filter(a => a.status !== 'completed' && a.dueDate)
@@ -103,9 +136,14 @@ export default function ProgressView({ issues, actions, healthScore, setHealthSc
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-medium mb-2">Progress & Health</h2>
+          <h2 className="text-2xl font-medium mb-2">
+            {viewingAsPartner.id === currentPartner.id ? 'Your Progress & Health' : `${viewingAsPartner.name}'s Progress View`}
+          </h2>
           <p className="text-muted-foreground">
-            Track your relationship journey and celebrate growth
+            {viewingAsPartner.id === currentPartner.id 
+              ? 'Track your relationship journey and celebrate growth'
+              : `See progress from ${viewingAsPartner.name}'s perspective`
+            }
           </p>
         </div>
       </div>
@@ -191,8 +229,71 @@ export default function ProgressView({ issues, actions, healthScore, setHealthSc
         </CardContent>
       </Card>
 
-      {/* Action Progress */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Partner Progress Comparison */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Avatar className="h-6 w-6">
+                <AvatarFallback className="text-xs bg-primary text-primary-foreground">
+                  {currentPartner.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              {currentPartner.name}'s Progress
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Total Actions</span>
+              <span className="font-bold">{myActions.length}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Completed</span>
+              <span className="font-bold text-primary">{myCompletedActions}</span>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Completion Rate</span>
+                <span className="font-bold">{Math.round(myCompletionRate)}%</span>
+              </div>
+              <Progress value={myCompletionRate} className="h-2" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Avatar className="h-6 w-6">
+                <AvatarFallback className="text-xs bg-secondary text-secondary-foreground">
+                  {otherPartner.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              {otherPartner.name}'s Progress
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Total Actions</span>
+              <span className="font-bold">{partnerActions.length}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Completed</span>
+              <span className="font-bold text-primary">{partnerCompletedActions}</span>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Completion Rate</span>
+                <span className="font-bold">{Math.round(partnerCompletionRate)}%</span>
+              </div>
+              <Progress value={partnerCompletionRate} className="h-2" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Overall Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-2">
@@ -217,7 +318,7 @@ export default function ProgressView({ issues, actions, healthScore, setHealthSc
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp className="text-accent" size={20} />
-              <span className="text-sm font-medium">Completion Rate</span>
+              <span className="text-sm font-medium">Overall Rate</span>
             </div>
             <div className="text-2xl font-bold">{Math.round(completionRate)}%</div>
           </CardContent>
@@ -286,9 +387,26 @@ export default function ProgressView({ issues, actions, healthScore, setHealthSc
                       <p className="text-xs text-muted-foreground">
                         {getIssueTitle(action.issueId)}
                       </p>
-                      <p className="text-xs text-muted-foreground">
-                        Completed {formatDate(action.completedAt!)}
-                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <p className="text-xs text-muted-foreground">
+                          Completed {formatDate(action.completedAt!)}
+                        </p>
+                        {action.completedBy && (
+                          <>
+                            <span className="text-xs text-muted-foreground">•</span>
+                            <div className="flex items-center gap-1">
+                              <Avatar className="h-3 w-3">
+                                <AvatarFallback className="text-[8px]">
+                                  {getPartnerName(action.completedBy).charAt(0).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="text-xs text-muted-foreground">
+                                {getPartnerName(action.completedBy)}
+                              </span>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}

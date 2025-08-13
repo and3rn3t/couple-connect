@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Issue, Action } from '@/App'
+import { Partner } from '@/components/PartnerSetup'
 import { toast } from 'sonner'
 
 interface ActionDialogProps {
@@ -15,12 +16,24 @@ interface ActionDialogProps {
   actions: Action[]
   setActions: (update: (current: Action[]) => Action[]) => void
   action?: Action | null
+  currentPartner: Partner
+  otherPartner: Partner
 }
 
-export default function ActionDialog({ isOpen, onClose, issue, actions, setActions, action }: ActionDialogProps) {
+export default function ActionDialog({ 
+  isOpen, 
+  onClose, 
+  issue, 
+  actions, 
+  setActions, 
+  action, 
+  currentPartner, 
+  otherPartner 
+}: ActionDialogProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [assignedTo, setAssignedTo] = useState<Action['assignedTo']>('both')
+  const [assignedToId, setAssignedToId] = useState<string>('')
   const [dueDate, setDueDate] = useState('')
 
   useEffect(() => {
@@ -28,11 +41,13 @@ export default function ActionDialog({ isOpen, onClose, issue, actions, setActio
       setTitle(action.title)
       setDescription(action.description)
       setAssignedTo(action.assignedTo)
-      setDueDate(action.dueDate.split('T')[0])
+      setAssignedToId(action.assignedToId || '')
+      setDueDate(action.dueDate ? action.dueDate.split('T')[0] : '')
     } else {
       setTitle('')
       setDescription('')
       setAssignedTo('both')
+      setAssignedToId('')
       setDueDate('')
     }
   }, [action])
@@ -53,7 +68,14 @@ export default function ActionDialog({ isOpen, onClose, issue, actions, setActio
       setActions((current) =>
         current.map((a) =>
           a.id === action.id
-            ? { ...a, title, description, assignedTo, dueDate: dueDate ? new Date(dueDate).toISOString() : '' }
+            ? { 
+                ...a, 
+                title, 
+                description, 
+                assignedTo, 
+                assignedToId: assignedToId || undefined,
+                dueDate: dueDate ? new Date(dueDate).toISOString() : '' 
+              }
             : a
         )
       )
@@ -66,9 +88,11 @@ export default function ActionDialog({ isOpen, onClose, issue, actions, setActio
         title,
         description,
         assignedTo,
+        assignedToId: assignedToId || undefined,
         dueDate: dueDate ? new Date(dueDate).toISOString() : '',
         status: 'pending',
         createdAt: new Date().toISOString(),
+        createdBy: currentPartner.id,
         notes: []
       }
       setActions((current) => [...current, newAction])
@@ -125,13 +149,24 @@ export default function ActionDialog({ isOpen, onClose, issue, actions, setActio
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Assigned To</Label>
-              <Select value={assignedTo} onValueChange={(value: Action['assignedTo']) => setAssignedTo(value)}>
+              <Select 
+                value={assignedToId || assignedTo} 
+                onValueChange={(value) => {
+                  if (value === currentPartner.id || value === otherPartner.id) {
+                    setAssignedToId(value)
+                    setAssignedTo('partner1') // Will be updated by the component logic
+                  } else {
+                    setAssignedToId('')
+                    setAssignedTo(value as Action['assignedTo'])
+                  }
+                }}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="partner1">Partner 1</SelectItem>
-                  <SelectItem value="partner2">Partner 2</SelectItem>
+                  <SelectItem value={currentPartner.id}>{currentPartner.name} (You)</SelectItem>
+                  <SelectItem value={otherPartner.id}>{otherPartner.name}</SelectItem>
                   <SelectItem value="both">Both Partners</SelectItem>
                 </SelectContent>
               </Select>

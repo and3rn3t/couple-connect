@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Plus, Heart, Users, DollarSign, Clock, House, TrendingUp, Dots } from '@phosphor-icons/react'
 import { Issue, Action } from '@/App'
+import { Partner } from '@/components/PartnerSetup'
 import IssueDialog from '@/components/IssueDialog'
 import ActionDialog from '@/components/ActionDialog'
 
@@ -12,6 +13,9 @@ interface MindmapViewProps {
   setIssues: (update: (current: Issue[]) => Issue[]) => void
   actions: Action[]
   setActions: (update: (current: Action[]) => Action[]) => void
+  currentPartner: Partner
+  otherPartner: Partner
+  viewingAsPartner: Partner
 }
 
 const categoryIcons = {
@@ -34,7 +38,15 @@ const categoryColors = {
   other: 'bg-muted text-muted-foreground border-border'
 }
 
-export default function MindmapView({ issues, setIssues, actions, setActions }: MindmapViewProps) {
+export default function MindmapView({ 
+  issues, 
+  setIssues, 
+  actions, 
+  setActions, 
+  currentPartner, 
+  otherPartner, 
+  viewingAsPartner 
+}: MindmapViewProps) {
   const [isIssueDialogOpen, setIsIssueDialogOpen] = useState(false)
   const [isActionDialogOpen, setIsActionDialogOpen] = useState(false)
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null)
@@ -178,6 +190,8 @@ export default function MindmapView({ issues, setIssues, actions, setActions }: 
         issue={selectedIssue}
         actions={actions}
         setActions={setActions}
+        currentPartner={currentPartner}
+        otherPartner={otherPartner}
       />
     </div>
   )

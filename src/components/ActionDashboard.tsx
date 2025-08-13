@@ -4,8 +4,10 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { CheckCircle, Clock, User, Users, Calendar, Plus } from '@phosphor-icons/react'
 import { Issue, Action } from '@/App'
+import { Partner } from '@/components/PartnerSetup'
 import { toast } from 'sonner'
 import ActionDialog from '@/components/ActionDialog'
 
@@ -13,9 +15,19 @@ interface ActionDashboardProps {
   issues: Issue[]
   actions: Action[]
   setActions: (update: (current: Action[]) => Action[]) => void
+  currentPartner: Partner
+  otherPartner: Partner
+  viewingAsPartner: Partner
 }
 
-export default function ActionDashboard({ issues, actions, setActions }: ActionDashboardProps) {
+export default function ActionDashboard({ 
+  issues, 
+  actions, 
+  setActions, 
+  currentPartner, 
+  otherPartner, 
+  viewingAsPartner 
+}: ActionDashboardProps) {
   const [isActionDialogOpen, setIsActionDialogOpen] = useState(false)
   const [editingAction, setEditingAction] = useState<Action | null>(null)
   const [newNote, setNewNote] = useState<{ [key: string]: string }>({})
@@ -36,7 +48,8 @@ export default function ActionDashboard({ issues, actions, setActions }: ActionD
           ? {
               ...action,
               status,
-              completedAt: status === 'completed' ? new Date().toISOString() : undefined
+              completedAt: status === 'completed' ? new Date().toISOString() : undefined,
+              completedBy: status === 'completed' ? currentPartner.id : undefined
             }
           : action
       )
@@ -51,12 +64,14 @@ export default function ActionDashboard({ issues, actions, setActions }: ActionD
     const note = newNote[actionId]?.trim()
     if (!note) return
 
+    const noteWithAuthor = `${new Date().toLocaleDateString()} (${currentPartner.name}): ${note}`
+
     setActions((current) =>
       current.map((action) =>
         action.id === actionId
           ? {
               ...action,
-              notes: [...action.notes, `${new Date().toLocaleDateString()}: ${note}`]
+              notes: [...action.notes, noteWithAuthor]
             }
           : action
       )
@@ -71,11 +86,20 @@ export default function ActionDashboard({ issues, actions, setActions }: ActionD
     setIsActionDialogOpen(true)
   }
 
-  const getAssignedToDisplay = (assignedTo: Action['assignedTo']) => {
-    switch (assignedTo) {
-      case 'partner1': return { text: 'Partner 1', icon: User }
-      case 'partner2': return { text: 'Partner 2', icon: User }
-      case 'both': return { text: 'Both', icon: Users }
+  const getAssignedToDisplay = (action: Action) => {
+    if (action.assignedToId) {
+      const assignedPartner = action.assignedToId === currentPartner.id ? currentPartner : otherPartner
+      return { 
+        text: assignedPartner.name, 
+        icon: User,
+        avatar: assignedPartner.name.charAt(0).toUpperCase()
+      }
+    }
+    
+    switch (action.assignedTo) {
+      case 'partner1': return { text: 'Partner 1', icon: User, avatar: 'P1' }
+      case 'partner2': return { text: 'Partner 2', icon: User, avatar: 'P2' }
+      case 'both': return { text: 'Both Partners', icon: Users, avatar: null }
     }
   }
 
@@ -90,9 +114,11 @@ export default function ActionDashboard({ issues, actions, setActions }: ActionD
   }
 
   const ActionCard = ({ action }: { action: Action }) => {
-    const assigned = getAssignedToDisplay(action.assignedTo)
+    const assigned = getAssignedToDisplay(action)
     const AssignedIcon = assigned.icon
     const overdue = isOverdue(action)
+    const isAssignedToCurrentUser = action.assignedToId === currentPartner.id || action.assignedTo === 'both'
+    const canEdit = action.createdBy === currentPartner.id || isAssignedToCurrentUser
 
     return (
       <Card key={action.id} className="transition-all hover:shadow-md">
@@ -104,6 +130,7 @@ export default function ActionDashboard({ issues, actions, setActions }: ActionD
                 onCheckedChange={(checked) =>
                   handleStatusChange(action.id, checked ? 'completed' : 'pending')
                 }
+                disabled={!isAssignedToCurrentUser}
               />
               <div>
                 <CardTitle className="text-base">{action.title}</CardTitle>
@@ -112,13 +139,15 @@ export default function ActionDashboard({ issues, actions, setActions }: ActionD
                 </p>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleEditAction(action)}
-            >
-              Edit
-            </Button>
+            {canEdit && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleEditAction(action)}
+              >
+                Edit
+              </Button>
+            )}
           </div>
         </CardHeader>
 
@@ -130,8 +159,16 @@ export default function ActionDashboard({ issues, actions, setActions }: ActionD
           )}
 
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <AssignedIcon size={14} />
+            <div className="flex items-center gap-2">
+              {assigned.avatar ? (
+                <Avatar className="h-4 w-4">
+                  <AvatarFallback className="text-xs text-xs bg-muted">
+                    {assigned.avatar}
+                  </AvatarFallback>
+                </Avatar>
+              ) : (
+                <AssignedIcon size={14} />
+              )}
               {assigned.text}
             </div>
             {action.dueDate && (
@@ -190,9 +227,14 @@ export default function ActionDashboard({ issues, actions, setActions }: ActionD
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-medium mb-2">Action Dashboard</h2>
+          <h2 className="text-2xl font-medium mb-2">
+            {viewingAsPartner.id === currentPartner.id ? 'Your Actions' : `${viewingAsPartner.name}'s Actions`}
+          </h2>
           <p className="text-muted-foreground">
-            Track progress on your relationship goals
+            {viewingAsPartner.id === currentPartner.id 
+              ? 'Track progress on your relationship goals'
+              : `View ${viewingAsPartner.name}'s perspective on shared goals`
+            }
           </p>
         </div>
         <Button onClick={() => setIsActionDialogOpen(true)} className="flex items-center gap-2">
@@ -253,6 +295,8 @@ export default function ActionDashboard({ issues, actions, setActions }: ActionD
         actions={actions}
         setActions={setActions}
         action={editingAction}
+        currentPartner={currentPartner}
+        otherPartner={otherPartner}
       />
     </div>
   )

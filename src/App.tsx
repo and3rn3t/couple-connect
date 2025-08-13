@@ -6,6 +6,8 @@ import { Toaster } from '@/components/ui/sonner'
 import MindmapView from '@/components/MindmapView'
 import ActionDashboard from '@/components/ActionDashboard'
 import ProgressView from '@/components/ProgressView'
+import PartnerSetup, { Partner } from '@/components/PartnerSetup'
+import PartnerProfile from '@/components/PartnerProfile'
 
 export interface Issue {
   id: string
@@ -24,10 +26,13 @@ export interface Action {
   title: string
   description: string
   assignedTo: 'partner1' | 'partner2' | 'both'
+  assignedToId?: string // Partner ID for more specific assignment
   dueDate: string
   status: 'pending' | 'in-progress' | 'completed'
   createdAt: string
+  createdBy: string // Partner ID who created the action
   completedAt?: string
+  completedBy?: string // Partner ID who completed the action
   notes: string[]
 }
 
@@ -45,6 +50,11 @@ export interface RelationshipHealth {
 }
 
 function App() {
+  // Partner identification state
+  const [currentPartner, setCurrentPartner] = useKV<Partner | null>("current-partner", null)
+  const [otherPartner, setOtherPartner] = useKV<Partner | null>("other-partner", null)
+  const [viewingAsPartner, setViewingAsPartner] = useState<string | null>(null) // For switching perspectives
+  
   const [issues, setIssues] = useKV<Issue[]>("relationship-issues", [])
   const [actions, setActions] = useKV<Action[]>("relationship-actions", [])
   const [healthScore, setHealthScore] = useKV<RelationshipHealth>("relationship-health", {
@@ -62,17 +72,84 @@ function App() {
   
   const [activeTab, setActiveTab] = useState("mindmap")
 
+  // If no partners are set up, show setup screen
+  if (!currentPartner || !otherPartner) {
+    return (
+      <PartnerSetup 
+        onComplete={(current, other) => {
+          setCurrentPartner(() => current)
+          setOtherPartner(() => other)
+        }} 
+      />
+    )
+  }
+
+  // Determine which partner's perspective we're viewing
+  const activePartner = viewingAsPartner 
+    ? (viewingAsPartner === currentPartner.id ? currentPartner : otherPartner)
+    : currentPartner
+  
+  const isViewingOwnPerspective = activePartner.id === currentPartner.id
+
+  // Filter actions based on current view
+  const getPersonalizedActions = () => {
+    if (isViewingOwnPerspective) {
+      // Show actions assigned to current user or both
+      return actions.filter(action => 
+        action.assignedToId === currentPartner.id || 
+        action.assignedTo === 'both' ||
+        action.createdBy === currentPartner.id
+      )
+    } else {
+      // Show actions from partner's perspective
+      return actions.filter(action => 
+        action.assignedToId === otherPartner.id || 
+        action.assignedTo === 'both' ||
+        action.createdBy === otherPartner.id
+      )
+    }
+  }
+
+  const handleSwitchView = () => {
+    setViewingAsPartner(viewingAsPartner === currentPartner.id ? otherPartner.id : currentPartner.id)
+  }
+
+  const handleSignOut = () => {
+    setCurrentPartner(() => null)
+    setOtherPartner(() => null)
+    setViewingAsPartner(null)
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6">
-        <header className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Heart className="text-accent" size={32} weight="fill" />
-            <h1 className="text-3xl font-medium text-foreground">Together</h1>
+        <header className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <Heart className="text-accent" size={32} weight="fill" />
+              <div>
+                <h1 className="text-3xl font-medium text-foreground">Together</h1>
+                <p className="text-muted-foreground">
+                  {isViewingOwnPerspective 
+                    ? "Your personal accountability view" 
+                    : `Viewing ${activePartner.name}'s perspective`
+                  }
+                </p>
+              </div>
+            </div>
+            <PartnerProfile 
+              currentPartner={currentPartner}
+              otherPartner={otherPartner}
+              onSwitchView={handleSwitchView}
+              onSignOut={handleSignOut}
+            />
           </div>
-          <p className="text-muted-foreground text-lg">
-            Building stronger relationships through accountability and growth
-          </p>
+          
+          <div className="text-center">
+            <p className="text-muted-foreground text-lg">
+              Building stronger relationships through accountability and growth
+            </p>
+          </div>
         </header>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -97,14 +174,20 @@ function App() {
               setIssues={setIssues}
               actions={actions}
               setActions={setActions}
+              currentPartner={currentPartner}
+              otherPartner={otherPartner}
+              viewingAsPartner={activePartner}
             />
           </TabsContent>
 
           <TabsContent value="actions" className="space-y-6">
             <ActionDashboard 
               issues={issues}
-              actions={actions}
+              actions={getPersonalizedActions()}
               setActions={setActions}
+              currentPartner={currentPartner}
+              otherPartner={otherPartner}
+              viewingAsPartner={activePartner}
             />
           </TabsContent>
 
@@ -114,6 +197,9 @@ function App() {
               actions={actions}
               healthScore={healthScore}
               setHealthScore={setHealthScore}
+              currentPartner={currentPartner}
+              otherPartner={otherPartner}
+              viewingAsPartner={activePartner}
             />
           </TabsContent>
         </Tabs>
