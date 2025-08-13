@@ -10,6 +10,9 @@ import PartnerSetup, { Partner } from '@/components/PartnerSetup'
 import PartnerProfile from '@/components/PartnerProfile'
 import NotificationCenter from '@/components/NotificationCenter'
 import NotificationSummary from '@/components/NotificationSummary'
+import GamificationCenter, { GamificationState } from '@/components/GamificationCenter'
+import RewardSystem from '@/components/RewardSystem'
+import DailyChallenges from '@/components/DailyChallenges'
 
 export interface Issue {
   id: string
@@ -71,6 +74,17 @@ function App() {
     },
     lastUpdated: new Date().toISOString()
   })
+
+  // Gamification state
+  const [gamificationState, setGamificationState] = useKV<GamificationState>("gamification-state", {
+    totalPoints: 0,
+    currentStreak: 0,
+    longestStreak: 0,
+    achievements: [],
+    weeklyGoal: 7,
+    weeklyProgress: 0,
+    partnerStats: {}
+  })
   
   const [activeTab, setActiveTab] = useState("mindmap")
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false)
@@ -131,6 +145,15 @@ function App() {
     )
   }
 
+  const handleCreateAction = (newAction: Omit<Action, 'id' | 'createdAt'>) => {
+    const action: Action = {
+      ...newAction,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString()
+    }
+    setActions(currentActions => [...currentActions, action])
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6">
@@ -149,6 +172,20 @@ function App() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <GamificationCenter
+                actions={actions}
+                issues={issues}
+                currentPartner={currentPartner}
+                otherPartner={otherPartner}
+                gamificationState={gamificationState}
+                onUpdateGamification={setGamificationState}
+              />
+              <RewardSystem
+                currentPartner={currentPartner}
+                otherPartner={otherPartner}
+                gamificationState={gamificationState}
+                onUpdateGamification={setGamificationState}
+              />
               <NotificationCenter
                 actions={actions}
                 issues={issues}
@@ -180,6 +217,16 @@ function App() {
           currentPartner={currentPartner}
           otherPartner={otherPartner}
           onViewAll={() => setNotificationCenterOpen(true)}
+        />
+
+        <DailyChallenges
+          actions={actions}
+          issues={issues}
+          currentPartner={currentPartner}
+          otherPartner={otherPartner}
+          gamificationState={gamificationState}
+          onUpdateGamification={setGamificationState}
+          onCreateAction={handleCreateAction}
         />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
