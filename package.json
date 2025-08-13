@@ -95,4 +95,11 @@
             "packages/*"
         ]
     }
+    ,
+    "lint-staged": {
+        "*.{js,jsx,ts,tsx}": [
+            "eslint --fix",
+            "prettier --write"
+        ]
+    }
 }
