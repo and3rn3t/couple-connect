@@ -8,6 +8,8 @@ import ActionDashboard from '@/components/ActionDashboard'
 import ProgressView from '@/components/ProgressView'
 import PartnerSetup, { Partner } from '@/components/PartnerSetup'
 import PartnerProfile from '@/components/PartnerProfile'
+import NotificationCenter from '@/components/NotificationCenter'
+import NotificationSummary from '@/components/NotificationSummary'
 
 export interface Issue {
   id: string
@@ -71,6 +73,7 @@ function App() {
   })
   
   const [activeTab, setActiveTab] = useState("mindmap")
+  const [notificationCenterOpen, setNotificationCenterOpen] = useState(false)
 
   // If no partners are set up, show setup screen
   if (!currentPartner || !otherPartner) {
@@ -120,6 +123,14 @@ function App() {
     setViewingAsPartner(null)
   }
 
+  const handleActionUpdate = (actionId: string, updates: Partial<Action>) => {
+    setActions(currentActions => 
+      currentActions.map(action => 
+        action.id === actionId ? { ...action, ...updates } : action
+      )
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6">
@@ -137,12 +148,23 @@ function App() {
                 </p>
               </div>
             </div>
-            <PartnerProfile 
-              currentPartner={currentPartner}
-              otherPartner={otherPartner}
-              onSwitchView={handleSwitchView}
-              onSignOut={handleSignOut}
-            />
+            <div className="flex items-center gap-3">
+              <NotificationCenter
+                actions={actions}
+                issues={issues}
+                currentPartner={currentPartner}
+                otherPartner={otherPartner}
+                onActionUpdate={handleActionUpdate}
+                isOpen={notificationCenterOpen}
+                onOpenChange={setNotificationCenterOpen}
+              />
+              <PartnerProfile 
+                currentPartner={currentPartner}
+                otherPartner={otherPartner}
+                onSwitchView={handleSwitchView}
+                onSignOut={handleSignOut}
+              />
+            </div>
           </div>
           
           <div className="text-center">
@@ -151,6 +173,14 @@ function App() {
             </p>
           </div>
         </header>
+
+        <NotificationSummary
+          actions={actions}
+          issues={issues}
+          currentPartner={currentPartner}
+          otherPartner={otherPartner}
+          onViewAll={() => setNotificationCenterOpen(true)}
+        />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-8">

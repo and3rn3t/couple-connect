@@ -1,0 +1,518 @@
+import { useState, useEffect } from 'react'
+import { useKV } from '@github/spark/hooks'
+import { Bell, X, Clock, AlertTriangle, CheckCircle, Settings as SettingsIcon } from '@phosphor-icons/react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
+import { toast } from 'sonner'
+import { Action, Issue } from '../App'
+import { Partner } from './PartnerSetup'
+import { useNotificationSystem } from '../hooks/useNotificationSystem'
+
+interface Notification {
+  id: string
+  type: 'overdue' | 'deadline-soon' | 'partner-completed'
+  actionId: string
+  partnerId: string
+  title: string
+  message: string
+  createdAt: string
+  read: boolean
+  priority: 'high' | 'medium' | 'low'
+}
+
+interface NotificationSettings {
+  enabled: boolean
+  overdueReminders: boolean
+  deadlineWarnings: boolean
+  partnerUpdates: boolean
+  warningDays: number // Days before deadline to show warning
+  browserNotifications: boolean
+}
+
+interface NotificationCenterProps {
+  actions: Action[]
+  issues: Issue[]
+  currentPartner: Partner
+  otherPartner: Partner
+  onActionUpdate: (actionId: string, updates: Partial<Action>) => void
+  isOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+}
+
+export default function NotificationCenter({ 
+  actions, 
+  issues, 
+  currentPartner, 
+  otherPartner, 
+  onActionUpdate,
+  isOpen: externalIsOpen,
+  onOpenChange: externalOnOpenChange
+}: NotificationCenterProps) {
+  const [notifications, setNotifications] = useKV<Notification[]>('notifications', [])
+  const [settings, setSettings] = useKV<NotificationSettings>('notification-settings', {
+    enabled: true,
+    overdueReminders: true,
+    deadlineWarnings: true,
+    partnerUpdates: true,
+    warningDays: 2,
+    browserNotifications: true
+  })
+  
+  const [isOpen, setIsOpen] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+
+  // Use external control if provided, otherwise use internal state
+  const dialogOpen = externalIsOpen !== undefined ? externalIsOpen : isOpen
+  const setDialogOpen = externalOnOpenChange || setIsOpen
+
+  // Initialize the notification system
+  const { requestNotificationPermission } = useNotificationSystem({
+    actions,
+    issues,
+    currentPartner,
+    otherPartner,
+    settings
+  })
+
+  // Generate notifications based on current actions
+  useEffect(() => {
+    if (!settings.enabled) return
+
+    const now = new Date()
+    const newNotifications: Notification[] = []
+
+    actions.forEach(action => {
+      const dueDate = new Date(action.dueDate)
+      const daysDiff = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+      
+      // Check for overdue actions
+      if (settings.overdueReminders && action.status !== 'completed' && daysDiff < 0) {
+        const existingOverdue = notifications.find(n => 
+          n.actionId === action.id && 
+          n.type === 'overdue' && 
+          n.partnerId === currentPartner.id
+        )
+        
+        if (!existingOverdue) {
+          const issue = issues.find(i => i.id === action.issueId)
+          newNotifications.push({
+            id: `overdue-${action.id}-${Date.now()}`,
+            type: 'overdue',
+            actionId: action.id,
+            partnerId: currentPartner.id,
+            title: 'Overdue Action',
+            message: `"${action.title}" was due ${Math.abs(daysDiff)} day${Math.abs(daysDiff) === 1 ? '' : 's'} ago${issue ? ` (${issue.title})` : ''}`,
+            createdAt: new Date().toISOString(),
+            read: false,
+            priority: 'high'
+          })
+        }
+      }
+
+      // Check for upcoming deadlines
+      if (settings.deadlineWarnings && 
+          action.status !== 'completed' && 
+          daysDiff > 0 && 
+          daysDiff <= settings.warningDays) {
+        const existingWarning = notifications.find(n => 
+          n.actionId === action.id && 
+          n.type === 'deadline-soon' && 
+          n.partnerId === currentPartner.id
+        )
+        
+        if (!existingWarning) {
+          const issue = issues.find(i => i.id === action.issueId)
+          newNotifications.push({
+            id: `deadline-${action.id}-${Date.now()}`,
+            type: 'deadline-soon',
+            actionId: action.id,
+            partnerId: currentPartner.id,
+            title: 'Upcoming Deadline',
+            message: `"${action.title}" is due in ${daysDiff} day${daysDiff === 1 ? '' : 's'}${issue ? ` (${issue.title})` : ''}`,
+            createdAt: new Date().toISOString(),
+            read: false,
+            priority: daysDiff === 1 ? 'high' : 'medium'
+          })
+        }
+      }
+
+      // Check for partner completions
+      if (settings.partnerUpdates && 
+          action.status === 'completed' && 
+          action.completedBy === otherPartner.id) {
+        const existingCompletion = notifications.find(n => 
+          n.actionId === action.id && 
+          n.type === 'partner-completed' && 
+          n.partnerId === currentPartner.id
+        )
+        
+        if (!existingCompletion && action.completedAt) {
+          const completedDate = new Date(action.completedAt)
+          const hoursSinceCompletion = (now.getTime() - completedDate.getTime()) / (1000 * 60 * 60)
+          
+          // Only notify if completed within last 24 hours
+          if (hoursSinceCompletion <= 24) {
+            const issue = issues.find(i => i.id === action.issueId)
+            newNotifications.push({
+              id: `completed-${action.id}-${Date.now()}`,
+              type: 'partner-completed',
+              actionId: action.id,
+              partnerId: currentPartner.id,
+              title: 'Partner Completed Action',
+              message: `${otherPartner.name} completed "${action.title}"${issue ? ` (${issue.title})` : ''}`,
+              createdAt: new Date().toISOString(),
+              read: false,
+              priority: 'low'
+            })
+          }
+        }
+      }
+    })
+
+    if (newNotifications.length > 0) {
+      setNotifications(current => [...current, ...newNotifications])
+      
+      // Show toast for high priority notifications
+      newNotifications.forEach(notification => {
+        if (notification.priority === 'high') {
+          toast.error(notification.title, {
+            description: notification.message,
+            action: {
+              label: 'View',
+              onClick: () => setIsOpen(true)
+            }
+          })
+        }
+      })
+    }
+  }, [actions, issues, currentPartner.id, otherPartner.id, settings, notifications])
+
+  const unreadCount = notifications.filter(n => 
+    !n.read && n.partnerId === currentPartner.id
+  ).length
+
+  const currentPartnerNotifications = notifications
+    .filter(n => n.partnerId === currentPartner.id)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
+  const markAsRead = (notificationId: string) => {
+    setNotifications(current => 
+      current.map(n => 
+        n.id === notificationId ? { ...n, read: true } : n
+      )
+    )
+  }
+
+  const markAllAsRead = () => {
+    setNotifications(current => 
+      current.map(n => 
+        n.partnerId === currentPartner.id ? { ...n, read: true } : n
+      )
+    )
+  }
+
+  const deleteNotification = (notificationId: string) => {
+    setNotifications(current => 
+      current.filter(n => n.id !== notificationId)
+    )
+  }
+
+  const clearAllNotifications = () => {
+    setNotifications(current => 
+      current.filter(n => n.partnerId !== currentPartner.id)
+    )
+  }
+
+  const updateSettings = (updates: Partial<NotificationSettings>) => {
+    setSettings(current => ({ ...current, ...updates }))
+  }
+
+  const getNotificationIcon = (type: Notification['type']) => {
+    switch (type) {
+      case 'overdue':
+        return <AlertTriangle className="text-destructive" size={16} />
+      case 'deadline-soon':
+        return <Clock className="text-accent" size={16} />
+      case 'partner-completed':
+        return <CheckCircle className="text-primary" size={16} />
+      default:
+        return <Bell size={16} />
+    }
+  }
+
+  const getPriorityColor = (priority: Notification['priority']) => {
+    switch (priority) {
+      case 'high':
+        return 'destructive'
+      case 'medium':
+        return 'secondary'
+      case 'low':
+        return 'outline'
+      default:
+        return 'outline'
+    }
+  }
+
+  return (
+    <>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="relative"
+        onClick={() => setDialogOpen(true)}
+      >
+        <Bell size={20} />
+        {unreadCount > 0 && (
+          <Badge 
+            variant="destructive" 
+            className="absolute -top-1 -right-1 h-5 w-5 text-xs p-0 flex items-center justify-center"
+          >
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </Badge>
+        )}
+      </Button>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="flex items-center gap-2">
+                <Bell size={20} />
+                Notifications
+                {unreadCount > 0 && (
+                  <Badge variant="secondary">{unreadCount} unread</Badge>
+                )}
+              </DialogTitle>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowSettings(!showSettings)}
+                  className="flex items-center gap-1"
+                >
+                  <SettingsIcon size={14} />
+                  Settings
+                </Button>
+                {unreadCount > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={markAllAsRead}
+                  >
+                    Mark all read
+                  </Button>
+                )}
+              </div>
+            </div>
+          </DialogHeader>
+
+          {showSettings && (
+            <Card className="mb-4">
+              <CardHeader>
+                <CardTitle className="text-sm">Notification Settings</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="notifications-enabled">Enable notifications</Label>
+                  <Switch
+                    id="notifications-enabled"
+                    checked={settings.enabled}
+                    onCheckedChange={(checked) => updateSettings({ enabled: checked })}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="overdue-reminders">Overdue action reminders</Label>
+                  <Switch
+                    id="overdue-reminders"
+                    checked={settings.overdueReminders}
+                    onCheckedChange={(checked) => updateSettings({ overdueReminders: checked })}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="deadline-warnings">Upcoming deadline warnings</Label>
+                  <Switch
+                    id="deadline-warnings"
+                    checked={settings.deadlineWarnings}
+                    onCheckedChange={(checked) => updateSettings({ deadlineWarnings: checked })}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="partner-updates">Partner completion updates</Label>
+                  <Switch
+                    id="partner-updates"
+                    checked={settings.partnerUpdates}
+                    onCheckedChange={(checked) => updateSettings({ partnerUpdates: checked })}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-1">
+                    <Label htmlFor="browser-notifications">Browser notifications</Label>
+                    {'Notification' in window && (
+                      <span className="text-xs text-muted-foreground">
+                        Status: {
+                          Notification.permission === 'granted' ? '✓ Enabled' :
+                          Notification.permission === 'denied' ? '✗ Blocked' :
+                          '? Permission needed'
+                        }
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {settings.browserNotifications && 'Notification' in window && Notification.permission === 'default' && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={requestNotificationPermission}
+                        className="text-xs"
+                      >
+                        Allow
+                      </Button>
+                    )}
+                    <Switch
+                      id="browser-notifications"
+                      checked={settings.browserNotifications}
+                      onCheckedChange={(checked) => {
+                        updateSettings({ browserNotifications: checked })
+                        if (checked) {
+                          requestNotificationPermission()
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="warning-days">Warning days before deadline</Label>
+                  <select
+                    id="warning-days"
+                    value={settings.warningDays}
+                    onChange={(e) => updateSettings({ warningDays: parseInt(e.target.value) })}
+                    className="bg-background border border-input rounded px-2 py-1 text-sm"
+                  >
+                    <option value={1}>1 day</option>
+                    <option value={2}>2 days</option>
+                    <option value={3}>3 days</option>
+                    <option value={7}>1 week</option>
+                  </select>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="flex-1 overflow-y-auto space-y-3">
+            {currentPartnerNotifications.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Bell size={48} className="mx-auto mb-4 opacity-50" />
+                <p>No notifications yet</p>
+                <p className="text-sm">You'll be notified about overdue actions and deadlines</p>
+              </div>
+            ) : (
+              <>
+                {currentPartnerNotifications.map(notification => {
+                  const action = actions.find(a => a.id === notification.actionId)
+                  const issue = action ? issues.find(i => i.id === action.issueId) : null
+                  
+                  return (
+                    <Card 
+                      key={notification.id} 
+                      className={`${!notification.read ? 'ring-2 ring-primary/20' : ''}`}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-start gap-3 flex-1">
+                            {getNotificationIcon(notification.type)}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h4 className="font-medium text-sm">{notification.title}</h4>
+                                <Badge 
+                                  variant={getPriorityColor(notification.priority)}
+                                  className="text-xs"
+                                >
+                                  {notification.priority}
+                                </Badge>
+                                {!notification.read && (
+                                  <div className="w-2 h-2 bg-primary rounded-full" />
+                                )}
+                              </div>
+                              <p className="text-sm text-muted-foreground mb-2">
+                                {notification.message}
+                              </p>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <span>
+                                  {new Date(notification.createdAt).toLocaleDateString()} at{' '}
+                                  {new Date(notification.createdAt).toLocaleTimeString([], { 
+                                    hour: '2-digit', 
+                                    minute: '2-digit' 
+                                  })}
+                                </span>
+                                {action && (
+                                  <Button
+                                    variant="link"
+                                    size="sm"
+                                    className="h-auto p-0 text-xs"
+                                    onClick={() => {
+                                      markAsRead(notification.id)
+                                      // Focus on the specific action - you could emit an event here
+                                      toast.info('Action located in Action Plans tab')
+                      setDialogOpen(false)
+                                    }}
+                                  >
+                                    View Action
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            {!notification.read && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => markAsRead(notification.id)}
+                                className="h-8 w-8 p-0"
+                              >
+                                <CheckCircle size={14} />
+                              </Button>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => deleteNotification(notification.id)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <X size={14} />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
+                
+                {currentPartnerNotifications.length > 3 && (
+                  <div className="text-center pt-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={clearAllNotifications}
+                    >
+                      Clear All Notifications
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  )
+}
