@@ -249,7 +249,7 @@ export default function ActionDashboard({
             <CheckCircle className="mx-auto mb-4 text-muted-foreground" size={48} weight="light" />
             <h3 className="text-lg font-medium mb-2">No Actions Yet</h3>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              Start by creating action plans from your issues, or add a new action directly.
+              Choose from proven templates or create custom action plans to strengthen your relationship.
             </p>
             <Button onClick={() => setIsActionDialogOpen(true)} className="flex items-center gap-2 mx-auto">
               <Plus size={16} />

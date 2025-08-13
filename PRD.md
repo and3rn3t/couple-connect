@@ -20,11 +20,18 @@ A collaborative relationship tool that helps couples identify, track, and resolv
 - **Success criteria**: Issues are visually organized, categorized, and show relationships to each other
 
 ### Action Planning
-- **Functionality**: Convert issues into specific, actionable tasks with ownership and deadlines
-- **Purpose**: Transforms abstract problems into concrete steps both partners can take
+- **Functionality**: Convert issues into specific, actionable tasks with ownership and deadlines, using proven templates or custom plans
+- **Purpose**: Transforms abstract problems into concrete steps both partners can take, with guidance from relationship experts
 - **Trigger**: Select an issue from the mindmap and choose "Create Action Plan"
-- **Progression**: Select issue → Define specific action → Assign ownership (individual/shared) → Set timeline → Add accountability check-ins → Commit
-- **Success criteria**: Clear action items exist for each issue with defined responsibility and timelines
+- **Progression**: Select issue → Choose from expert templates OR create custom action → Assign ownership (individual/shared) → Set timeline → Add accountability check-ins → Commit
+- **Success criteria**: Clear action items exist for each issue with defined responsibility and timelines, supported by evidence-based strategies
+
+### Template-Guided Actions
+- **Functionality**: Pre-built action templates for common relationship challenges, categorized by issue type
+- **Purpose**: Provides couples with expert-backed starting points and reduces decision paralysis
+- **Trigger**: Creating new action from issue or browsing template library
+- **Progression**: Browse templates by category → Preview template details → Customize for specific situation → Apply to relationship → Track progress
+- **Success criteria**: Quick access to proven strategies with clear implementation guidance
 
 ### Progress Tracking
 - **Functionality**: Dashboard showing completion status, upcoming deadlines, and relationship health metrics

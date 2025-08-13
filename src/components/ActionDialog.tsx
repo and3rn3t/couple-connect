@@ -5,9 +5,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Sparkles, Edit } from '@phosphor-icons/react'
 import { Issue, Action } from '@/App'
 import { Partner } from '@/components/PartnerSetup'
 import { toast } from 'sonner'
+import ActionTemplatePicker from '@/components/ActionTemplatePicker'
+import QuickTemplateSuggestions from '@/components/QuickTemplateSuggestions'
+import { ActionTemplate } from '@/data/actionTemplates'
 
 interface ActionDialogProps {
   isOpen: boolean
@@ -35,6 +40,7 @@ export default function ActionDialog({
   const [assignedTo, setAssignedTo] = useState<Action['assignedTo']>('both')
   const [assignedToId, setAssignedToId] = useState<string>('')
   const [dueDate, setDueDate] = useState('')
+  const [activeTab, setActiveTab] = useState('templates')
 
   useEffect(() => {
     if (action) {
@@ -43,14 +49,39 @@ export default function ActionDialog({
       setAssignedTo(action.assignedTo)
       setAssignedToId(action.assignedToId || '')
       setDueDate(action.dueDate ? action.dueDate.split('T')[0] : '')
+      setActiveTab('custom') // Go directly to custom form when editing
     } else {
       setTitle('')
       setDescription('')
       setAssignedTo('both')
       setAssignedToId('')
       setDueDate('')
+      setActiveTab('templates') // Start with templates for new actions
     }
-  }, [action])
+  }, [action, isOpen])
+
+  const handleTemplateSelect = (template: ActionTemplate) => {
+    setTitle(template.title)
+    setDescription(template.description)
+    
+    // Set suggested assignment
+    if (template.suggestedAssignment === 'both') {
+      setAssignedTo('both')
+      setAssignedToId('')
+    } else {
+      setAssignedTo('partner1')
+      setAssignedToId(currentPartner.id) // Default to current partner
+    }
+    
+    // Set suggested due date
+    const suggestedDueDate = new Date()
+    suggestedDueDate.setDate(suggestedDueDate.getDate() + template.suggestedDuration)
+    setDueDate(suggestedDueDate.toISOString().split('T')[0])
+    
+    // Switch to custom tab for fine-tuning
+    setActiveTab('custom')
+    toast.success('Template applied! Customize as needed.')
+  }
 
   const handleSave = () => {
     if (!title.trim()) {
@@ -112,7 +143,7 @@ export default function ActionDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>
             {action ? 'Edit Action' : 'Create Action Plan'}
@@ -124,83 +155,192 @@ export default function ActionDialog({
           )}
         </DialogHeader>
 
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="action-title">Action Title</Label>
-            <Input
-              id="action-title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g., Schedule weekly budget meetings"
-            />
-          </div>
+        {!action ? (
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="templates" className="flex items-center gap-2">
+                <Sparkles size={16} />
+                Choose Template
+              </TabsTrigger>
+              <TabsTrigger value="custom" className="flex items-center gap-2">
+                <Edit size={16} />
+                Custom Action
+              </TabsTrigger>
+            </TabsList>
 
-          <div className="space-y-2">
-            <Label htmlFor="action-description">Action Description</Label>
-            <Textarea
-              id="action-description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe what needs to be done and how you'll do it..."
-              rows={4}
-            />
-          </div>
+            <TabsContent value="templates" className="flex-1 overflow-auto">
+              <div className="space-y-4">
+                {issue && (
+                  <QuickTemplateSuggestions 
+                    issue={issue}
+                    onSelectTemplate={handleTemplateSelect}
+                  />
+                )}
+                <ActionTemplatePicker 
+                  onSelectTemplate={handleTemplateSelect}
+                  selectedCategory={issue?.category}
+                />
+              </div>
+            </TabsContent>
 
-          <div className="grid grid-cols-2 gap-4">
+            <TabsContent value="custom" className="flex-1 overflow-auto">
+              <div className="space-y-6 pr-2">
+                <div className="space-y-2">
+                  <Label htmlFor="action-title">Action Title</Label>
+                  <Input
+                    id="action-title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="e.g., Schedule weekly budget meetings"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="action-description">Action Description</Label>
+                  <Textarea
+                    id="action-description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Describe what needs to be done and how you'll do it..."
+                    rows={4}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Assigned To</Label>
+                    <Select 
+                      value={assignedToId || assignedTo} 
+                      onValueChange={(value) => {
+                        if (value === currentPartner.id || value === otherPartner.id) {
+                          setAssignedToId(value)
+                          setAssignedTo('partner1')
+                        } else {
+                          setAssignedToId('')
+                          setAssignedTo(value as Action['assignedTo'])
+                        }
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={currentPartner.id}>{currentPartner.name} (You)</SelectItem>
+                        <SelectItem value={otherPartner.id}>{otherPartner.name}</SelectItem>
+                        <SelectItem value="both">Both Partners</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="due-date">Due Date (Optional)</Label>
+                    <Input
+                      id="due-date"
+                      type="date"
+                      value={dueDate}
+                      onChange={(e) => setDueDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-between pt-4">
+                  <div>
+                    {action && (
+                      <Button variant="destructive" onClick={handleDelete}>
+                        Delete Action
+                      </Button>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" onClick={onClose}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSave}>
+                      {action ? 'Update' : 'Create'} Action
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        ) : (
+          // Editing existing action - show form directly
+          <div className="space-y-6 overflow-auto">
             <div className="space-y-2">
-              <Label>Assigned To</Label>
-              <Select 
-                value={assignedToId || assignedTo} 
-                onValueChange={(value) => {
-                  if (value === currentPartner.id || value === otherPartner.id) {
-                    setAssignedToId(value)
-                    setAssignedTo('partner1') // Will be updated by the component logic
-                  } else {
-                    setAssignedToId('')
-                    setAssignedTo(value as Action['assignedTo'])
-                  }
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={currentPartner.id}>{currentPartner.name} (You)</SelectItem>
-                  <SelectItem value={otherPartner.id}>{otherPartner.name}</SelectItem>
-                  <SelectItem value="both">Both Partners</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="due-date">Due Date (Optional)</Label>
+              <Label htmlFor="action-title">Action Title</Label>
               <Input
-                id="due-date"
-                type="date"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
+                id="action-title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g., Schedule weekly budget meetings"
               />
             </div>
-          </div>
 
-          <div className="flex justify-between">
-            <div>
-              {action && (
+            <div className="space-y-2">
+              <Label htmlFor="action-description">Action Description</Label>
+              <Textarea
+                id="action-description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe what needs to be done and how you'll do it..."
+                rows={4}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Assigned To</Label>
+                <Select 
+                  value={assignedToId || assignedTo} 
+                  onValueChange={(value) => {
+                    if (value === currentPartner.id || value === otherPartner.id) {
+                      setAssignedToId(value)
+                      setAssignedTo('partner1')
+                    } else {
+                      setAssignedToId('')
+                      setAssignedTo(value as Action['assignedTo'])
+                    }
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={currentPartner.id}>{currentPartner.name} (You)</SelectItem>
+                    <SelectItem value={otherPartner.id}>{otherPartner.name}</SelectItem>
+                    <SelectItem value="both">Both Partners</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="due-date">Due Date (Optional)</Label>
+                <Input
+                  id="due-date"
+                  type="date"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between">
+              <div>
                 <Button variant="destructive" onClick={handleDelete}>
                   Delete Action
                 </Button>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button onClick={handleSave}>
-                {action ? 'Update' : 'Create'} Action
-              </Button>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button onClick={handleSave}>
+                  Update Action
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </DialogContent>
     </Dialog>
   )
