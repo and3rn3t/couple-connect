@@ -12,6 +12,12 @@ format = "service-worker"
 dir = "dist"
 main = "./dist"
 
+# D1 Database configuration
+[[d1_databases]]
+binding = "DB"
+database_name = "couple-connect-db"
+database_id = "your-database-id-here"  # Replace with actual database ID after creation
+
 # Environment variables for production
 [env.production.vars]
 NODE_ENV = "production"

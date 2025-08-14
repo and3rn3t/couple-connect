@@ -17,9 +17,17 @@
     "clean": "rm -rf dist node_modules/.vite",
     "start": "npm run preview",
     "deploy": "npm run build && wrangler pages deploy dist",
-    "deploy:preview": "npm run build && wrangler pages deploy dist --env preview"
+    "deploy:preview": "npm run build && wrangler pages deploy dist --env preview",
+    "db:create": "wrangler d1 create couple-connect-db",
+    "db:schema": "wrangler d1 execute couple-connect-db --file=database/schema.sql",
+    "db:seed": "wrangler d1 execute couple-connect-db --file=database/seed.sql",
+    "db:setup": "npm run db:create && npm run db:schema && npm run db:seed",
+    "db:local-schema": "wrangler d1 execute couple-connect-db --local --file=database/schema.sql",
+    "db:local-seed": "wrangler d1 execute couple-connect-db --local --file=database/seed.sql",
+    "db:dev": "npm run db:local-schema && npm run db:local-seed"
   },
   "dependencies": {
+    "@cloudflare/workers-types": "^4.20250813.0",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^4.1.3",
     "@octokit/core": "^6.1.4",

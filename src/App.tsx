@@ -1,69 +1,84 @@
-import { useState } from 'react'
-import './App.css'
-import { useKV } from './hooks/useKV'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Heart, Target, ChartBar } from '@phosphor-icons/react'
-import { Toaster } from '@/components/ui/sonner'
-import MindmapView from '@/components/MindmapView'
-import ActionDashboard from '@/components/ActionDashboard'
-import ProgressView from '@/components/ProgressView'
-import PartnerSetup, { Partner } from '@/components/PartnerSetup'
-import PartnerProfile from '@/components/PartnerProfile'
-import NotificationCenter from '@/components/NotificationCenter'
-import NotificationSummary from '@/components/NotificationSummary'
-import GamificationCenter, { GamificationState } from '@/components/GamificationCenter'
-import RewardSystem from '@/components/RewardSystem'
-import DailyChallenges from '@/components/DailyChallenges'
+import { useState, useEffect } from 'react';
+import './App.css';
+import { useKV } from './hooks/useKV';
+import { initializeDatabase } from './services/initializeData';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Heart, Target, ChartBar } from '@phosphor-icons/react';
+import { Toaster } from '@/components/ui/sonner';
+import MindmapView from '@/components/MindmapView';
+import ActionDashboard from '@/components/ActionDashboard';
+import ProgressView from '@/components/ProgressView';
+import PartnerSetup, { Partner } from '@/components/PartnerSetup';
+import PartnerProfile from '@/components/PartnerProfile';
+import NotificationCenter from '@/components/NotificationCenter';
+import NotificationSummary from '@/components/NotificationSummary';
+import GamificationCenter, { GamificationState } from '@/components/GamificationCenter';
+import RewardSystem from '@/components/RewardSystem';
+import DailyChallenges from '@/components/DailyChallenges';
 
 export interface Issue {
-  id: string
-  title: string
-  description: string
-  category: 'communication' | 'intimacy' | 'finance' | 'time' | 'family' | 'personal-growth' | 'other'
-  priority: 'low' | 'medium' | 'high'
-  createdAt: string
-  position: { x: number; y: number }
-  connections: string[]
+  id: string;
+  title: string;
+  description: string;
+  category:
+    | 'communication'
+    | 'intimacy'
+    | 'finance'
+    | 'time'
+    | 'family'
+    | 'personal-growth'
+    | 'other';
+  priority: 'low' | 'medium' | 'high';
+  createdAt: string;
+  position: { x: number; y: number };
+  connections: string[];
 }
 
 export interface Action {
-  id: string
-  issueId: string
-  title: string
-  description: string
-  assignedTo: 'partner1' | 'partner2' | 'both'
-  assignedToId?: string // Partner ID for more specific assignment
-  dueDate: string
-  status: 'pending' | 'in-progress' | 'completed'
-  createdAt: string
-  createdBy: string // Partner ID who created the action
-  completedAt?: string
-  completedBy?: string // Partner ID who completed the action
-  notes: string[]
+  id: string;
+  issueId: string;
+  title: string;
+  description: string;
+  assignedTo: 'partner1' | 'partner2' | 'both';
+  assignedToId?: string; // Partner ID for more specific assignment
+  dueDate: string;
+  status: 'pending' | 'in-progress' | 'completed';
+  createdAt: string;
+  createdBy: string; // Partner ID who created the action
+  completedAt?: string;
+  completedBy?: string; // Partner ID who completed the action
+  notes: string[];
 }
 
 export interface RelationshipHealth {
-  overallScore: number
+  overallScore: number;
   categories: {
-    communication: number
-    intimacy: number
-    finance: number
-    time: number
-    family: number
-    personalGrowth: number
-  }
-  lastUpdated: string
+    communication: number;
+    intimacy: number;
+    finance: number;
+    time: number;
+    family: number;
+    personalGrowth: number;
+  };
+  lastUpdated: string;
 }
 
 function App() {
-  // Partner identification state
-  const [currentPartner, setCurrentPartner] = useKV<Partner | null>("current-partner", null)
-  const [otherPartner, setOtherPartner] = useKV<Partner | null>("other-partner", null)
-  const [viewingAsPartner, setViewingAsPartner] = useState<string | null>(null) // For switching perspectives
+  // Initialize database on app start
+  useEffect(() => {
+    initializeDatabase().catch((error) => {
+      console.error('Failed to initialize database:', error);
+    });
+  }, []);
 
-  const [issues, setIssues] = useKV<Issue[]>("relationship-issues", [])
-  const [actions, setActions] = useKV<Action[]>("relationship-actions", [])
-  const [healthScore, setHealthScore] = useKV<RelationshipHealth>("relationship-health", {
+  // Partner identification state
+  const [currentPartner, setCurrentPartner] = useKV<Partner | null>('current-partner', null);
+  const [otherPartner, setOtherPartner] = useKV<Partner | null>('other-partner', null);
+  const [viewingAsPartner, setViewingAsPartner] = useState<string | null>(null); // For switching perspectives
+
+  const [issues, setIssues] = useKV<Issue[]>('relationship-issues', []);
+  const [actions, setActions] = useKV<Action[]>('relationship-actions', []);
+  const [healthScore, setHealthScore] = useKV<RelationshipHealth>('relationship-health', {
     overallScore: 7,
     categories: {
       communication: 7,
@@ -71,113 +86,122 @@ function App() {
       finance: 8,
       time: 6,
       family: 7,
-      personalGrowth: 6
+      personalGrowth: 6,
     },
-    lastUpdated: new Date().toISOString()
-  })
+    lastUpdated: new Date().toISOString(),
+  });
 
   // Gamification state
-  const [gamificationState, setGamificationState] = useKV<GamificationState>("gamification-state", {
+  const [gamificationState, setGamificationState] = useKV<GamificationState>('gamification-state', {
     totalPoints: 0,
     currentStreak: 0,
     longestStreak: 0,
     achievements: [],
     weeklyGoal: 7,
     weeklyProgress: 0,
-    partnerStats: {}
-  })
+    partnerStats: {},
+  });
 
   // Wrapper functions to match component setter interfaces
   const setIssuesWrapper = (update: (current: Issue[]) => Issue[]) => {
-    setIssues(prev => update(prev || []))
-  }
+    setIssues((prev) => update(prev || []));
+  };
 
   const setActionsWrapper = (update: (current: Action[]) => Action[]) => {
-    setActions(prev => update(prev || []))
-  }
+    setActions((prev) => update(prev || []));
+  };
 
   const setHealthScoreWrapper = (update: (current: RelationshipHealth) => RelationshipHealth) => {
-    setHealthScore(prev => update(prev || {
-      overallScore: 0,
-      categories: {
-        communication: 0,
-        intimacy: 0,
-        finance: 0,
-        time: 0,
-        family: 0,
-        personalGrowth: 0
-      },
-      lastUpdated: new Date().toISOString()
-    }))
-  }
+    setHealthScore((prev) =>
+      update(
+        prev || {
+          overallScore: 0,
+          categories: {
+            communication: 0,
+            intimacy: 0,
+            finance: 0,
+            time: 0,
+            family: 0,
+            personalGrowth: 0,
+          },
+          lastUpdated: new Date().toISOString(),
+        }
+      )
+    );
+  };
 
-  const [activeTab, setActiveTab] = useState("mindmap")
-  const [notificationCenterOpen, setNotificationCenterOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState('mindmap');
+  const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
 
   // If no partners are set up, show setup screen
   if (!currentPartner || !otherPartner) {
     return (
       <PartnerSetup
         onComplete={(current, other) => {
-          setCurrentPartner(current)
-          setOtherPartner(other)
+          setCurrentPartner(current);
+          setOtherPartner(other);
         }}
       />
-    )
+    );
   }
 
   // Determine which partner's perspective we're viewing
   const activePartner = viewingAsPartner
-    ? (viewingAsPartner === currentPartner.id ? currentPartner : otherPartner)
-    : currentPartner
+    ? viewingAsPartner === currentPartner.id
+      ? currentPartner
+      : otherPartner
+    : currentPartner;
 
-  const isViewingOwnPerspective = activePartner.id === currentPartner.id
+  const isViewingOwnPerspective = activePartner.id === currentPartner.id;
 
   // Filter actions based on current view
   const getPersonalizedActions = () => {
-    const actionList = actions || []
+    const actionList = actions || [];
     if (isViewingOwnPerspective) {
       // Show actions assigned to current user or both
-      return actionList.filter(action =>
-        action.assignedToId === currentPartner.id ||
-        action.assignedTo === 'both' ||
-        action.createdBy === currentPartner.id
-      )
+      return actionList.filter(
+        (action) =>
+          action.assignedToId === currentPartner.id ||
+          action.assignedTo === 'both' ||
+          action.createdBy === currentPartner.id
+      );
     } else {
       // Show actions from partner's perspective
-      return actionList.filter(action =>
-        action.assignedToId === otherPartner.id ||
-        action.assignedTo === 'both' ||
-        action.createdBy === otherPartner.id
-      )
+      return actionList.filter(
+        (action) =>
+          action.assignedToId === otherPartner.id ||
+          action.assignedTo === 'both' ||
+          action.createdBy === otherPartner.id
+      );
     }
-  }
+  };
 
   const handleSwitchView = () => {
-    setViewingAsPartner(viewingAsPartner === currentPartner.id ? otherPartner.id : currentPartner.id)
-  }
+    setViewingAsPartner(
+      viewingAsPartner === currentPartner.id ? otherPartner.id : currentPartner.id
+    );
+  };
 
   const handleSignOut = () => {
-    setCurrentPartner(null)
-    setOtherPartner(null)
-    setViewingAsPartner(null)
-  }
+    setCurrentPartner(null);
+    setOtherPartner(null);
+    setViewingAsPartner(null);
+  };
 
   const handleActionUpdate = (actionId: string, updates: Partial<Action>) => {
-    setActions((actions || []).map(action =>
-        action.id === actionId ? { ...action, ...updates } : action
-      )
-    )
-  }
+    setActions(
+      (actions || []).map((action) => (action.id === actionId ? { ...action, ...updates } : action))
+    );
+  };
 
   const handleCreateAction = (newAction: Omit<Action, 'id' | 'createdAt'>) => {
     const action: Action = {
       ...newAction,
       id: Date.now().toString(),
-      createdAt: new Date().toISOString()
-    }
-    setActions([...(actions || []), action])
-  }
+      createdAt: new Date().toISOString(),
+    };
+    setActions([...(actions || []), action]);
+  };
 
   return (
     <div id="spark-app" className="min-h-screen bg-bg dark-theme">
@@ -190,9 +214,8 @@ function App() {
                 <h1 className="text-3xl font-medium text-fg">Together</h1>
                 <p className="text-fg-secondary">
                   {isViewingOwnPerspective
-                    ? "Your personal accountability view"
-                    : `Viewing ${activePartner.name}'s perspective`
-                  }
+                    ? 'Your personal accountability view'
+                    : `Viewing ${activePartner.name}'s perspective`}
                 </p>
               </div>
             </div>
@@ -202,29 +225,33 @@ function App() {
                 issues={issues || []}
                 currentPartner={currentPartner}
                 otherPartner={otherPartner}
-                gamificationState={gamificationState || {
-                  totalPoints: 0,
-                  currentStreak: 0,
-                  longestStreak: 0,
-                  achievements: [],
-                  weeklyGoal: 50,
-                  weeklyProgress: 0,
-                  partnerStats: {}
-                }}
+                gamificationState={
+                  gamificationState || {
+                    totalPoints: 0,
+                    currentStreak: 0,
+                    longestStreak: 0,
+                    achievements: [],
+                    weeklyGoal: 50,
+                    weeklyProgress: 0,
+                    partnerStats: {},
+                  }
+                }
                 onUpdateGamification={setGamificationState}
               />
               <RewardSystem
                 currentPartner={currentPartner}
                 otherPartner={otherPartner}
-                gamificationState={gamificationState || {
-                  totalPoints: 0,
-                  currentStreak: 0,
-                  longestStreak: 0,
-                  achievements: [],
-                  weeklyGoal: 50,
-                  weeklyProgress: 0,
-                  partnerStats: {}
-                }}
+                gamificationState={
+                  gamificationState || {
+                    totalPoints: 0,
+                    currentStreak: 0,
+                    longestStreak: 0,
+                    achievements: [],
+                    weeklyGoal: 50,
+                    weeklyProgress: 0,
+                    partnerStats: {},
+                  }
+                }
                 onUpdateGamification={setGamificationState}
               />
               <NotificationCenter
@@ -265,15 +292,17 @@ function App() {
           issues={issues || []}
           currentPartner={currentPartner}
           otherPartner={otherPartner}
-          gamificationState={gamificationState || {
-            totalPoints: 0,
-            currentStreak: 0,
-            longestStreak: 0,
-            achievements: [],
-            weeklyGoal: 50,
-            weeklyProgress: 0,
-            partnerStats: {}
-          }}
+          gamificationState={
+            gamificationState || {
+              totalPoints: 0,
+              currentStreak: 0,
+              longestStreak: 0,
+              achievements: [],
+              weeklyGoal: 50,
+              weeklyProgress: 0,
+              partnerStats: {},
+            }
+          }
           onUpdateGamification={setGamificationState}
           onCreateAction={handleCreateAction}
         />
@@ -321,18 +350,20 @@ function App() {
             <ProgressView
               issues={issues || []}
               actions={actions || []}
-              healthScore={healthScore || {
-                overallScore: 0,
-                categories: {
-                  communication: 0,
-                  intimacy: 0,
-                  finance: 0,
-                  time: 0,
-                  family: 0,
-                  personalGrowth: 0
-                },
-                lastUpdated: new Date().toISOString()
-              }}
+              healthScore={
+                healthScore || {
+                  overallScore: 0,
+                  categories: {
+                    communication: 0,
+                    intimacy: 0,
+                    finance: 0,
+                    time: 0,
+                    family: 0,
+                    personalGrowth: 0,
+                  },
+                  lastUpdated: new Date().toISOString(),
+                }
+              }
               setHealthScore={setHealthScoreWrapper}
               currentPartner={currentPartner}
               otherPartner={otherPartner}
@@ -343,7 +374,7 @@ function App() {
       </div>
       <Toaster />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
