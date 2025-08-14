@@ -69,12 +69,17 @@ For detailed pipeline information, see [Workflow Documentation](../../.github/wo
 
 3. **Set Environment Variables**:
 
+   Use values from `.env/.env.production` as reference:
+
    ```text
    VITE_APP_NAME=Couple Connect
    VITE_ENVIRONMENT=production
-   VITE_API_URL=https://your-api-url.com
+   VITE_API_URL=https://api.couple-connect.com/api
    VITE_ENABLE_ANALYTICS=true
+   VITE_ENABLE_PWA=true
    ```
+
+   For a complete list of production environment variables, see [.env/.env.production](../../.env/.env.production).
 
 4. **Deploy**:
    - Click "Save and Deploy"

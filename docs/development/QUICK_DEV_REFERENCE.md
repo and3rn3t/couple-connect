@@ -97,7 +97,42 @@ Set-Content -Path "file.txt" -Value "New content"          # Write content
 Add-Content -Path "file.txt" -Value "Append this"          # Append content
 ```
 
-## 📁 Key File Locations
+## � Environment Management
+
+**Quick environment setup commands:**
+
+```powershell
+# Environment Configuration
+npm run env:dev         # Setup development environment (.env.local)
+npm run env:staging     # Setup staging environment (.env.local)
+npm run env:prod        # Setup production environment (.env.local)
+npm run env:test        # Setup testing environment (.env.local)
+npm run env:check       # Check current environment status
+npm run env:validate    # Validate environment configuration
+
+# Manual environment setup
+Copy-Item ".env/.env.base" ".env.local" -Force
+Get-Content ".env/.env.development" | Add-Content ".env.local"
+
+# Environment status check
+Get-Content ".env.local" | Select-String "VITE_ENVIRONMENT"
+Test-Path ".env.local"  # Check if environment file exists
+```
+
+**Environment Files Structure:**
+
+```text
+.env/
+├── .env.base         # Shared baseline configuration
+├── .env.development  # Development-specific settings
+├── .env.production   # Production-specific settings
+├── .env.staging      # Staging/pre-production settings
+├── .env.test         # Testing environment settings
+├── .env.example      # Template with setup instructions
+└── README.md         # Environment documentation
+```
+
+## �📁 Key File Locations
 
 ```text
 🏗️ Core Configuration
