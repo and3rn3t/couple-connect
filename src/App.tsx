@@ -17,7 +17,10 @@ import { Heart, Target, ChartBar } from '@phosphor-icons/react';
 import { Toaster } from '@/components/ui/sonner';
 import MindmapView from '@/components/MindmapView';
 import ActionDashboard from '@/components/ActionDashboard';
+import MobileActionDashboard from '@/components/MobileActionDashboard';
 import ProgressView from '@/components/ProgressView';
+import { MobileTabBar, MobileNavBar } from '@/components/ui/mobile-navigation';
+import { useMobileDetection } from '@/hooks/use-mobile';
 
 // App configuration constants
 const APP_CONFIG = {
@@ -96,6 +99,8 @@ export interface RelationshipHealth {
 }
 
 function App() {
+  const { isMobile } = useMobileDetection();
+
   // Initialize database on app start
   useEffect(() => {
     const initializeApp = async () => {
@@ -366,141 +371,45 @@ function App() {
   };
 
   return (
-    <div id="spark-app" className="min-h-screen bg-bg dark-theme">
-      <div className="container mx-auto p-6">
-        <header className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <Heart className="text-accent" size={ICON_SIZES.LARGE} weight="fill" />
-              <div>
-                <h1 className="text-3xl font-medium text-fg">Together</h1>
-                <p className="text-fg-secondary">
-                  {isViewingOwnPerspective
-                    ? 'Your personal accountability view'
-                    : `Viewing ${activePartner.name}'s perspective`}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <GamificationCenter
-                actions={actions || []}
-                issues={issues || []}
-                currentPartner={currentPartner}
-                otherPartner={otherPartner}
-                gamificationState={
-                  gamificationState || {
-                    totalPoints: 0,
-                    currentStreak: 0,
-                    longestStreak: 0,
-                    achievements: [],
-                    weeklyGoal: 50,
-                    weeklyProgress: 0,
-                    partnerStats: {},
-                  }
-                }
-                onUpdateGamification={setGamificationState}
-              />
-              <RewardSystem
-                currentPartner={currentPartner}
-                _otherPartner={otherPartner}
-                gamificationState={
-                  gamificationState || {
-                    totalPoints: 0,
-                    currentStreak: 0,
-                    longestStreak: 0,
-                    achievements: [],
-                    weeklyGoal: 50,
-                    weeklyProgress: 0,
-                    partnerStats: {},
-                  }
-                }
-                onUpdateGamification={setGamificationState}
-              />
-              <NotificationCenter
-                actions={actions || []}
-                issues={issues || []}
-                currentPartner={currentPartner}
-                otherPartner={otherPartner}
-                onActionUpdate={handleActionUpdate}
-                isOpen={notificationCenterOpen}
-                onOpenChange={setNotificationCenterOpen}
-              />
-              <PartnerProfile
-                currentPartner={currentPartner}
-                otherPartner={otherPartner}
-                onSwitchView={handleSwitchView}
-                onSignOut={handleSignOut}
-              />
-            </div>
-          </div>
-
-          <div className="text-center">
-            <p className="text-muted-foreground text-lg">
-              Building stronger relationships through accountability and growth
-            </p>
-          </div>
-        </header>
-
-        <PerformanceDashboard />
-
-        <NotificationSummary
-          actions={actions || []}
-          issues={issues || []}
-          currentPartner={currentPartner}
-          otherPartner={otherPartner}
-          onViewAll={() => setNotificationCenterOpen(true)}
-        />
-
-        <DailyChallenges
-          actions={actions || []}
-          issues={issues || []}
-          currentPartner={currentPartner}
-          otherPartner={otherPartner}
-          gamificationState={
-            gamificationState || {
-              totalPoints: 0,
-              currentStreak: 0,
-              longestStreak: 0,
-              achievements: [],
-              weeklyGoal: APP_CONFIG.DEFAULT_WEEKLY_GOAL,
-              weeklyProgress: 0,
-              partnerStats: {},
-            }
-          }
-          onUpdateGamification={setGamificationState}
-          onCreateAction={handleCreateAction}
-        />
-
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="mindmap" className="flex items-center gap-2">
-              <Heart size={ICON_SIZES.SMALL} />
-              Issues Map
-            </TabsTrigger>
-            <TabsTrigger value="actions" className="flex items-center gap-2">
-              <Target size={ICON_SIZES.SMALL} />
-              Action Plans
-            </TabsTrigger>
-            <TabsTrigger value="progress" className="flex items-center gap-2">
-              <ChartBar size={ICON_SIZES.SMALL} />
-              Progress
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="mindmap" className="space-y-6">
-            <MindmapView
-              issues={issues || []}
-              setIssues={setIssuesWrapper}
-              actions={actions || []}
-              setActions={setActionsWrapper}
+    <div
+      id="spark-app"
+      className={`min-h-screen bg-bg dark-theme ${isMobile ? 'pb-safe-area-bottom' : ''}`}
+    >
+      {/* Mobile Navigation */}
+      {isMobile && (
+        <MobileNavBar
+          title="Together"
+          rightAction={
+            <PartnerProfile
               currentPartner={currentPartner}
               otherPartner={otherPartner}
-              viewingAsPartner={activePartner}
+              onSwitchView={handleSwitchView}
+              onSignOut={handleSignOut}
             />
-          </TabsContent>
+          }
+        />
+      )}
 
-          <TabsContent value="actions" className="space-y-6">
-            <ActionDashboard
+      {isMobile ? (
+        /* Mobile Layout */
+        <div className="pt-16 pb-20">
+          {/* Mobile Tab Content */}
+          {activeTab === 'mindmap' && (
+            <div className="px-0">
+              <MindmapView
+                issues={issues || []}
+                setIssues={setIssuesWrapper}
+                actions={actions || []}
+                setActions={setActionsWrapper}
+                currentPartner={currentPartner}
+                otherPartner={otherPartner}
+                viewingAsPartner={activePartner}
+              />
+            </div>
+          )}
+
+          {activeTab === 'actions' && (
+            <MobileActionDashboard
               issues={issues || []}
               actions={getPersonalizedActions()}
               setActions={setActionsWrapper}
@@ -508,34 +417,210 @@ function App() {
               otherPartner={otherPartner}
               viewingAsPartner={activePartner}
             />
-          </TabsContent>
+          )}
 
-          <TabsContent value="progress" className="space-y-6">
-            <ProgressView
-              issues={issues || []}
-              actions={actions || []}
-              healthScore={
-                healthScore || {
-                  overallScore: 0,
-                  categories: {
-                    communication: 0,
-                    intimacy: 0,
-                    finance: 0,
-                    time: 0,
-                    family: 0,
-                    personalGrowth: 0,
-                  },
-                  lastUpdated: new Date().toISOString(),
+          {activeTab === 'progress' && (
+            <div className="px-4">
+              <ProgressView
+                issues={issues || []}
+                actions={actions || []}
+                healthScore={
+                  healthScore || {
+                    overallScore: 0,
+                    categories: {
+                      communication: 0,
+                      intimacy: 0,
+                      finance: 0,
+                      time: 0,
+                      family: 0,
+                      personalGrowth: 0,
+                    },
+                    lastUpdated: new Date().toISOString(),
+                  }
                 }
+                setHealthScore={setHealthScoreWrapper}
+                currentPartner={currentPartner}
+                otherPartner={otherPartner}
+                viewingAsPartner={activePartner}
+              />
+            </div>
+          )}
+
+          {/* Mobile Tab Bar */}
+          <MobileTabBar activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
+      ) : (
+        /* Desktop Layout */
+        <div className="container mx-auto p-6">
+          <header className="mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <Heart className="text-accent" size={ICON_SIZES.LARGE} weight="fill" />
+                <div>
+                  <h1 className="text-3xl font-medium text-fg">Together</h1>
+                  <p className="text-fg-secondary">
+                    {isViewingOwnPerspective
+                      ? 'Your personal accountability view'
+                      : `Viewing ${activePartner.name}'s perspective`}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <GamificationCenter
+                  actions={actions || []}
+                  issues={issues || []}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  gamificationState={
+                    gamificationState || {
+                      totalPoints: 0,
+                      currentStreak: 0,
+                      longestStreak: 0,
+                      achievements: [],
+                      weeklyGoal: 50,
+                      weeklyProgress: 0,
+                      partnerStats: {},
+                    }
+                  }
+                  onUpdateGamification={setGamificationState}
+                />
+                <RewardSystem
+                  currentPartner={currentPartner}
+                  _otherPartner={otherPartner}
+                  gamificationState={
+                    gamificationState || {
+                      totalPoints: 0,
+                      currentStreak: 0,
+                      longestStreak: 0,
+                      achievements: [],
+                      weeklyGoal: 50,
+                      weeklyProgress: 0,
+                      partnerStats: {},
+                    }
+                  }
+                  onUpdateGamification={setGamificationState}
+                />
+                <NotificationCenter
+                  actions={actions || []}
+                  issues={issues || []}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  onActionUpdate={handleActionUpdate}
+                  isOpen={notificationCenterOpen}
+                  onOpenChange={setNotificationCenterOpen}
+                />
+                <PartnerProfile
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  onSwitchView={handleSwitchView}
+                  onSignOut={handleSignOut}
+                />
+              </div>
+            </div>
+
+            <div className="text-center">
+              <p className="text-muted-foreground text-lg">
+                Building stronger relationships through accountability and growth
+              </p>
+            </div>
+          </header>
+
+          <PerformanceDashboard />
+
+          <NotificationSummary
+            actions={actions || []}
+            issues={issues || []}
+            currentPartner={currentPartner}
+            otherPartner={otherPartner}
+            onViewAll={() => setNotificationCenterOpen(true)}
+          />
+
+          <DailyChallenges
+            actions={actions || []}
+            issues={issues || []}
+            currentPartner={currentPartner}
+            otherPartner={otherPartner}
+            gamificationState={
+              gamificationState || {
+                totalPoints: 0,
+                currentStreak: 0,
+                longestStreak: 0,
+                achievements: [],
+                weeklyGoal: APP_CONFIG.DEFAULT_WEEKLY_GOAL,
+                weeklyProgress: 0,
+                partnerStats: {},
               }
-              setHealthScore={setHealthScoreWrapper}
-              currentPartner={currentPartner}
-              otherPartner={otherPartner}
-              viewingAsPartner={activePartner}
-            />
-          </TabsContent>
-        </Tabs>
-      </div>
+            }
+            onUpdateGamification={setGamificationState}
+            onCreateAction={handleCreateAction}
+          />
+
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-8">
+              <TabsTrigger value="mindmap" className="flex items-center gap-2">
+                <Heart size={ICON_SIZES.SMALL} />
+                Issues Map
+              </TabsTrigger>
+              <TabsTrigger value="actions" className="flex items-center gap-2">
+                <Target size={ICON_SIZES.SMALL} />
+                Action Plans
+              </TabsTrigger>
+              <TabsTrigger value="progress" className="flex items-center gap-2">
+                <ChartBar size={ICON_SIZES.SMALL} />
+                Progress
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="mindmap" className="space-y-6">
+              <MindmapView
+                issues={issues || []}
+                setIssues={setIssuesWrapper}
+                actions={actions || []}
+                setActions={setActionsWrapper}
+                currentPartner={currentPartner}
+                otherPartner={otherPartner}
+                viewingAsPartner={activePartner}
+              />
+            </TabsContent>
+
+            <TabsContent value="actions" className="space-y-6">
+              <ActionDashboard
+                issues={issues || []}
+                actions={getPersonalizedActions()}
+                setActions={setActionsWrapper}
+                currentPartner={currentPartner}
+                otherPartner={otherPartner}
+                viewingAsPartner={activePartner}
+              />
+            </TabsContent>
+
+            <TabsContent value="progress" className="space-y-6">
+              <ProgressView
+                issues={issues || []}
+                actions={actions || []}
+                healthScore={
+                  healthScore || {
+                    overallScore: 0,
+                    categories: {
+                      communication: 0,
+                      intimacy: 0,
+                      finance: 0,
+                      time: 0,
+                      family: 0,
+                      personalGrowth: 0,
+                    },
+                    lastUpdated: new Date().toISOString(),
+                  }
+                }
+                setHealthScore={setHealthScoreWrapper}
+                currentPartner={currentPartner}
+                otherPartner={otherPartner}
+                viewingAsPartner={activePartner}
+              />
+            </TabsContent>
+          </Tabs>
+        </div>
+      )}
       <Toaster />
     </div>
   );
