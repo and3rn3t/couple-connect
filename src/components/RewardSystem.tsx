@@ -1,36 +1,53 @@
-import { useState } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { Gift, Heart, Coffee, MagicWand, Calendar, Camera, MusicNote, GameController, ShoppingBag, Star } from '@phosphor-icons/react'
-import { Partner } from '@/components/PartnerSetup'
-import { GamificationState } from './GamificationCenter'
-import { toast } from 'sonner'
-import { useKV } from '../hooks/useKV'
+import { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import {
+  Gift,
+  Heart,
+  Coffee,
+  MagicWand,
+  Calendar,
+  Camera,
+  MusicNote,
+  GameController,
+  ShoppingBag,
+  Star,
+} from '@phosphor-icons/react';
+import { Partner } from '@/components/PartnerSetup';
+import { GamificationState } from './GamificationCenter';
+import { toast } from 'sonner';
+import { useKV } from '../hooks/useKV';
 
 export interface Reward {
-  id: string
-  title: string
-  description: string
-  icon: React.ReactNode
-  category: 'date' | 'personal' | 'shared' | 'surprise' | 'experience'
-  cost: number
-  rarity: 'common' | 'rare' | 'epic'
-  unlockLevel?: number // Points threshold to unlock
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  category: 'date' | 'personal' | 'shared' | 'surprise' | 'experience';
+  cost: number;
+  rarity: 'common' | 'rare' | 'epic';
+  unlockLevel?: number; // Points threshold to unlock
   redemptions: {
-    redeemedAt: string
-    redeemedBy: string
-    message?: string
-  }[]
+    redeemedAt: string;
+    redeemedBy: string;
+    message?: string;
+  }[];
 }
 
 interface RewardSystemProps {
-  currentPartner: Partner
-  otherPartner: Partner
-  gamificationState: GamificationState
-  onUpdateGamification: (state: GamificationState) => void
+  currentPartner: Partner;
+  otherPartner: Partner;
+  gamificationState: GamificationState;
+  onUpdateGamification: (state: GamificationState) => void;
 }
 
 const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
@@ -42,7 +59,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     icon: <Camera className="w-5 h-5" />,
     category: 'date',
     cost: 100,
-    rarity: 'common'
+    rarity: 'common',
   },
   {
     id: 'restaurant-choice',
@@ -51,7 +68,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     icon: <Coffee className="w-5 h-5" />,
     category: 'date',
     cost: 150,
-    rarity: 'common'
+    rarity: 'common',
   },
   {
     id: 'surprise-date',
@@ -61,7 +78,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     category: 'date',
     cost: 300,
     rarity: 'rare',
-    unlockLevel: 500
+    unlockLevel: 500,
   },
   {
     id: 'weekend-getaway',
@@ -71,7 +88,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     category: 'experience',
     cost: 800,
     rarity: 'epic',
-    unlockLevel: 1500
+    unlockLevel: 1500,
   },
 
   // Personal Rewards
@@ -82,7 +99,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     icon: <Heart className="w-5 h-5" />,
     category: 'personal',
     cost: 200,
-    rarity: 'common'
+    rarity: 'common',
   },
   {
     id: 'massage',
@@ -91,7 +108,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     icon: <MagicWand className="w-5 h-5" />,
     category: 'personal',
     cost: 250,
-    rarity: 'rare'
+    rarity: 'rare',
   },
   {
     id: 'hobby-time',
@@ -100,7 +117,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     icon: <GameController className="w-5 h-5" />,
     category: 'personal',
     cost: 180,
-    rarity: 'common'
+    rarity: 'common',
   },
   {
     id: 'spa-day',
@@ -110,7 +127,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     category: 'personal',
     cost: 500,
     rarity: 'epic',
-    unlockLevel: 1000
+    unlockLevel: 1000,
   },
 
   // Shared Experience Rewards
@@ -121,7 +138,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     icon: <MusicNote className="w-5 h-5" />,
     category: 'shared',
     cost: 120,
-    rarity: 'common'
+    rarity: 'common',
   },
   {
     id: 'cooking-together',
@@ -130,7 +147,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     icon: <Coffee className="w-5 h-5" />,
     category: 'shared',
     cost: 220,
-    rarity: 'rare'
+    rarity: 'rare',
   },
   {
     id: 'game-night',
@@ -139,7 +156,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     icon: <GameController className="w-5 h-5" />,
     category: 'shared',
     cost: 180,
-    rarity: 'common'
+    rarity: 'common',
   },
 
   // Surprise Rewards
@@ -151,7 +168,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     category: 'surprise',
     cost: 350,
     rarity: 'rare',
-    unlockLevel: 300
+    unlockLevel: 300,
   },
   {
     id: 'favorite-treat',
@@ -160,7 +177,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     icon: <ShoppingBag className="w-5 h-5" />,
     category: 'surprise',
     cost: 160,
-    rarity: 'common'
+    rarity: 'common',
   },
   {
     id: 'love-note',
@@ -169,82 +186,92 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     icon: <Heart className="w-5 h-5" />,
     category: 'surprise',
     cost: 100,
-    rarity: 'common'
-  }
-]
+    rarity: 'common',
+  },
+];
 
-export default function RewardSystem({ 
-  currentPartner, 
-  otherPartner, 
-  gamificationState, 
-  onUpdateGamification 
+export default function RewardSystem({
+  currentPartner,
+  otherPartner,
+  gamificationState,
+  onUpdateGamification,
 }: RewardSystemProps) {
-  const [open, setOpen] = useState(false)
-  const [redeemedRewards, setRedeemedRewards] = useKV<Reward[]>('redeemed-rewards', [])
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [open, setOpen] = useState(false);
+  const [redeemedRewards, setRedeemedRewards] = useKV<Reward[]>('redeemed-rewards', []);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  const canAfford = (cost: number) => gamificationState.totalPoints >= cost
-  const canUnlock = (reward: Omit<Reward, 'redemptions'>) => 
-    !reward.unlockLevel || gamificationState.totalPoints >= reward.unlockLevel
+  const canAfford = (cost: number) => gamificationState.totalPoints >= cost;
+  const canUnlock = (reward: Omit<Reward, 'redemptions'>) =>
+    !reward.unlockLevel || gamificationState.totalPoints >= reward.unlockLevel;
 
   const redeemReward = (reward: Omit<Reward, 'redemptions'>) => {
     if (!canAfford(reward.cost)) {
-      toast.error("Not enough points to redeem this reward!")
-      return
+      toast.error('Not enough points to redeem this reward!');
+      return;
     }
 
     const redemption = {
       redeemedAt: new Date().toISOString(),
       redeemedBy: currentPartner.id,
-      message: `${currentPartner.name} redeemed: ${reward.title}`
-    }
+      message: `${currentPartner.name} redeemed: ${reward.title}`,
+    };
 
     const redeemedReward: Reward = {
       ...reward,
-      redemptions: [redemption]
-    }
+      redemptions: [redemption],
+    };
 
     // Update redeemed rewards
-    setRedeemedRewards(current => [...(current || []), redeemedReward])
+    setRedeemedRewards((current) => [...(current || []), redeemedReward]);
 
     // Update gamification state (deduct points)
     const updatedGamificationState = {
       ...gamificationState,
-      totalPoints: gamificationState.totalPoints - reward.cost
-    }
-    onUpdateGamification(updatedGamificationState)
+      totalPoints: gamificationState.totalPoints - reward.cost,
+    };
+    onUpdateGamification(updatedGamificationState);
 
     toast.success(`🎁 Redeemed: ${reward.title}!`, {
       description: `Your partner will be notified. Enjoy your reward!`,
-      duration: 5000
-    })
+      duration: 5000,
+    });
 
     // You could trigger a notification to the other partner here
-  }
+  };
 
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
-      case 'common': return 'bg-green-100 text-green-800'
-      case 'rare': return 'bg-blue-100 text-blue-800'
-      case 'epic': return 'bg-purple-100 text-purple-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'common':
+        return 'bg-green-100 text-green-800';
+      case 'rare':
+        return 'bg-blue-100 text-blue-800';
+      case 'epic':
+        return 'bg-purple-100 text-purple-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'date': return 'bg-pink-100 text-pink-800'
-      case 'personal': return 'bg-indigo-100 text-indigo-800'
-      case 'shared': return 'bg-orange-100 text-orange-800'
-      case 'surprise': return 'bg-yellow-100 text-yellow-800'
-      case 'experience': return 'bg-teal-100 text-teal-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'date':
+        return 'bg-pink-100 text-pink-800';
+      case 'personal':
+        return 'bg-indigo-100 text-indigo-800';
+      case 'shared':
+        return 'bg-orange-100 text-orange-800';
+      case 'surprise':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'experience':
+        return 'bg-teal-100 text-teal-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
-  const filteredRewards = AVAILABLE_REWARDS.filter(reward => 
-    selectedCategory === 'all' || reward.category === selectedCategory
-  )
+  const filteredRewards = AVAILABLE_REWARDS.filter(
+    (reward) => selectedCategory === 'all' || reward.category === selectedCategory
+  );
 
   const categories = [
     { id: 'all', name: 'All Rewards', icon: <Gift className="w-4 h-4" /> },
@@ -253,7 +280,7 @@ export default function RewardSystem({
     { id: 'shared', name: 'Together', icon: <MagicWand className="w-4 h-4" /> },
     { id: 'surprise', name: 'Surprises', icon: <Gift className="w-4 h-4" /> },
     { id: 'experience', name: 'Experiences', icon: <Calendar className="w-4 h-4" /> },
-  ]
+  ];
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -263,7 +290,7 @@ export default function RewardSystem({
           Rewards
         </Button>
       </DialogTrigger>
-      
+
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -309,7 +336,8 @@ export default function RewardSystem({
                             <div>
                               <p className="font-medium">{reward.title}</p>
                               <p className="text-sm text-muted-foreground">
-                                Redeemed {new Date(reward.redemptions[0].redeemedAt).toLocaleDateString()}
+                                Redeemed{' '}
+                                {new Date(reward.redemptions[0].redeemedAt).toLocaleDateString()}
                               </p>
                             </div>
                           </div>
@@ -326,10 +354,10 @@ export default function RewardSystem({
           {/* Category Filter */}
           <div>
             <div className="flex flex-wrap gap-2 mb-4">
-              {categories.map(category => (
+              {categories.map((category) => (
                 <Button
                   key={category.id}
-                  variant={selectedCategory === category.id ? "default" : "outline"}
+                  variant={selectedCategory === category.id ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setSelectedCategory(category.id)}
                   className="flex items-center gap-2"
@@ -343,13 +371,16 @@ export default function RewardSystem({
 
           {/* Rewards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredRewards.map(reward => {
-              const isAffordable = canAfford(reward.cost)
-              const isUnlocked = canUnlock(reward)
-              const isRedeemable = isAffordable && isUnlocked
+            {filteredRewards.map((reward) => {
+              const isAffordable = canAfford(reward.cost);
+              const isUnlocked = canUnlock(reward);
+              const isRedeemable = isAffordable && isUnlocked;
 
               return (
-                <Card key={reward.id} className={`relative overflow-hidden ${!isUnlocked ? 'opacity-50' : ''}`}>
+                <Card
+                  key={reward.id}
+                  className={`relative overflow-hidden ${!isUnlocked ? 'opacity-50' : ''}`}
+                >
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
@@ -364,7 +395,9 @@ export default function RewardSystem({
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className={`text-lg font-bold ${isAffordable ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        <p
+                          className={`text-lg font-bold ${isAffordable ? 'text-foreground' : 'text-muted-foreground'}`}
+                        >
                           {reward.cost}
                         </p>
                         <p className="text-xs text-muted-foreground">points</p>
@@ -380,32 +413,27 @@ export default function RewardSystem({
                           Unlocks at {reward.unlockLevel} points
                         </p>
                         <div className="w-full bg-muted rounded-full h-2">
-                          <div 
+                          <div
                             className="bg-accent h-2 rounded-full transition-all duration-300"
-                            style={{ 
-                              width: `${Math.min((gamificationState.totalPoints / reward.unlockLevel) * 100, 100)}%` 
+                            style={{
+                              width: `${Math.min((gamificationState.totalPoints / reward.unlockLevel) * 100, 100)}%`,
                             }}
                           />
                         </div>
                       </div>
                     )}
 
-                    <Button 
+                    <Button
                       onClick={() => redeemReward(reward)}
                       disabled={!isRedeemable}
                       className="w-full"
-                      variant={isRedeemable ? "default" : "outline"}
+                      variant={isRedeemable ? 'default' : 'outline'}
                     >
-                      {!isUnlocked 
-                        ? "Locked" 
-                        : !isAffordable 
-                        ? "Need More Points" 
-                        : "Redeem"
-                      }
+                      {!isUnlocked ? 'Locked' : !isAffordable ? 'Need More Points' : 'Redeem'}
                     </Button>
                   </CardContent>
                 </Card>
-              )
+              );
             })}
           </div>
 
@@ -413,14 +441,12 @@ export default function RewardSystem({
             <Card>
               <CardContent className="p-6 text-center">
                 <Gift className="w-12 h-12 mx-auto text-muted-foreground mb-3" />
-                <p className="text-muted-foreground">
-                  No rewards found in this category.
-                </p>
+                <p className="text-muted-foreground">No rewards found in this category.</p>
               </CardContent>
             </Card>
           )}
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
