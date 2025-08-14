@@ -60,10 +60,10 @@ jobs:
         run: |
           case "${{ matrix.check }}" in
             "lint")
-              npm run lint
+              npm run lint:ci
               ;;
             "type-check")
-              npm run type-check
+              npm run type-check:ci
               ;;
             "format-check")
               npm run format:check
