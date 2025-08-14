@@ -1,0 +1,80 @@
+{
+  "timestamp": "2025-08-14T20:06:19.068Z",
+  "summary": {
+    "totalFiles": 7,
+    "totalSize": 1094794,
+    "categories": {
+      "javascript": {
+        "count": 5,
+        "size": 724826
+      },
+      "css": {
+        "count": 1,
+        "size": 369081
+      },
+      "images": {
+        "count": 0,
+        "size": 0
+      },
+      "fonts": {
+        "count": 0,
+        "size": 0
+      },
+      "other": {
+        "count": 1,
+        "size": 887
+      }
+    }
+  },
+  "files": [
+    {
+      "name": "index-Jd2zn3OH.js",
+      "size": 606504,
+      "category": ".js",
+      "path": "dist\\assets\\index-Jd2zn3OH.js"
+    },
+    {
+      "name": "index-DINV4KCs.css",
+      "size": 369081,
+      "category": ".css",
+      "path": "dist\\assets\\index-DINV4KCs.css"
+    },
+    {
+      "name": "chunk-CLQm3FC_.js",
+      "size": 81641,
+      "category": ".js",
+      "path": "dist\\js\\chunk-CLQm3FC_.js"
+    },
+    {
+      "name": "chunk-BJeS7sC5.js",
+      "size": 24825,
+      "category": ".js",
+      "path": "dist\\js\\chunk-BJeS7sC5.js"
+    },
+    {
+      "name": "chunk-gH-7aFTg.js",
+      "size": 11827,
+      "category": ".js",
+      "path": "dist\\js\\chunk-gH-7aFTg.js"
+    },
+    {
+      "name": "index.html",
+      "size": 887,
+      "category": ".html",
+      "path": "dist\\index.html"
+    },
+    {
+      "name": "chunk-B5GZzgjQ.js",
+      "size": 29,
+      "category": ".js",
+      "path": "dist\\js\\chunk-B5GZzgjQ.js"
+    }
+  ],
+  "recommendations": [
+    {
+      "type": "info",
+      "category": "CSS",
+      "message": "CSS bundle (360.43 KB) could be optimized. Consider purging unused styles."
+    }
+  ]
+}

@@ -77,13 +77,14 @@ export default tseslint.config(
   {
     files: ['scripts/**/*.js'],
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: 2022,
       globals: globals.node,
-      sourceType: 'script', // Allow CommonJS
+      sourceType: 'module', // Allow ES modules
     },
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
       'no-console': 'off', // Allow console in scripts
+      '@typescript-eslint/no-unused-vars': 'off', // Not applicable to JS files
     },
   }
 );
