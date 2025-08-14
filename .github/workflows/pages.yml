@@ -10,7 +10,7 @@ on:
 
 # Grant necessary permissions for the workflow
 permissions:
-  contents: read
+  contents: write # Changed from read to write for GitHub releases
   deployments: write
   actions: read
   checks: write
