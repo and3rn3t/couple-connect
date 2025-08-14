@@ -1,8 +1,8 @@
 name: Bug Report
 description: File a bug report to help us improve
-title: "[BUG] "
-labels: ["bug", "triage"]
-assignees: ["and3rn3t"]
+title: '[BUG] '
+labels: ['bug', 'triage']
+assignees: ['and3rn3t']
 
 body:
   - type: markdown

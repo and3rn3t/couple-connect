@@ -1,45 +1,45 @@
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Textarea } from '@/components/ui/textarea'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { CheckCircle, Clock, User, Users, Calendar, Plus } from '@phosphor-icons/react'
-import { Issue, Action } from '@/App'
-import { Partner } from '@/components/PartnerSetup'
-import { toast } from 'sonner'
-import ActionDialog from '@/components/ActionDialog'
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Textarea } from '@/components/ui/textarea';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { CheckCircle, Clock, User, Users, Calendar, Plus } from '@phosphor-icons/react';
+import { Issue, Action } from '@/App';
+import { Partner } from '@/components/PartnerSetup';
+import { toast } from 'sonner';
+import ActionDialog from '@/components/ActionDialog';
 
 interface ActionDashboardProps {
-  issues: Issue[]
-  actions: Action[]
-  setActions: (update: (current: Action[]) => Action[]) => void
-  currentPartner: Partner
-  otherPartner: Partner
-  viewingAsPartner: Partner
+  issues: Issue[];
+  actions: Action[];
+  setActions: (update: (current: Action[]) => Action[]) => void;
+  currentPartner: Partner;
+  otherPartner: Partner;
+  viewingAsPartner: Partner;
 }
 
-export default function ActionDashboard({ 
-  issues, 
-  actions, 
-  setActions, 
-  currentPartner, 
-  otherPartner, 
-  viewingAsPartner 
+export default function ActionDashboard({
+  issues,
+  actions,
+  setActions,
+  currentPartner,
+  otherPartner,
+  viewingAsPartner,
 }: ActionDashboardProps) {
-  const [isActionDialogOpen, setIsActionDialogOpen] = useState(false)
-  const [editingAction, setEditingAction] = useState<Action | null>(null)
-  const [newNote, setNewNote] = useState<{ [key: string]: string }>({})
+  const [isActionDialogOpen, setIsActionDialogOpen] = useState(false);
+  const [editingAction, setEditingAction] = useState<Action | null>(null);
+  const [newNote, setNewNote] = useState<{ [key: string]: string }>({});
 
-  const pendingActions = actions.filter(a => a.status === 'pending')
-  const inProgressActions = actions.filter(a => a.status === 'in-progress')
-  const completedActions = actions.filter(a => a.status === 'completed')
+  const pendingActions = actions.filter((a) => a.status === 'pending');
+  const inProgressActions = actions.filter((a) => a.status === 'in-progress');
+  const completedActions = actions.filter((a) => a.status === 'completed');
 
   const getIssueTitle = (issueId: string) => {
-    const issue = issues.find(i => i.id === issueId)
-    return issue?.title || 'Unknown Issue'
-  }
+    const issue = issues.find((i) => i.id === issueId);
+    return issue?.title || 'Unknown Issue';
+  };
 
   const handleStatusChange = (actionId: string, status: Action['status']) => {
     setActions((current) =>
@@ -49,76 +49,81 @@ export default function ActionDashboard({
               ...action,
               status,
               completedAt: status === 'completed' ? new Date().toISOString() : undefined,
-              completedBy: status === 'completed' ? currentPartner.id : undefined
+              completedBy: status === 'completed' ? currentPartner.id : undefined,
             }
           : action
       )
-    )
-    
+    );
+
     if (status === 'completed') {
-      toast.success('Action marked as completed! 🎉')
+      toast.success('Action marked as completed! 🎉');
     }
-  }
+  };
 
   const handleAddNote = (actionId: string) => {
-    const note = newNote[actionId]?.trim()
-    if (!note) return
+    const note = newNote[actionId]?.trim();
+    if (!note) return;
 
-    const noteWithAuthor = `${new Date().toLocaleDateString()} (${currentPartner.name}): ${note}`
+    const noteWithAuthor = `${new Date().toLocaleDateString()} (${currentPartner.name}): ${note}`;
 
     setActions((current) =>
       current.map((action) =>
         action.id === actionId
           ? {
               ...action,
-              notes: [...action.notes, noteWithAuthor]
+              notes: [...action.notes, noteWithAuthor],
             }
           : action
       )
-    )
+    );
 
-    setNewNote(prev => ({ ...prev, [actionId]: '' }))
-    toast.success('Note added')
-  }
+    setNewNote((prev) => ({ ...prev, [actionId]: '' }));
+    toast.success('Note added');
+  };
 
   const handleEditAction = (action: Action) => {
-    setEditingAction(action)
-    setIsActionDialogOpen(true)
-  }
+    setEditingAction(action);
+    setIsActionDialogOpen(true);
+  };
 
   const getAssignedToDisplay = (action: Action) => {
     if (action.assignedToId) {
-      const assignedPartner = action.assignedToId === currentPartner.id ? currentPartner : otherPartner
-      return { 
-        text: assignedPartner.name, 
+      const assignedPartner =
+        action.assignedToId === currentPartner.id ? currentPartner : otherPartner;
+      return {
+        text: assignedPartner.name,
         icon: User,
-        avatar: assignedPartner.name.charAt(0).toUpperCase()
-      }
+        avatar: assignedPartner.name.charAt(0).toUpperCase(),
+      };
     }
-    
+
     switch (action.assignedTo) {
-      case 'partner1': return { text: 'Partner 1', icon: User, avatar: 'P1' }
-      case 'partner2': return { text: 'Partner 2', icon: User, avatar: 'P2' }
-      case 'both': return { text: 'Both Partners', icon: Users, avatar: null }
+      case 'partner1':
+        return { text: 'Partner 1', icon: User, avatar: 'P1' };
+      case 'partner2':
+        return { text: 'Partner 2', icon: User, avatar: 'P2' };
+      case 'both':
+        return { text: 'Both Partners', icon: Users, avatar: null };
     }
-  }
+  };
 
   const formatDate = (dateString: string) => {
-    if (!dateString) return null
-    return new Date(dateString).toLocaleDateString()
-  }
+    if (!dateString) return null;
+    return new Date(dateString).toLocaleDateString();
+  };
 
   const isOverdue = (action: Action) => {
-    if (!action.dueDate || action.status === 'completed') return false
-    return new Date(action.dueDate) < new Date()
-  }
+    if (!action.dueDate || action.status === 'completed') return false;
+    return new Date(action.dueDate) < new Date();
+  };
 
   const ActionCard = ({ action }: { action: Action }) => {
-    const assigned = getAssignedToDisplay(action)
-    const AssignedIcon = assigned.icon
-    const overdue = isOverdue(action)
-    const isAssignedToCurrentUser = action.assignedToId === currentPartner.id || action.assignedTo === 'both'
-    const canEdit = action.createdBy === currentPartner.id || isAssignedToCurrentUser
+    const assigned = getAssignedToDisplay(action);
+    const AssignedIcon = assigned.icon;
+    const overdue = isOverdue(action);
+    const isAssignedToCurrentUser =
+      action.assignedToId === currentPartner.id || action.assignedTo === 'both';
+    const canEdit = action.createdBy === currentPartner.id || isAssignedToCurrentUser;
 
     return (
       <Card key={action.id} className="transition-all hover:shadow-md">
@@ -140,11 +145,7 @@ export default function ActionDashboard({
               </div>
             </div>
             {canEdit && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleEditAction(action)}
-              >
+              <Button variant="ghost" size="sm" onClick={() => handleEditAction(action)}>
                 Edit
               </Button>
             )}
@@ -153,9 +154,7 @@ export default function ActionDashboard({
 
         <CardContent className="space-y-4">
           {action.description && (
-            <p className="text-sm text-muted-foreground">
-              {action.description}
-            </p>
+            <p className="text-sm text-muted-foreground">{action.description}</p>
           )}
 
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -180,8 +179,11 @@ export default function ActionDashboard({
             )}
             <Badge
               variant={
-                action.status === 'completed' ? 'default' :
-                action.status === 'in-progress' ? 'secondary' : 'outline'
+                action.status === 'completed'
+                  ? 'default'
+                  : action.status === 'in-progress'
+                    ? 'secondary'
+                    : 'outline'
               }
               className="text-xs"
             >
@@ -206,7 +208,7 @@ export default function ActionDashboard({
             <Textarea
               placeholder="Add a progress note..."
               value={newNote[action.id] || ''}
-              onChange={(e) => setNewNote(prev => ({ ...prev, [action.id]: e.target.value }))}
+              onChange={(e) => setNewNote((prev) => ({ ...prev, [action.id]: e.target.value }))}
               className="text-xs"
               rows={2}
             />
@@ -220,21 +222,22 @@ export default function ActionDashboard({
           </div>
         </CardContent>
       </Card>
-    )
-  }
+    );
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-medium mb-2">
-            {viewingAsPartner.id === currentPartner.id ? 'Your Actions' : `${viewingAsPartner.name}'s Actions`}
+            {viewingAsPartner.id === currentPartner.id
+              ? 'Your Actions'
+              : `${viewingAsPartner.name}'s Actions`}
           </h2>
           <p className="text-muted-foreground">
-            {viewingAsPartner.id === currentPartner.id 
+            {viewingAsPartner.id === currentPartner.id
               ? 'Track progress on your relationship goals'
-              : `View ${viewingAsPartner.name}'s perspective on shared goals`
-            }
+              : `View ${viewingAsPartner.name}'s perspective on shared goals`}
           </p>
         </div>
         <Button onClick={() => setIsActionDialogOpen(true)} className="flex items-center gap-2">
@@ -249,9 +252,13 @@ export default function ActionDashboard({
             <CheckCircle className="mx-auto mb-4 text-muted-foreground" size={48} weight="light" />
             <h3 className="text-lg font-medium mb-2">No Actions Yet</h3>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              Choose from proven templates or create custom action plans to strengthen your relationship.
+              Choose from proven templates or create custom action plans to strengthen your
+              relationship.
             </p>
-            <Button onClick={() => setIsActionDialogOpen(true)} className="flex items-center gap-2 mx-auto">
+            <Button
+              onClick={() => setIsActionDialogOpen(true)}
+              className="flex items-center gap-2 mx-auto"
+            >
               <Plus size={16} />
               Create Your First Action
             </Button>
@@ -264,7 +271,9 @@ export default function ActionDashboard({
               <Clock className="text-muted-foreground" size={20} />
               <h3 className="font-medium">Pending ({pendingActions.length})</h3>
             </div>
-            {pendingActions.map(action => <ActionCard key={action.id} action={action} />)}
+            {pendingActions.map((action) => (
+              <ActionCard key={action.id} action={action} />
+            ))}
           </div>
 
           <div className="space-y-4">
@@ -272,7 +281,9 @@ export default function ActionDashboard({
               <Clock className="text-accent" size={20} />
               <h3 className="font-medium">In Progress ({inProgressActions.length})</h3>
             </div>
-            {inProgressActions.map(action => <ActionCard key={action.id} action={action} />)}
+            {inProgressActions.map((action) => (
+              <ActionCard key={action.id} action={action} />
+            ))}
           </div>
 
           <div className="space-y-4">
@@ -280,7 +291,9 @@ export default function ActionDashboard({
               <CheckCircle className="text-primary" size={20} weight="fill" />
               <h3 className="font-medium">Completed ({completedActions.length})</h3>
             </div>
-            {completedActions.map(action => <ActionCard key={action.id} action={action} />)}
+            {completedActions.map((action) => (
+              <ActionCard key={action.id} action={action} />
+            ))}
           </div>
         </div>
       )}
@@ -288,8 +301,8 @@ export default function ActionDashboard({
       <ActionDialog
         isOpen={isActionDialogOpen}
         onClose={() => {
-          setIsActionDialogOpen(false)
-          setEditingAction(null)
+          setIsActionDialogOpen(false);
+          setEditingAction(null);
         }}
         issue={null}
         actions={actions}
@@ -299,5 +312,5 @@ export default function ActionDashboard({
         otherPartner={otherPartner}
       />
     </div>
-  )
+  );
 }

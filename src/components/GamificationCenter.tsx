@@ -193,7 +193,7 @@ export default function GamificationCenter({
   onUpdateGamification,
 }: GamificationCenterProps) {
   const [open, setOpen] = useState(false);
-  const [newAchievements, setNewAchievements] = useState<Achievement[]>([]);
+  const [_newAchievements, setNewAchievements] = useState<Achievement[]>([]);
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationData, setCelebrationData] = useState<{
     type: 'achievement' | 'streak' | 'reward' | 'challenge';
@@ -328,6 +328,7 @@ export default function GamificationCenter({
   useEffect(() => {
     updateDailyActivity();
     checkAchievements();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actions, issues]);
 
   const getRarityColor = (rarity: string) => {

@@ -1,23 +1,25 @@
-import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Trophy, Star, MagicWand, Heart, Gift } from '@phosphor-icons/react'
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Trophy, Star, MagicWand, Heart, Gift } from '@phosphor-icons/react';
 
 interface CelebrationAnimationProps {
-  show: boolean
-  type: 'achievement' | 'streak' | 'reward' | 'challenge'
-  title: string
-  points?: number
-  onComplete: () => void
+  show: boolean;
+  type: 'achievement' | 'streak' | 'reward' | 'challenge';
+  title: string;
+  points?: number;
+  onComplete: () => void;
 }
 
-export default function CelebrationAnimation({ 
-  show, 
-  type, 
-  title, 
-  points, 
-  onComplete 
+export default function CelebrationAnimation({
+  show,
+  type,
+  title,
+  points,
+  onComplete,
 }: CelebrationAnimationProps) {
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([])
+  const [particles, setParticles] = useState<
+    Array<{ id: number; x: number; y: number; delay: number }>
+  >([]);
 
   useEffect(() => {
     if (show) {
@@ -26,35 +28,45 @@ export default function CelebrationAnimation({
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
-        delay: Math.random() * 0.5
-      }))
-      setParticles(newParticles)
+        delay: Math.random() * 0.5,
+      }));
+      setParticles(newParticles);
 
       // Auto-hide after animation
-      const timer = setTimeout(onComplete, 3000)
-      return () => clearTimeout(timer)
+      const timer = setTimeout(onComplete, 3000);
+      return () => clearTimeout(timer);
     }
-  }, [show, onComplete])
+  }, [show, onComplete]);
 
   const getIcon = () => {
     switch (type) {
-      case 'achievement': return <Trophy className="w-16 h-16 text-yellow-500" weight="fill" />
-      case 'streak': return <MagicWand className="w-16 h-16 text-orange-500" weight="fill" />
-      case 'reward': return <Gift className="w-16 h-16 text-purple-500" weight="fill" />
-      case 'challenge': return <Star className="w-16 h-16 text-blue-500" weight="fill" />
-      default: return <Heart className="w-16 h-16 text-pink-500" weight="fill" />
+      case 'achievement':
+        return <Trophy className="w-16 h-16 text-yellow-500" weight="fill" />;
+      case 'streak':
+        return <MagicWand className="w-16 h-16 text-orange-500" weight="fill" />;
+      case 'reward':
+        return <Gift className="w-16 h-16 text-purple-500" weight="fill" />;
+      case 'challenge':
+        return <Star className="w-16 h-16 text-blue-500" weight="fill" />;
+      default:
+        return <Heart className="w-16 h-16 text-pink-500" weight="fill" />;
     }
-  }
+  };
 
   const getColors = () => {
     switch (type) {
-      case 'achievement': return ['#fbbf24', '#f59e0b', '#d97706']
-      case 'streak': return ['#f97316', '#ea580c', '#dc2626']
-      case 'reward': return ['#a855f7', '#9333ea', '#7c3aed']
-      case 'challenge': return ['#3b82f6', '#2563eb', '#1d4ed8']
-      default: return ['#ec4899', '#db2777', '#be185d']
+      case 'achievement':
+        return ['#fbbf24', '#f59e0b', '#d97706'];
+      case 'streak':
+        return ['#f97316', '#ea580c', '#dc2626'];
+      case 'reward':
+        return ['#a855f7', '#9333ea', '#7c3aed'];
+      case 'challenge':
+        return ['#3b82f6', '#2563eb', '#1d4ed8'];
+      default:
+        return ['#ec4899', '#db2777', '#be185d'];
     }
-  }
+  };
 
   return (
     <AnimatePresence>
@@ -67,31 +79,31 @@ export default function CelebrationAnimation({
           onClick={onComplete}
         >
           {/* Confetti Particles */}
-          {particles.map(particle => (
+          {particles.map((particle) => (
             <motion.div
               key={particle.id}
-              initial={{ 
-                opacity: 0, 
+              initial={{
+                opacity: 0,
                 scale: 0,
                 x: '50vw',
                 y: '50vh',
-                rotate: 0
+                rotate: 0,
               }}
-              animate={{ 
-                opacity: [0, 1, 1, 0], 
+              animate={{
+                opacity: [0, 1, 1, 0],
                 scale: [0, 1, 1, 0],
                 x: `${particle.x}vw`,
                 y: `${particle.y}vh`,
-                rotate: 360
+                rotate: 360,
               }}
-              transition={{ 
+              transition={{
                 duration: 2,
                 delay: particle.delay,
-                ease: "easeOut"
+                ease: 'easeOut',
               }}
               className="absolute w-3 h-3 rounded-full"
-              style={{ 
-                backgroundColor: getColors()[particle.id % getColors().length]
+              style={{
+                backgroundColor: getColors()[particle.id % getColors().length],
               }}
             />
           ))}
@@ -101,24 +113,24 @@ export default function CelebrationAnimation({
             initial={{ scale: 0, rotate: -10 }}
             animate={{ scale: 1, rotate: 0 }}
             exit={{ scale: 0, rotate: 10 }}
-            transition={{ 
-              type: "spring",
+            transition={{
+              type: 'spring',
               stiffness: 300,
               damping: 20,
-              delay: 0.2
+              delay: 0.2,
             }}
             className="bg-card border border-border rounded-2xl p-8 shadow-2xl text-center max-w-sm mx-4"
           >
             {/* Pulsing Icon */}
             <motion.div
-              animate={{ 
+              animate={{
                 scale: [1, 1.1, 1],
-                rotateY: [0, 180, 360]
+                rotateY: [0, 180, 360],
               }}
-              transition={{ 
+              transition={{
                 duration: 2,
                 repeat: Infinity,
-                ease: "easeInOut"
+                ease: 'easeInOut',
               }}
               className="mb-4 flex justify-center"
             >
@@ -140,10 +152,10 @@ export default function CelebrationAnimation({
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ 
+                transition={{
                   delay: 0.7,
-                  type: "spring",
-                  stiffness: 500
+                  type: 'spring',
+                  stiffness: 500,
                 }}
                 className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full mb-4"
               >
@@ -159,25 +171,25 @@ export default function CelebrationAnimation({
               transition={{ delay: 0.9 }}
               className="text-muted-foreground mb-6"
             >
-              {type === 'achievement' && "Amazing achievement unlocked!"}
-              {type === 'streak' && "Keep the momentum going!"}
-              {type === 'reward' && "Enjoy your well-earned reward!"}
-              {type === 'challenge' && "Challenge completed successfully!"}
+              {type === 'achievement' && 'Amazing achievement unlocked!'}
+              {type === 'streak' && 'Keep the momentum going!'}
+              {type === 'reward' && 'Enjoy your well-earned reward!'}
+              {type === 'challenge' && 'Challenge completed successfully!'}
             </motion.p>
 
             {/* Animated Border */}
             <motion.div
-              animate={{ 
+              animate={{
                 background: [
                   `linear-gradient(45deg, ${getColors()[0]}, ${getColors()[1]})`,
                   `linear-gradient(45deg, ${getColors()[1]}, ${getColors()[2]})`,
-                  `linear-gradient(45deg, ${getColors()[2]}, ${getColors()[0]})`
-                ]
+                  `linear-gradient(45deg, ${getColors()[2]}, ${getColors()[0]})`,
+                ],
               }}
-              transition={{ 
+              transition={{
                 duration: 3,
                 repeat: Infinity,
-                ease: "easeInOut"
+                ease: 'easeInOut',
               }}
               className="absolute inset-0 rounded-2xl opacity-20 -z-10"
             />
@@ -195,5 +207,5 @@ export default function CelebrationAnimation({
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }

@@ -299,6 +299,7 @@ export default function DailyChallenges({
   useEffect(() => {
     generateDailyChallenges();
     updateChallengeProgress();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actions]);
 
   const getDifficultyColor = (difficulty: string) => {

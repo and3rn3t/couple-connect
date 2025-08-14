@@ -10,12 +10,14 @@ To enable Cloudflare Pages deployment, add these secrets in your repository sett
 2. Add the following repository secrets:
 
 ### Cloudflare Secrets
+
 - **CLOUDFLARE_API_TOKEN**: Your Cloudflare API token with Pages:Edit permissions
 - **CLOUDFLARE_ACCOUNT_ID**: Your Cloudflare Account ID
 
 ### How to get Cloudflare credentials:
 
 #### API Token:
+
 1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/profile/api-tokens)
 2. Click "Create Token"
 3. Use "Custom token" with these permissions:
@@ -24,6 +26,7 @@ To enable Cloudflare Pages deployment, add these secrets in your repository sett
    - Account:Cloudflare Pages:Edit
 
 #### Account ID:
+
 1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
 2. Select your domain
 3. Copy the Account ID from the right sidebar
@@ -43,22 +46,26 @@ Set up branch protection for `main` branch:
 ## Environment Setup
 
 ### Production Environment
+
 - Name: `production`
 - Deployment branch: `main`
 - Required reviewers: (optional, for additional security)
 
 ### Preview Environment
+
 - Name: `preview`
 - Deployment branch: Any branch (for PR previews)
 
 ## Security Setup
 
 The repository includes automated security scanning:
+
 - npm audit on every push/PR
 - Dependency review on PRs
 - Weekly security audits
 
 Make sure to:
+
 1. Keep dependencies updated
 2. Review security alerts promptly
 3. Enable Dependabot alerts in repository settings
