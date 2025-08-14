@@ -8,6 +8,14 @@ on:
   schedule:
     - cron: '0 2 * * 1' # Weekly security audit on Mondays at 2 AM
 
+# Grant necessary permissions for the workflow
+permissions:
+  contents: read
+  deployments: write
+  actions: read
+  checks: write
+  pull-requests: write
+
 env:
   NODE_VERSION: '20'
 
