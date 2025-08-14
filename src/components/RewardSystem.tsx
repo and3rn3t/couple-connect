@@ -45,7 +45,7 @@ export interface Reward {
 
 interface RewardSystemProps {
   currentPartner: Partner;
-  otherPartner: Partner;
+  _otherPartner: Partner;
   gamificationState: GamificationState;
   onUpdateGamification: (state: GamificationState) => void;
 }
@@ -192,7 +192,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
 
 export default function RewardSystem({
   currentPartner,
-  otherPartner,
+  _otherPartner,
   gamificationState,
   onUpdateGamification,
 }: RewardSystemProps) {
@@ -414,10 +414,12 @@ export default function RewardSystem({
                         </p>
                         <div className="w-full bg-muted rounded-full h-2">
                           <div
-                            className="bg-accent h-2 rounded-full transition-all duration-300"
-                            style={{
-                              width: `${Math.min((gamificationState.totalPoints / reward.unlockLevel) * 100, 100)}%`,
-                            }}
+                            className={`bg-accent h-2 rounded-full transition-all duration-300`}
+                            style={{}}
+                            data-width={Math.min(
+                              (gamificationState.totalPoints / reward.unlockLevel) * 100,
+                              100
+                            )}
                           />
                         </div>
                       </div>
