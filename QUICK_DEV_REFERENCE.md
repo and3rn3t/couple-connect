@@ -2,6 +2,8 @@
 
 This is a quick reference guide for common development tasks in Couple Connect. For detailed documentation, see the [docs folder](./docs/).
 
+**🎉 BONUS**: Check out our [Fun Development Guide](./FUN_DEVELOPMENT_GUIDE.md) for emoji commands and silly development tricks!
+
 ## 🏃‍♂️ Quick Start Commands
 
 ```bash
@@ -41,7 +43,7 @@ npm run test                 # Run all tests (type-check + lint)
 
 ## 📁 Key File Locations
 
-```
+```text
 🏗️ Core Configuration
 ├── package.json                    # Dependencies & scripts
 ├── vite.config.ts                  # Build configuration
@@ -69,7 +71,7 @@ npm run test                 # Run all tests (type-check + lint)
 └── components.json                 # Shadcn/ui configuration
 
 📚 Documentation
-├── .copilot-instructions.md        # AI assistant guidelines
+├── .github/.copilot-instructions.md # AI assistant guidelines
 ├── docs/README.md                  # Documentation index
 ├── docs/DOC_INDEX.md               # Complete documentation list
 ├── docs/development/               # Technical guides

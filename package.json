@@ -24,7 +24,15 @@
     "db:setup": "npm run db:create && npm run db:schema && npm run db:seed",
     "db:local-schema": "wrangler d1 execute couple-connect-db --local --file=database/schema.sql",
     "db:local-seed": "wrangler d1 execute couple-connect-db --local --file=database/seed.sql",
-    "db:dev": "npm run db:local-schema && npm run db:local-seed"
+    "db:dev": "npm run db:local-schema && npm run db:local-seed",
+    "💕": "echo '💕 Welcome to Couple Connect! Spreading love through code! 💕' && npm run dev",
+    "🚀": "echo '🚀 Launching love into production! 🚀' && npm run deploy",
+    "🎉": "echo '🎉 Love build party! Building something beautiful! 🎉' && npm run build",
+    "🔍": "echo '🔍 Love debugging session! Making sure everything is perfect! 🔍' && npm run test",
+    "💝": "echo '💝 Gift-wrapping the code with prettier! 💝' && npm run format",
+    "🌟": "echo '🌟 Optimizing for maximum love efficiency! 🌟' && npm run optimize",
+    "❤️": "echo '❤️ Checking the pulse of our relationship app! ❤️' && npm run type-check",
+    "🎪": "echo '🎪 Love circus preview! Step right up! 🎪' && npm run preview"
   },
   "dependencies": {
     "@cloudflare/workers-types": "^4.20250813.0",

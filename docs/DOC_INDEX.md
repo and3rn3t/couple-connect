@@ -47,7 +47,7 @@ Welcome to the comprehensive documentation for Couple Connect! This index provid
 
 ## 🤖 AI Development Assistance
 
-- **[Copilot Instructions](../.copilot-instructions.md)** - Comprehensive GitHub Copilot guidelines for this project
+- **[Copilot Instructions](../.github/.copilot-instructions.md)** - Comprehensive GitHub Copilot guidelines for this project
 
 ## 📁 Documentation Organization
 
@@ -78,7 +78,7 @@ docs/
 1. Read the [Main README](../README.md)
 2. Follow the [Setup Guide](./development/SETUP.md)
 3. Review the [Database Architecture](./development/DATABASE.md)
-4. Check the [Copilot Instructions](../.copilot-instructions.md)
+4. Check the [Copilot Instructions](../.github/.copilot-instructions.md)
 
 ### For Feature Development
 
@@ -102,7 +102,7 @@ When adding new documentation:
 3. **General project docs** → Root `./docs/` directory
 4. Update this index file with links to new documentation
 5. Update the main [docs README](./README.md)
-6. Consider updating [Copilot Instructions](../.copilot-instructions.md) if architecture changes
+6. Consider updating [Copilot Instructions](../.github/.copilot-instructions.md) if architecture changes
 
 ## 🔄 Documentation Maintenance
 

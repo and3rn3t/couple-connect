@@ -33,7 +33,7 @@ For getting started with the project, refer to the main [README.md](../README.md
 
 ### 🤖 AI Development Assistant
 
-This project includes comprehensive GitHub Copilot instructions in [`.copilot-instructions.md`](../.copilot-instructions.md) to help AI assistants understand the project architecture, coding patterns, and development workflows.
+This project includes comprehensive GitHub Copilot instructions in [`.github/.copilot-instructions.md`](../.github/.copilot-instructions.md) to help AI assistants understand the project architecture, coding patterns, and development workflows.
 
 ## 📁 Documentation Structure
 

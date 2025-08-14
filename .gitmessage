@@ -1,0 +1,65 @@
+# 💕 Couple Connect Commit Template
+
+#
+
+# Use one of these fun prefixes for your commits:
+
+# 💕 feat: New love-spreading feature
+
+# 🐛 fix: Squashed a relationship bug
+
+# 🎨 style: Made the UI more beautiful (like love!)
+
+# ⚡ perf: Made love load faster
+
+# 🔒 security: Protected the love data
+
+# 📚 docs: Updated the love manual
+
+# 🧪 test: Added love validation tests
+
+# 🚀 deploy: Sent love to production
+
+# 💎 refactor: Polished the love code
+
+# 🎉 release: Love milestone achieved!
+
+#
+
+# Examples of fun commit messages:
+
+# 💕 feat: add heart-melting animation to action completion
+
+# 🐛 fix: relationship progress bar now shows actual progress (not wishful thinking!)
+
+# 🎨 style: make buttons so pretty they deserve their own dating profile
+
+# ⚡ perf: relationship loading faster than love at first sight
+
+# 🔒 security: protect couple data like a jealous partner (but in a good way!)
+
+#
+
+# Remember: Every commit is a step towards stronger relationships! 💝
+
+#
+
+# Format: <emoji> <type>: <short description>
+
+#
+
+# Longer description (optional):
+
+# - What love magic does this commit bring?
+
+# - Any relationship improvements?
+
+# - Breaking changes? (hopefully just breaking the ice!)
+
+#
+
+# Footer (optional):
+
+# Closes #<issue-number>
+
+# Co-authored-by: Love Guru <love@example.com>
