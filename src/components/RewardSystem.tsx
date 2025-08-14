@@ -4,11 +4,11 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Gift, Heart, Coffee, Sparkles, Calendar, Camera, Music, GameController, ShoppingBag, Star } from '@phosphor-icons/react'
-import { Partner } from '@/App'
+import { Gift, Heart, Coffee, MagicWand, Calendar, Camera, MusicNote, GameController, ShoppingBag, Star } from '@phosphor-icons/react'
+import { Partner } from '@/components/PartnerSetup'
 import { GamificationState } from './GamificationCenter'
 import { toast } from 'sonner'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '../hooks/useKV'
 
 export interface Reward {
   id: string
@@ -57,7 +57,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     id: 'surprise-date',
     title: 'Surprise Date Planning',
     description: 'Your partner plans a complete surprise date for you',
-    icon: <Sparkles className="w-5 h-5" />,
+    icon: <MagicWand className="w-5 h-5" />,
     category: 'date',
     cost: 300,
     rarity: 'rare',
@@ -88,7 +88,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     id: 'massage',
     title: '30-Minute Massage',
     description: 'Receive a relaxing 30-minute massage from your partner',
-    icon: <Sparkles className="w-5 h-5" />,
+    icon: <MagicWand className="w-5 h-5" />,
     category: 'personal',
     cost: 250,
     rarity: 'rare'
@@ -118,7 +118,7 @@ const AVAILABLE_REWARDS: Omit<Reward, 'redemptions'>[] = [
     id: 'playlist-control',
     title: 'Music Playlist Control',
     description: 'Control the music playlist for a whole week',
-    icon: <Music className="w-5 h-5" />,
+    icon: <MusicNote className="w-5 h-5" />,
     category: 'shared',
     cost: 120,
     rarity: 'common'
@@ -205,7 +205,7 @@ export default function RewardSystem({
     }
 
     // Update redeemed rewards
-    setRedeemedRewards(current => [...current, redeemedReward])
+    setRedeemedRewards(current => [...(current || []), redeemedReward])
 
     // Update gamification state (deduct points)
     const updatedGamificationState = {
@@ -250,7 +250,7 @@ export default function RewardSystem({
     { id: 'all', name: 'All Rewards', icon: <Gift className="w-4 h-4" /> },
     { id: 'date', name: 'Date Night', icon: <Heart className="w-4 h-4" /> },
     { id: 'personal', name: 'Personal', icon: <Star className="w-4 h-4" /> },
-    { id: 'shared', name: 'Together', icon: <Sparkles className="w-4 h-4" /> },
+    { id: 'shared', name: 'Together', icon: <MagicWand className="w-4 h-4" /> },
     { id: 'surprise', name: 'Surprises', icon: <Gift className="w-4 h-4" /> },
     { id: 'experience', name: 'Experiences', icon: <Calendar className="w-4 h-4" /> },
   ]
@@ -293,11 +293,11 @@ export default function RewardSystem({
           </Card>
 
           {/* Recent Redemptions */}
-          {redeemedRewards.length > 0 && (
+          {(redeemedRewards || []).length > 0 && (
             <div>
               <h3 className="text-lg font-semibold mb-3">Recent Redemptions</h3>
               <div className="space-y-2">
-                {redeemedRewards
+                {(redeemedRewards || [])
                   .slice(-3)
                   .reverse()
                   .map((reward, index) => (

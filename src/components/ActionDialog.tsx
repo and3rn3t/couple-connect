@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Sparkles, Edit } from '@phosphor-icons/react'
+import { MagicWand, PencilSimple } from '@phosphor-icons/react'
 import { Issue, Action } from '@/App'
 import { Partner } from '@/components/PartnerSetup'
 import { toast } from 'sonner'
@@ -159,11 +159,11 @@ export default function ActionDialog({
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="templates" className="flex items-center gap-2">
-                <Sparkles size={16} />
+                <MagicWand size={16} />
                 Choose Template
               </TabsTrigger>
               <TabsTrigger value="custom" className="flex items-center gap-2">
-                <Edit size={16} />
+                <PencilSimple size={16} />
                 Custom Action
               </TabsTrigger>
             </TabsList>

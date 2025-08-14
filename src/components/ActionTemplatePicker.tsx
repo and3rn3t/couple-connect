@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Clock, Star, Users, User, Sparkles, Search } from '@phosphor-icons/react'
+import { Clock, Star, Users, User, MagicWand, MagnifyingGlass } from '@phosphor-icons/react'
 import { ActionTemplate, actionTemplates, getTemplatesByCategory, searchTemplates } from '@/data/actionTemplates'
 
 interface ActionTemplatePickerProps {
@@ -112,7 +112,7 @@ export default function ActionTemplatePicker({ onSelectTemplate, selectedCategor
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3 mb-4">
-        <Sparkles className="text-primary" size={24} />
+        <MagicWand className="text-primary" size={24} />
         <div>
           <h3 className="font-medium">Choose from Templates</h3>
           <p className="text-sm text-muted-foreground">
@@ -122,7 +122,7 @@ export default function ActionTemplatePicker({ onSelectTemplate, selectedCategor
       </div>
 
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
+        <MagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
         <Input
           placeholder="Search templates..."
           value={searchQuery}

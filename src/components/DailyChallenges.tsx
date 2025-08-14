@@ -3,11 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { CheckCircle, Circle, Zap, Heart, Target, MessageCircle, Clock, Gift } from '@phosphor-icons/react'
-import { Partner, Action, Issue } from '@/App'
+import { CheckCircle, Circle, Lightning, Heart, Target, ChatCircle, Clock, Gift } from '@phosphor-icons/react'
+import { Action, Issue } from '@/App'
+import { Partner } from './PartnerSetup'
 import { GamificationState } from './GamificationCenter'
 import { toast } from 'sonner'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '../hooks/useKV'
 
 export interface DailyChallenge {
   id: string
@@ -51,7 +52,7 @@ const CHALLENGE_TEMPLATES = [
     points: 20,
     title: 'Check-In Champion',
     description: 'Have a 5-minute check-in conversation about your day',
-    icon: <MessageCircle className="w-4 h-4" />,
+    icon: <ChatCircle className="w-4 h-4" />,
     maxProgress: 1
   },
   {
@@ -89,7 +90,7 @@ const CHALLENGE_TEMPLATES = [
     points: 30,
     title: 'Future Planner',
     description: 'Create 2 new action items for relationship growth',
-    icon: <Zap className="w-4 h-4" />,
+    icon: <Lightning className="w-4 h-4" />,
     maxProgress: 2
   },
   {
@@ -107,7 +108,7 @@ const CHALLENGE_TEMPLATES = [
     points: 40,
     title: 'Connection Time',
     description: 'Have a 30-minute meaningful conversation',
-    icon: <MessageCircle className="w-4 h-4" />,
+    icon: <ChatCircle className="w-4 h-4" />,
     maxProgress: 1
   },
 
@@ -127,7 +128,7 @@ const CHALLENGE_TEMPLATES = [
     points: 50,
     title: 'Growth Architect',
     description: 'Identify and create action plans for a new relationship area',
-    icon: <Zap className="w-4 h-4" />,
+    icon: <Lightning className="w-4 h-4" />,
     maxProgress: 1
   },
   {
@@ -136,7 +137,7 @@ const CHALLENGE_TEMPLATES = [
     points: 55,
     title: 'Deep Connector',
     description: 'Have an hour-long heart-to-heart conversation',
-    icon: <MessageCircle className="w-4 h-4" />,
+    icon: <ChatCircle className="w-4 h-4" />,
     maxProgress: 1
   }
 ]
@@ -160,7 +161,7 @@ export default function DailyChallenges({
     tomorrow.setHours(0, 0, 0, 0)
 
     // Check if we already have challenges for today
-    const hasTodays = dailyChallenges.some(challenge => 
+    const hasTodays = (dailyChallenges || []).some(challenge => 
       new Date(challenge.expiresAt).toDateString() === tomorrow.toDateString()
     )
 
@@ -172,12 +173,14 @@ export default function DailyChallenges({
       const newChallenges: DailyChallenge[] = selectedTemplates.map((template, index) => ({
         id: `challenge-${today}-${index}`,
         ...template,
+        type: template.type as DailyChallenge['type'],
+        difficulty: template.difficulty as DailyChallenge['difficulty'],
         progress: 0,
         expiresAt: tomorrow.toISOString()
       }))
 
-      setDailyChallenges(current => [
-        ...current.filter(c => new Date(c.expiresAt) > new Date()), // Remove expired
+      setDailyChallenges([
+        ...(dailyChallenges || []).filter(c => new Date(c.expiresAt) > new Date()), // Remove expired
         ...newChallenges
       ])
     }
@@ -196,8 +199,7 @@ export default function DailyChallenges({
       new Date(action.createdAt).toDateString() === today
     )
 
-    setDailyChallenges(current => 
-      current.map(challenge => {
+    setDailyChallenges((dailyChallenges || []).map(challenge => {
         if (challenge.completedAt) return challenge // Already completed
 
         let newProgress = challenge.progress
@@ -230,12 +232,10 @@ export default function DailyChallenges({
           onUpdateGamification(updatedGamification)
 
           // Track completion
-          setChallengeCompletions(current => {
-            const today = new Date().toDateString()
-            return {
-              ...current,
-              [today]: [...(current[today] || []), challenge.id]
-            }
+          const today = new Date().toDateString()
+          setChallengeCompletions({
+            ...(challengeCompletions || {}),
+            [today]: [...((challengeCompletions || {})[today] || []), challenge.id]
           })
 
           toast.success(`🎯 Challenge Complete: ${challenge.title}!`, {
@@ -252,8 +252,7 @@ export default function DailyChallenges({
   }
 
   const manualCompleteChallenge = (challengeId: string) => {
-    setDailyChallenges(current =>
-      current.map(challenge => {
+    setDailyChallenges((dailyChallenges || []).map(challenge => {
         if (challenge.id === challengeId && !challenge.completedAt) {
           const completed = {
             ...challenge,
@@ -295,7 +294,7 @@ export default function DailyChallenges({
     }
   }
 
-  const todaysChallenges = dailyChallenges.filter(challenge => {
+  const todaysChallenges = (dailyChallenges || []).filter(challenge => {
     const challengeDate = new Date(challenge.expiresAt)
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
@@ -315,7 +314,7 @@ export default function DailyChallenges({
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Zap className="w-5 h-5 text-accent" />
+              <Lightning className="w-5 h-5 text-accent" />
               Daily Challenges
             </CardTitle>
             <CardDescription>

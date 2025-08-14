@@ -7,27 +7,80 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependency directories
+node_modules/
 node_modules
-dist
-dist-ssr
-*-dist
-*.local
+jspm_packages/
 
-# Editor directories and files
+# Build outputs
+dist/
+dist-ssr/
+*-dist/
+*.local
+build/
+out/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*
+!.env.example
+
+# IDE directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
+!.vscode/settings.json
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+.history/
 
-.env
+# OS generated files
+Thumbs.db
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+# Cloudflare
+.wrangler/
+.dev.vars
+
+# Temporary folders
+tmp/
+temp/
+
+# Runtime and cache
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist
+
+# Build outputs
 **/agent-eval-report*
 packages
-.file-manifest
-.devcontainer/
+
+# Lock files (choose one based on your package manager)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
 
 .spark-workbench-id

@@ -5,8 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
-import { Trophy, Star, Flame, Gift, TrendUp, Heart, Target, BarChart3, Users, Calendar, Zap } from '@phosphor-icons/react'
-import { Partner, Action, Issue } from '@/App'
+import { Trophy, Star, Flame, Gift, TrendUp, Heart, Target, ChartBar, Users, Calendar, Lightning } from '@phosphor-icons/react'
+import { Action, Issue } from '@/App'
+import { Partner } from './PartnerSetup'
 import { toast } from 'sonner'
 import CelebrationAnimation from './CelebrationAnimation'
 
@@ -89,7 +90,7 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'unlockedAt' | 'unlockedBy'>[] = [
     id: 'dedication-legend',
     title: 'Dedication Legend',
     description: 'Achieve a 100-day streak',
-    icon: <Zap className="w-5 h-5" />,
+    icon: <Lightning className="w-5 h-5" />,
     category: 'consistency',
     points: 1000,
     rarity: 'legendary',
@@ -401,7 +402,7 @@ export default function GamificationCenter({
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-green-500" />
+                  <ChartBar className="w-5 h-5 text-green-500" />
                   <div>
                     <p className="text-sm text-muted-foreground">Best Streak</p>
                     <p className="text-2xl font-semibold">{gamificationState.longestStreak}</p>

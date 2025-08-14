@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu'
-import { User, SignOut, Settings } from '@phosphor-icons/react'
+import { User, SignOut, Gear } from '@phosphor-icons/react'
 import { Partner } from './PartnerSetup'
 
 interface PartnerProfileProps {
@@ -68,7 +68,7 @@ export default function PartnerProfile({
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
-            <Settings className="mr-2 h-4 w-4" />
+            <Gear className="mr-2 h-4 w-4" />
             Partnership Settings
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onSignOut} className="text-destructive">

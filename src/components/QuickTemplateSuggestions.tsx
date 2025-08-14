@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Sparkles, ArrowRight } from '@phosphor-icons/react'
+import { MagicWand, ArrowRight } from '@phosphor-icons/react'
 import { ActionTemplate, getTemplatesByCategory } from '@/data/actionTemplates'
 import { Issue } from '@/App'
 
@@ -19,7 +19,7 @@ export default function QuickTemplateSuggestions({ issue, onSelectTemplate }: Qu
     <Card className="border-primary/20 bg-primary/5">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm flex items-center gap-2 text-primary">
-          <Sparkles size={16} />
+          <MagicWand size={16} />
           Quick Start Templates
         </CardTitle>
         <p className="text-xs text-muted-foreground">

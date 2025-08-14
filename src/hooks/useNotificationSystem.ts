@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from './useKV'
 import { Action, Issue } from '../App'
 import { Partner } from '../components/PartnerSetup'
 

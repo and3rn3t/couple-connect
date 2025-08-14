@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Trophy, Star, Sparkles, Heart, Gift } from '@phosphor-icons/react'
+import { Trophy, Star, MagicWand, Heart, Gift } from '@phosphor-icons/react'
 
 interface CelebrationAnimationProps {
   show: boolean
@@ -39,7 +39,7 @@ export default function CelebrationAnimation({
   const getIcon = () => {
     switch (type) {
       case 'achievement': return <Trophy className="w-16 h-16 text-yellow-500" weight="fill" />
-      case 'streak': return <Sparkles className="w-16 h-16 text-orange-500" weight="fill" />
+      case 'streak': return <MagicWand className="w-16 h-16 text-orange-500" weight="fill" />
       case 'reward': return <Gift className="w-16 h-16 text-purple-500" weight="fill" />
       case 'challenge': return <Star className="w-16 h-16 text-blue-500" weight="fill" />
       default: return <Heart className="w-16 h-16 text-pink-500" weight="fill" />

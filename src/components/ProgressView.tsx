@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Slider } from '@/components/ui/slider'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Heart, TrendingUp, CheckCircle, Target, Calendar, BarChart3 } from '@phosphor-icons/react'
+import { Heart, TrendUp, CheckCircle, Target, Calendar, ChartBar } from '@phosphor-icons/react'
 import { Issue, Action, RelationshipHealth } from '@/App'
 import { Partner } from '@/components/PartnerSetup'
 import { toast } from 'sonner'
@@ -317,7 +317,7 @@ export default function ProgressView({
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="text-accent" size={20} />
+              <TrendUp className="text-accent" size={20} />
               <span className="text-sm font-medium">Overall Rate</span>
             </div>
             <div className="text-2xl font-bold">{Math.round(completionRate)}%</div>
@@ -327,7 +327,7 @@ export default function ProgressView({
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-2">
-              <BarChart3 className="text-secondary" size={20} />
+              <ChartBar className="text-secondary" size={20} />
               <span className="text-sm font-medium">Active Issues</span>
             </div>
             <div className="text-2xl font-bold">{issues.length}</div>

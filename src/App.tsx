@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { useKV } from '@github/spark/hooks'
+import './App.css'
+import { useKV } from './hooks/useKV'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Heart, Target, BarChart3 } from '@phosphor-icons/react'
+import { Heart, Target, ChartBar } from '@phosphor-icons/react'
 import { Toaster } from '@/components/ui/sonner'
 import MindmapView from '@/components/MindmapView'
 import ActionDashboard from '@/components/ActionDashboard'
@@ -85,6 +86,30 @@ function App() {
     weeklyProgress: 0,
     partnerStats: {}
   })
+
+  // Wrapper functions to match component setter interfaces
+  const setIssuesWrapper = (update: (current: Issue[]) => Issue[]) => {
+    setIssues(prev => update(prev || []))
+  }
+  
+  const setActionsWrapper = (update: (current: Action[]) => Action[]) => {
+    setActions(prev => update(prev || []))
+  }
+  
+  const setHealthScoreWrapper = (update: (current: RelationshipHealth) => RelationshipHealth) => {
+    setHealthScore(prev => update(prev || {
+      overallScore: 0,
+      categories: {
+        communication: 0,
+        intimacy: 0,
+        finance: 0,
+        time: 0,
+        family: 0,
+        personalGrowth: 0
+      },
+      lastUpdated: new Date().toISOString()
+    }))
+  }
   
   const [activeTab, setActiveTab] = useState("mindmap")
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false)
@@ -94,8 +119,8 @@ function App() {
     return (
       <PartnerSetup 
         onComplete={(current, other) => {
-          setCurrentPartner(() => current)
-          setOtherPartner(() => other)
+          setCurrentPartner(current)
+          setOtherPartner(other)
         }} 
       />
     )
@@ -110,16 +135,17 @@ function App() {
 
   // Filter actions based on current view
   const getPersonalizedActions = () => {
+    const actionList = actions || []
     if (isViewingOwnPerspective) {
       // Show actions assigned to current user or both
-      return actions.filter(action => 
+      return actionList.filter(action => 
         action.assignedToId === currentPartner.id || 
         action.assignedTo === 'both' ||
         action.createdBy === currentPartner.id
       )
     } else {
       // Show actions from partner's perspective
-      return actions.filter(action => 
+      return actionList.filter(action => 
         action.assignedToId === otherPartner.id || 
         action.assignedTo === 'both' ||
         action.createdBy === otherPartner.id
@@ -132,14 +158,13 @@ function App() {
   }
 
   const handleSignOut = () => {
-    setCurrentPartner(() => null)
-    setOtherPartner(() => null)
+    setCurrentPartner(null)
+    setOtherPartner(null)
     setViewingAsPartner(null)
   }
 
   const handleActionUpdate = (actionId: string, updates: Partial<Action>) => {
-    setActions(currentActions => 
-      currentActions.map(action => 
+    setActions((actions || []).map(action => 
         action.id === actionId ? { ...action, ...updates } : action
       )
     )
@@ -151,7 +176,7 @@ function App() {
       id: Date.now().toString(),
       createdAt: new Date().toISOString()
     }
-    setActions(currentActions => [...currentActions, action])
+    setActions([...(actions || []), action])
   }
 
   return (
@@ -173,22 +198,38 @@ function App() {
             </div>
             <div className="flex items-center gap-3">
               <GamificationCenter
-                actions={actions}
-                issues={issues}
+                actions={actions || []}
+                issues={issues || []}
                 currentPartner={currentPartner}
                 otherPartner={otherPartner}
-                gamificationState={gamificationState}
+                gamificationState={gamificationState || { 
+                  totalPoints: 0, 
+                  currentStreak: 0, 
+                  longestStreak: 0, 
+                  achievements: [], 
+                  weeklyGoal: 50, 
+                  weeklyProgress: 0, 
+                  partnerStats: {} 
+                }}
                 onUpdateGamification={setGamificationState}
               />
               <RewardSystem
                 currentPartner={currentPartner}
                 otherPartner={otherPartner}
-                gamificationState={gamificationState}
+                gamificationState={gamificationState || { 
+                  totalPoints: 0, 
+                  currentStreak: 0, 
+                  longestStreak: 0, 
+                  achievements: [], 
+                  weeklyGoal: 50, 
+                  weeklyProgress: 0, 
+                  partnerStats: {} 
+                }}
                 onUpdateGamification={setGamificationState}
               />
               <NotificationCenter
-                actions={actions}
-                issues={issues}
+                actions={actions || []}
+                issues={issues || []}
                 currentPartner={currentPartner}
                 otherPartner={otherPartner}
                 onActionUpdate={handleActionUpdate}
@@ -212,19 +253,27 @@ function App() {
         </header>
 
         <NotificationSummary
-          actions={actions}
-          issues={issues}
+          actions={actions || []}
+          issues={issues || []}
           currentPartner={currentPartner}
           otherPartner={otherPartner}
           onViewAll={() => setNotificationCenterOpen(true)}
         />
 
         <DailyChallenges
-          actions={actions}
-          issues={issues}
+          actions={actions || []}
+          issues={issues || []}
           currentPartner={currentPartner}
           otherPartner={otherPartner}
-          gamificationState={gamificationState}
+          gamificationState={gamificationState || {
+            totalPoints: 0,
+            currentStreak: 0,
+            longestStreak: 0,
+            achievements: [],
+            weeklyGoal: 50,
+            weeklyProgress: 0,
+            partnerStats: {}
+          }}
           onUpdateGamification={setGamificationState}
           onCreateAction={handleCreateAction}
         />
@@ -240,17 +289,17 @@ function App() {
               Action Plans
             </TabsTrigger>
             <TabsTrigger value="progress" className="flex items-center gap-2">
-              <BarChart3 size={16} />
+              <ChartBar size={16} />
               Progress
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="mindmap" className="space-y-6">
             <MindmapView 
-              issues={issues} 
-              setIssues={setIssues}
-              actions={actions}
-              setActions={setActions}
+              issues={issues || []} 
+              setIssues={setIssuesWrapper}
+              actions={actions || []}
+              setActions={setActionsWrapper}
               currentPartner={currentPartner}
               otherPartner={otherPartner}
               viewingAsPartner={activePartner}
@@ -259,9 +308,9 @@ function App() {
 
           <TabsContent value="actions" className="space-y-6">
             <ActionDashboard 
-              issues={issues}
+              issues={issues || []}
               actions={getPersonalizedActions()}
-              setActions={setActions}
+              setActions={setActionsWrapper}
               currentPartner={currentPartner}
               otherPartner={otherPartner}
               viewingAsPartner={activePartner}
@@ -270,10 +319,21 @@ function App() {
 
           <TabsContent value="progress" className="space-y-6">
             <ProgressView 
-              issues={issues}
-              actions={actions}
-              healthScore={healthScore}
-              setHealthScore={setHealthScore}
+              issues={issues || []}
+              actions={actions || []}
+              healthScore={healthScore || {
+                overallScore: 0,
+                categories: {
+                  communication: 0,
+                  intimacy: 0,
+                  finance: 0,
+                  time: 0,
+                  family: 0,
+                  personalGrowth: 0
+                },
+                lastUpdated: new Date().toISOString()
+              }}
+              setHealthScore={setHealthScoreWrapper}
               currentPartner={currentPartner}
               otherPartner={otherPartner}
               viewingAsPartner={activePartner}

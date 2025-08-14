@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useKV } from '@github/spark/hooks'
-import { Bell, X, Clock, AlertTriangle, CheckCircle, Settings as SettingsIcon } from '@phosphor-icons/react'
+import { useKV } from '../hooks/useKV'
+import { Bell, X, Clock, Warning, CheckCircle, Gear as SettingsIcon } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -75,14 +75,31 @@ export default function NotificationCenter({
     issues,
     currentPartner,
     otherPartner,
-    settings
+    settings: settings || {
+      enabled: true,
+      overdueReminders: true,
+      deadlineWarnings: true,
+      partnerUpdates: true,
+      warningDays: 3,
+      browserNotifications: false
+    }
   })
 
   // Generate notifications based on current actions
   useEffect(() => {
-    if (!settings.enabled) return
+    const currentSettings = settings || {
+      enabled: true,
+      overdueReminders: true,
+      deadlineWarnings: true,
+      partnerUpdates: true,
+      warningDays: 3,
+      browserNotifications: false
+    }
+    
+    if (!currentSettings.enabled) return
 
     const now = new Date()
+    const currentNotifications = notifications || []
     const newNotifications: Notification[] = []
 
     actions.forEach(action => {
@@ -90,8 +107,8 @@ export default function NotificationCenter({
       const daysDiff = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
       
       // Check for overdue actions
-      if (settings.overdueReminders && action.status !== 'completed' && daysDiff < 0) {
-        const existingOverdue = notifications.find(n => 
+      if (currentSettings.overdueReminders && action.status !== 'completed' && daysDiff < 0) {
+        const existingOverdue = currentNotifications.find(n => 
           n.actionId === action.id && 
           n.type === 'overdue' && 
           n.partnerId === currentPartner.id
@@ -114,11 +131,11 @@ export default function NotificationCenter({
       }
 
       // Check for upcoming deadlines
-      if (settings.deadlineWarnings && 
+      if (currentSettings.deadlineWarnings && 
           action.status !== 'completed' && 
           daysDiff > 0 && 
-          daysDiff <= settings.warningDays) {
-        const existingWarning = notifications.find(n => 
+          daysDiff <= currentSettings.warningDays) {
+        const existingWarning = currentNotifications.find(n => 
           n.actionId === action.id && 
           n.type === 'deadline-soon' && 
           n.partnerId === currentPartner.id
@@ -141,10 +158,10 @@ export default function NotificationCenter({
       }
 
       // Check for partner completions
-      if (settings.partnerUpdates && 
+      if (currentSettings.partnerUpdates && 
           action.status === 'completed' && 
           action.completedBy === otherPartner.id) {
-        const existingCompletion = notifications.find(n => 
+        const existingCompletion = currentNotifications.find(n => 
           n.actionId === action.id && 
           n.type === 'partner-completed' && 
           n.partnerId === currentPartner.id
@@ -174,7 +191,7 @@ export default function NotificationCenter({
     })
 
     if (newNotifications.length > 0) {
-      setNotifications(current => [...current, ...newNotifications])
+      setNotifications(current => [...(current || []), ...newNotifications])
       
       // Show toast for high priority notifications
       newNotifications.forEach(notification => {
@@ -191,17 +208,17 @@ export default function NotificationCenter({
     }
   }, [actions, issues, currentPartner.id, otherPartner.id, settings, notifications])
 
-  const unreadCount = notifications.filter(n => 
+  const unreadCount = (notifications || []).filter(n => 
     !n.read && n.partnerId === currentPartner.id
   ).length
 
-  const currentPartnerNotifications = notifications
+  const currentPartnerNotifications = (notifications || [])
     .filter(n => n.partnerId === currentPartner.id)
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
   const markAsRead = (notificationId: string) => {
     setNotifications(current => 
-      current.map(n => 
+      (current || []).map(n => 
         n.id === notificationId ? { ...n, read: true } : n
       )
     )
@@ -209,7 +226,7 @@ export default function NotificationCenter({
 
   const markAllAsRead = () => {
     setNotifications(current => 
-      current.map(n => 
+      (current || []).map(n => 
         n.partnerId === currentPartner.id ? { ...n, read: true } : n
       )
     )
@@ -217,24 +234,34 @@ export default function NotificationCenter({
 
   const deleteNotification = (notificationId: string) => {
     setNotifications(current => 
-      current.filter(n => n.id !== notificationId)
+      (current || []).filter(n => n.id !== notificationId)
     )
   }
 
   const clearAllNotifications = () => {
     setNotifications(current => 
-      current.filter(n => n.partnerId !== currentPartner.id)
+      (current || []).filter(n => n.partnerId !== currentPartner.id)
     )
   }
 
   const updateSettings = (updates: Partial<NotificationSettings>) => {
-    setSettings(current => ({ ...current, ...updates }))
+    setSettings(current => {
+      const currentSettings = current || {
+        enabled: true,
+        overdueReminders: true,
+        deadlineWarnings: true,
+        partnerUpdates: true,
+        warningDays: 3,
+        browserNotifications: false
+      }
+      return { ...currentSettings, ...updates }
+    })
   }
 
   const getNotificationIcon = (type: Notification['type']) => {
     switch (type) {
       case 'overdue':
-        return <AlertTriangle className="text-destructive" size={16} />
+        return <Warning className="text-destructive" size={16} />
       case 'deadline-soon':
         return <Clock className="text-accent" size={16} />
       case 'partner-completed':
@@ -255,6 +282,16 @@ export default function NotificationCenter({
       default:
         return 'outline'
     }
+  }
+
+  // Get safe settings values
+  const safeSettings = settings || {
+    enabled: true,
+    overdueReminders: true,
+    deadlineWarnings: true,
+    partnerUpdates: true,
+    warningDays: 3,
+    browserNotifications: false
   }
 
   return (
@@ -320,7 +357,7 @@ export default function NotificationCenter({
                   <Label htmlFor="notifications-enabled">Enable notifications</Label>
                   <Switch
                     id="notifications-enabled"
-                    checked={settings.enabled}
+                    checked={safeSettings.enabled}
                     onCheckedChange={(checked) => updateSettings({ enabled: checked })}
                   />
                 </div>
@@ -329,7 +366,7 @@ export default function NotificationCenter({
                   <Label htmlFor="overdue-reminders">Overdue action reminders</Label>
                   <Switch
                     id="overdue-reminders"
-                    checked={settings.overdueReminders}
+                    checked={safeSettings.overdueReminders}
                     onCheckedChange={(checked) => updateSettings({ overdueReminders: checked })}
                   />
                 </div>
@@ -338,7 +375,7 @@ export default function NotificationCenter({
                   <Label htmlFor="deadline-warnings">Upcoming deadline warnings</Label>
                   <Switch
                     id="deadline-warnings"
-                    checked={settings.deadlineWarnings}
+                    checked={safeSettings.deadlineWarnings}
                     onCheckedChange={(checked) => updateSettings({ deadlineWarnings: checked })}
                   />
                 </div>
@@ -347,7 +384,7 @@ export default function NotificationCenter({
                   <Label htmlFor="partner-updates">Partner completion updates</Label>
                   <Switch
                     id="partner-updates"
-                    checked={settings.partnerUpdates}
+                    checked={safeSettings.partnerUpdates}
                     onCheckedChange={(checked) => updateSettings({ partnerUpdates: checked })}
                   />
                 </div>
@@ -366,7 +403,7 @@ export default function NotificationCenter({
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    {settings.browserNotifications && 'Notification' in window && Notification.permission === 'default' && (
+                    {safeSettings.browserNotifications && 'Notification' in window && Notification.permission === 'default' && (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -378,7 +415,7 @@ export default function NotificationCenter({
                     )}
                     <Switch
                       id="browser-notifications"
-                      checked={settings.browserNotifications}
+                      checked={safeSettings.browserNotifications}
                       onCheckedChange={(checked) => {
                         updateSettings({ browserNotifications: checked })
                         if (checked) {
@@ -393,7 +430,7 @@ export default function NotificationCenter({
                   <Label htmlFor="warning-days">Warning days before deadline</Label>
                   <select
                     id="warning-days"
-                    value={settings.warningDays}
+                    value={safeSettings.warningDays}
                     onChange={(e) => updateSettings({ warningDays: parseInt(e.target.value) })}
                     className="bg-background border border-input rounded px-2 py-1 text-sm"
                   >

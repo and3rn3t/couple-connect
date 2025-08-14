@@ -1,4 +1,4 @@
-import { Clock, AlertTriangle, CheckCircle } from '@phosphor-icons/react'
+import { Clock, Warning, CheckCircle } from '@phosphor-icons/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -58,7 +58,7 @@ export default function NotificationSummary({
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <AlertTriangle size={16} className="text-accent" />
+            <Warning size={16} className="text-accent" />
             Attention Needed
           </CardTitle>
           <Button
@@ -75,7 +75,7 @@ export default function NotificationSummary({
         {overdueActions.length > 0 && (
           <div className="flex items-center justify-between p-3 bg-destructive/10 rounded-md">
             <div className="flex items-center gap-2">
-              <AlertTriangle size={16} className="text-destructive" />
+              <Warning size={16} className="text-destructive" />
               <span className="text-sm font-medium">Overdue Actions</span>
             </div>
             <Badge variant="destructive">
