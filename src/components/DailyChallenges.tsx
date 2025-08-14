@@ -19,6 +19,28 @@ import { GamificationState } from './GamificationCenter';
 import { toast } from 'sonner';
 import { useKV } from '../hooks/useKV';
 
+// Local constants for daily challenges
+const CHALLENGE_CONSTANTS = {
+  DAILY_CHALLENGE_COUNT: 3,
+  TOAST_DURATION: 4000,
+  RANDOM_SHUFFLE_CENTER: 0.5,
+  NEXT_DAY_OFFSET: 1,
+  MIDNIGHT_HOUR: 0,
+  MIDNIGHT_MINUTE: 0,
+  MIDNIGHT_SECOND: 0,
+  MIDNIGHT_MS: 0,
+} as const;
+
+// Point value ranges for reference (used in CHALLENGE_TEMPLATES below)
+const _CHALLENGE_POINTS = {
+  EASY_MIN: 10,
+  EASY_MAX: 20,
+  MEDIUM_MIN: 25,
+  MEDIUM_MAX: 40,
+  HARD_MIN: 45,
+  HARD_MAX: 60,
+} as const;
+
 export interface DailyChallenge {
   id: string;
   title: string;
@@ -169,8 +191,13 @@ export default function DailyChallenges({
   const generateDailyChallenges = () => {
     const today = new Date().toDateString();
     const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
+    tomorrow.setDate(tomorrow.getDate() + CHALLENGE_CONSTANTS.NEXT_DAY_OFFSET);
+    tomorrow.setHours(
+      CHALLENGE_CONSTANTS.MIDNIGHT_HOUR,
+      CHALLENGE_CONSTANTS.MIDNIGHT_MINUTE,
+      CHALLENGE_CONSTANTS.MIDNIGHT_SECOND,
+      CHALLENGE_CONSTANTS.MIDNIGHT_MS
+    );
 
     // Check if we already have challenges for today
     const hasTodays = (dailyChallenges || []).some(
@@ -179,8 +206,10 @@ export default function DailyChallenges({
 
     if (!hasTodays) {
       // Generate 3 new challenges for today
-      const shuffled = [...CHALLENGE_TEMPLATES].sort(() => Math.random() - 0.5);
-      const selectedTemplates = shuffled.slice(0, 3);
+      const shuffled = [...CHALLENGE_TEMPLATES].sort(
+        () => Math.random() - CHALLENGE_CONSTANTS.RANDOM_SHUFFLE_CENTER
+      );
+      const selectedTemplates = shuffled.slice(0, CHALLENGE_CONSTANTS.DAILY_CHALLENGE_COUNT);
 
       const newChallenges: DailyChallenge[] = selectedTemplates.map((template, index) => ({
         id: `challenge-${today}-${index}`,
@@ -255,7 +284,7 @@ export default function DailyChallenges({
 
           toast.success(`🎯 Challenge Complete: ${challenge.title}!`, {
             description: `+${challenge.points} points earned`,
-            duration: 4000,
+            duration: CHALLENGE_CONSTANTS.TOAST_DURATION,
           });
 
           return completed;
@@ -286,7 +315,7 @@ export default function DailyChallenges({
 
           toast.success(`🎯 Challenge Complete: ${challenge.title}!`, {
             description: `+${challenge.points} points earned`,
-            duration: 4000,
+            duration: CHALLENGE_CONSTANTS.TOAST_DURATION,
           });
 
           return completed;
@@ -318,7 +347,7 @@ export default function DailyChallenges({
   const todaysChallenges = (dailyChallenges || []).filter((challenge) => {
     const challengeDate = new Date(challenge.expiresAt);
     const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setDate(tomorrow.getDate() + CHALLENGE_CONSTANTS.NEXT_DAY_OFFSET);
     return challengeDate.toDateString() === tomorrow.toDateString();
   });
 

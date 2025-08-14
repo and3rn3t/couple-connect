@@ -17,6 +17,18 @@ import { Issue, Action, RelationshipHealth } from '@/App';
 import { Partner } from '@/components/PartnerSetup';
 import { toast } from 'sonner';
 
+// Progress and health constants
+const HEALTH_CONSTANTS = {
+  MAX_SCORE: 10,
+  PERCENTAGE_MULTIPLIER: 100,
+  SCORE_MULTIPLIER: 10, // for progress bar display
+} as const;
+
+const ICON_SIZES = {
+  LARGE: 20,
+  SMALL: 16,
+} as const;
+
 interface ProgressViewProps {
   issues: Issue[];
   actions: Action[];
@@ -41,7 +53,10 @@ export default function ProgressView({
 
   const completedActions = actions.filter((a) => a.status === 'completed');
   const totalActions = actions.length;
-  const completionRate = totalActions > 0 ? (completedActions.length / totalActions) * 100 : 0;
+  const completionRate =
+    totalActions > 0
+      ? (completedActions.length / totalActions) * HEALTH_CONSTANTS.PERCENTAGE_MULTIPLIER
+      : 0;
 
   // Partner-specific metrics
   const myActions = actions.filter(
@@ -58,9 +73,14 @@ export default function ProgressView({
   const myCompletedActions = myActions.filter((a) => a.status === 'completed').length;
   const partnerCompletedActions = partnerActions.filter((a) => a.status === 'completed').length;
 
-  const myCompletionRate = myActions.length > 0 ? (myCompletedActions / myActions.length) * 100 : 0;
+  const myCompletionRate =
+    myActions.length > 0
+      ? (myCompletedActions / myActions.length) * HEALTH_CONSTANTS.PERCENTAGE_MULTIPLIER
+      : 0;
   const partnerCompletionRate =
-    partnerActions.length > 0 ? (partnerCompletedActions / partnerActions.length) * 100 : 0;
+    partnerActions.length > 0
+      ? (partnerCompletedActions / partnerActions.length) * HEALTH_CONSTANTS.PERCENTAGE_MULTIPLIER
+      : 0;
 
   const issuesByCategory = issues.reduce(
     (acc, issue) => {
@@ -169,7 +189,7 @@ export default function ProgressView({
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Heart className="text-accent" size={20} weight="fill" />
+              <Heart className="text-accent" size={ICON_SIZES.LARGE} weight="fill" />
               Relationship Health Score
             </CardTitle>
             <Dialog open={isHealthDialogOpen} onOpenChange={setIsHealthDialogOpen}>
@@ -188,7 +208,7 @@ export default function ProgressView({
                       <div className="flex justify-between">
                         <span className="text-sm font-medium">{label}</span>
                         <span className="text-sm text-muted-foreground">
-                          {tempScores[key as keyof typeof tempScores]}/10
+                          {tempScores[key as keyof typeof tempScores]}/{HEALTH_CONSTANTS.MAX_SCORE}
                         </span>
                       </div>
                       <Slider
@@ -196,7 +216,7 @@ export default function ProgressView({
                         onValueChange={([value]) =>
                           setTempScores((prev) => ({ ...prev, [key]: value }))
                         }
-                        max={10}
+                        max={HEALTH_CONSTANTS.MAX_SCORE}
                         min={1}
                         step={1}
                         className="w-full"
@@ -218,7 +238,7 @@ export default function ProgressView({
           <div className="flex items-center gap-6">
             <div className="text-center">
               <div className={`text-4xl font-bold ${getHealthColor(healthScore.overallScore)}`}>
-                {healthScore.overallScore}/10
+                {healthScore.overallScore}/{HEALTH_CONSTANTS.MAX_SCORE}
               </div>
               <Badge variant="secondary" className="mt-2">
                 {getHealthLabel(healthScore.overallScore)}
@@ -230,8 +250,13 @@ export default function ProgressView({
                 return (
                   <div key={key} className="flex items-center gap-3">
                     <div className="w-24 text-sm">{label}</div>
-                    <Progress value={score * 10} className="flex-1" />
-                    <div className={`text-sm font-medium ${getHealthColor(score)}`}>{score}/10</div>
+                    <Progress
+                      value={score * HEALTH_CONSTANTS.SCORE_MULTIPLIER}
+                      className="flex-1"
+                    />
+                    <div className={`text-sm font-medium ${getHealthColor(score)}`}>
+                      {score}/{HEALTH_CONSTANTS.MAX_SCORE}
+                    </div>
                   </div>
                 );
               })}
@@ -311,7 +336,7 @@ export default function ProgressView({
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-2">
-              <Target className="text-primary" size={20} />
+              <Target className="text-primary" size={ICON_SIZES.LARGE} />
               <span className="text-sm font-medium">Total Actions</span>
             </div>
             <div className="text-2xl font-bold">{totalActions}</div>
@@ -321,7 +346,7 @@ export default function ProgressView({
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-2">
-              <CheckCircle className="text-primary" size={20} weight="fill" />
+              <CheckCircle className="text-primary" size={ICON_SIZES.LARGE} weight="fill" />
               <span className="text-sm font-medium">Completed</span>
             </div>
             <div className="text-2xl font-bold">{completedActions.length}</div>

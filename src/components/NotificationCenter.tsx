@@ -12,6 +12,34 @@ import { Action, Issue } from '../App';
 import { Partner } from './PartnerSetup';
 import { useNotificationSystem } from '../hooks/useNotificationSystem';
 
+// Constants for notification system
+const NOTIFICATION_DEFAULTS = {
+  ENABLED: true,
+  OVERDUE_REMINDERS: true,
+  DEADLINE_WARNINGS: true,
+  PARTNER_UPDATES: true,
+  WARNING_DAYS: 3,
+  BROWSER_NOTIFICATIONS: false,
+} as const;
+
+const TIME_CONSTANTS = {
+  MS_PER_DAY: 1000 * 60 * 60 * 24,
+  MS_PER_HOUR: 1000 * 60 * 60,
+  HOURS_IN_DAY: 24,
+} as const;
+
+const NOTIFICATION_LIMITS = {
+  MAX_UNREAD_DISPLAY: 9,
+} as const;
+
+const WARNING_DAY_OPTIONS = [
+  { value: 1, label: '1 day' },
+  { value: 2, label: '2 days' },
+  { value: 3, label: '3 days' },
+  { value: 7, label: '1 week' },
+  { value: 14, label: '2 weeks' },
+] as const;
+
 interface Notification {
   id: string;
   type: 'overdue' | 'deadline-soon' | 'partner-completed';
@@ -54,12 +82,12 @@ export default function NotificationCenter({
 }: NotificationCenterProps) {
   const [notifications, setNotifications] = useKV<Notification[]>('notifications', []);
   const [settings, setSettings] = useKV<NotificationSettings>('notification-settings', {
-    enabled: true,
-    overdueReminders: true,
-    deadlineWarnings: true,
-    partnerUpdates: true,
-    warningDays: 2,
-    browserNotifications: true,
+    enabled: NOTIFICATION_DEFAULTS.ENABLED,
+    overdueReminders: NOTIFICATION_DEFAULTS.OVERDUE_REMINDERS,
+    deadlineWarnings: NOTIFICATION_DEFAULTS.DEADLINE_WARNINGS,
+    partnerUpdates: NOTIFICATION_DEFAULTS.PARTNER_UPDATES,
+    warningDays: NOTIFICATION_DEFAULTS.WARNING_DAYS,
+    browserNotifications: NOTIFICATION_DEFAULTS.BROWSER_NOTIFICATIONS,
   });
 
   const [isOpen, setIsOpen] = useState(false);
@@ -76,12 +104,12 @@ export default function NotificationCenter({
     currentPartner,
     otherPartner,
     settings: settings || {
-      enabled: true,
-      overdueReminders: true,
-      deadlineWarnings: true,
-      partnerUpdates: true,
-      warningDays: 3,
-      browserNotifications: false,
+      enabled: NOTIFICATION_DEFAULTS.ENABLED,
+      overdueReminders: NOTIFICATION_DEFAULTS.OVERDUE_REMINDERS,
+      deadlineWarnings: NOTIFICATION_DEFAULTS.DEADLINE_WARNINGS,
+      partnerUpdates: NOTIFICATION_DEFAULTS.PARTNER_UPDATES,
+      warningDays: NOTIFICATION_DEFAULTS.WARNING_DAYS,
+      browserNotifications: NOTIFICATION_DEFAULTS.BROWSER_NOTIFICATIONS,
     },
   });
 
@@ -104,7 +132,7 @@ export default function NotificationCenter({
 
     actions.forEach((action) => {
       const dueDate = new Date(action.dueDate);
-      const daysDiff = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      const daysDiff = Math.ceil((dueDate.getTime() - now.getTime()) / TIME_CONSTANTS.MS_PER_DAY);
 
       // Check for overdue actions
       if (currentSettings.overdueReminders && action.status !== 'completed' && daysDiff < 0) {
@@ -174,10 +202,11 @@ export default function NotificationCenter({
 
         if (!existingCompletion && action.completedAt) {
           const completedDate = new Date(action.completedAt);
-          const hoursSinceCompletion = (now.getTime() - completedDate.getTime()) / (1000 * 60 * 60);
+          const hoursSinceCompletion =
+            (now.getTime() - completedDate.getTime()) / TIME_CONSTANTS.MS_PER_HOUR;
 
           // Only notify if completed within last 24 hours
-          if (hoursSinceCompletion <= 24) {
+          if (hoursSinceCompletion <= TIME_CONSTANTS.HOURS_IN_DAY) {
             const issue = issues.find((i) => i.id === action.issueId);
             newNotifications.push({
               id: `completed-${action.id}-${Date.now()}`,
@@ -301,7 +330,7 @@ export default function NotificationCenter({
             variant="destructive"
             className="absolute -top-1 -right-1 h-5 w-5 text-xs p-0 flex items-center justify-center"
           >
-            {unreadCount > 9 ? '9+' : unreadCount}
+            {unreadCount > NOTIFICATION_LIMITS.MAX_UNREAD_DISPLAY ? '9+' : unreadCount}
           </Badge>
         )}
       </Button>
@@ -425,10 +454,11 @@ export default function NotificationCenter({
                     className="bg-background border border-input rounded px-2 py-1 text-sm"
                     aria-label="Warning days before deadline"
                   >
-                    <option value={1}>1 day</option>
-                    <option value={2}>2 days</option>
-                    <option value={3}>3 days</option>
-                    <option value={7}>1 week</option>
+                    {WARNING_DAY_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </CardContent>

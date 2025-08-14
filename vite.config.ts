@@ -6,7 +6,20 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import { fileURLToPath } from 'url';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const projectRoot = process.env.PROJECT_ROOT || __dirname;
+
+// Build configuration constants
+const BUILD_CONSTANTS = {
+  CHUNK_SIZE_WARNING_LIMIT: 1000, // KB
+  DEFAULT_CHUNK_NAME: 'chunk',
+} as const;
+
+// File extension patterns for asset organization
+const ASSET_PATTERNS = {
+  IMAGES: /png|jpe?g|svg|gif|tiff|bmp|ico/i,
+  FONTS: /woff2?|eot|ttf|otf/i,
+} as const;
+
+const projectRoot = process.env.PROJECT_ROOT || import.meta.dirname;
 
 // https://vite.dev/config/
 export default defineConfig(() => {
@@ -41,7 +54,7 @@ export default defineConfig(() => {
       sourcemap: process.env.NODE_ENV === 'development',
 
       // Bundle size optimizations
-      chunkSizeWarningLimit: 1000,
+      chunkSizeWarningLimit: BUILD_CONSTANTS.CHUNK_SIZE_WARNING_LIMIT,
       rollupOptions: {
         output: {
           // Optimize chunk splitting
@@ -60,16 +73,16 @@ export default defineConfig(() => {
           chunkFileNames: (chunkInfo) => {
             const facadeModuleId = chunkInfo.facadeModuleId
               ? chunkInfo.facadeModuleId.split('/').pop()?.replace('.tsx', '').replace('.ts', '')
-              : 'chunk';
+              : BUILD_CONSTANTS.DEFAULT_CHUNK_NAME;
             return `js/${facadeModuleId}-[hash].js`;
           },
           assetFileNames: (assetInfo) => {
             const info = assetInfo.name!.split('.');
             const ext = info[info.length - 1];
-            if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
+            if (ASSET_PATTERNS.IMAGES.test(ext)) {
               return `img/[name]-[hash].${ext}`;
             }
-            if (/woff2?|eot|ttf|otf/i.test(ext)) {
+            if (ASSET_PATTERNS.FONTS.test(ext)) {
               return `fonts/[name]-[hash].${ext}`;
             }
             return `assets/[name]-[hash].${ext}`;

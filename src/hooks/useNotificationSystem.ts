@@ -3,6 +3,15 @@ import { useKV } from './useKV';
 import { Action, Issue } from '../App';
 import { Partner } from '../components/PartnerSetup';
 
+// Local constants for notification system
+const NOTIFICATION_CONSTANTS = {
+  CHECK_INTERVAL_HOURS: 1,
+  RECENT_OVERDUE_DAYS: 3,
+  URGENT_DEADLINE_DAYS: 1,
+  HOURS_TO_MS: 1000 * 60 * 60,
+  DAYS_TO_MS: 1000 * 60 * 60 * 24,
+} as const;
+
 interface NotificationSettings {
   enabled: boolean;
   overdueReminders: boolean;
@@ -51,8 +60,9 @@ export function useNotificationSystem({
     // Only check if we haven't checked in the last hour
     if (lastNotificationCheck) {
       const lastCheck = new Date(lastNotificationCheck);
-      const hoursSinceLastCheck = (now.getTime() - lastCheck.getTime()) / (1000 * 60 * 60);
-      if (hoursSinceLastCheck < 1) return;
+      const hoursSinceLastCheck =
+        (now.getTime() - lastCheck.getTime()) / NOTIFICATION_CONSTANTS.HOURS_TO_MS;
+      if (hoursSinceLastCheck < NOTIFICATION_CONSTANTS.CHECK_INTERVAL_HOURS) return;
     }
 
     let urgentNotifications = 0;
@@ -64,7 +74,9 @@ export function useNotificationSystem({
       if (action.status === 'completed') return;
 
       const dueDate = new Date(action.dueDate);
-      const daysDiff = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      const daysDiff = Math.ceil(
+        (dueDate.getTime() - now.getTime()) / NOTIFICATION_CONSTANTS.DAYS_TO_MS
+      );
       const issue = issues.find((i) => i.id === action.issueId);
 
       // Count overdue actions
@@ -75,7 +87,7 @@ export function useNotificationSystem({
         if (
           settings.browserNotifications &&
           Notification.permission === 'granted' &&
-          Math.abs(daysDiff) <= 3
+          Math.abs(daysDiff) <= NOTIFICATION_CONSTANTS.RECENT_OVERDUE_DAYS
         ) {
           // Only for recently overdue items
           new Notification('Overdue Action', {
@@ -94,7 +106,7 @@ export function useNotificationSystem({
         if (
           settings.browserNotifications &&
           Notification.permission === 'granted' &&
-          daysDiff === 1
+          daysDiff === NOTIFICATION_CONSTANTS.URGENT_DEADLINE_DAYS
         ) {
           new Notification('Action Due Tomorrow', {
             body: `"${action.title}" is due tomorrow${issue ? ` (${issue.title})` : ''}`,

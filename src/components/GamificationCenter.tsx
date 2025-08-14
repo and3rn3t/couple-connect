@@ -28,6 +28,32 @@ import { Partner } from './PartnerSetup';
 import { toast } from 'sonner';
 import CelebrationAnimation from './CelebrationAnimation';
 
+// Gamification constants
+const ACHIEVEMENT_POINTS = {
+  FIRST_STEPS: 50,
+  GETTING_STARTED: 200,
+  MONTH_STREAK: 500,
+  HUNDRED_DAY_STREAK: 1000,
+  ACTION_STARTER: 150,
+  ACTION_ACHIEVER: 400,
+  ISSUE_RESOLVER: 300,
+  SUPPORTIVE_PARTNER: 250,
+  TEAM_BUILDER: 200,
+  RELATIONSHIP_CHAMPION: 600,
+} as const;
+
+const ACHIEVEMENT_THRESHOLDS = {
+  ACTIONS_COMPLETED_BASIC: 10,
+  ACTIONS_COMPLETED_ADVANCED: 50,
+  CONSECUTIVE_DAYS_MONTH: 30,
+  CONSECUTIVE_DAYS_HUNDRED: 100,
+  ACTIONS_CREATED_BASIC: 10,
+} as const;
+
+const UI_CONSTANTS = {
+  ACHIEVEMENT_TOAST_DURATION: 5000,
+} as const;
+
 export interface Achievement {
   id: string;
   title: string;
@@ -85,7 +111,7 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'unlockedAt' | 'unlockedBy'>[] = [
     description: 'Complete your first action together',
     icon: <Target className="w-5 h-5" />,
     category: 'milestone',
-    points: 50,
+    points: ACHIEVEMENT_POINTS.FIRST_STEPS,
     rarity: 'common',
     requirements: { type: 'actions_completed', count: 1 },
   },
@@ -95,7 +121,7 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'unlockedAt' | 'unlockedBy'>[] = [
     description: 'Stay active for 7 consecutive days',
     icon: <Flame className="w-5 h-5" />,
     category: 'consistency',
-    points: 200,
+    points: ACHIEVEMENT_POINTS.GETTING_STARTED,
     rarity: 'rare',
     requirements: { type: 'consecutive_days', count: 7 },
   },
@@ -105,9 +131,12 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'unlockedAt' | 'unlockedBy'>[] = [
     description: 'Maintain a 30-day streak',
     icon: <Calendar className="w-5 h-5" />,
     category: 'consistency',
-    points: 500,
+    points: ACHIEVEMENT_POINTS.MONTH_STREAK,
     rarity: 'epic',
-    requirements: { type: 'consecutive_days', count: 30 },
+    requirements: {
+      type: 'consecutive_days',
+      count: ACHIEVEMENT_THRESHOLDS.CONSECUTIVE_DAYS_MONTH,
+    },
   },
   {
     id: 'dedication-legend',
@@ -115,9 +144,12 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'unlockedAt' | 'unlockedBy'>[] = [
     description: 'Achieve a 100-day streak',
     icon: <Lightning className="w-5 h-5" />,
     category: 'consistency',
-    points: 1000,
+    points: ACHIEVEMENT_POINTS.HUNDRED_DAY_STREAK,
     rarity: 'legendary',
-    requirements: { type: 'consecutive_days', count: 100 },
+    requirements: {
+      type: 'consecutive_days',
+      count: ACHIEVEMENT_THRESHOLDS.CONSECUTIVE_DAYS_HUNDRED,
+    },
   },
   // Completion Achievements
   {
@@ -126,9 +158,12 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'unlockedAt' | 'unlockedBy'>[] = [
     description: 'Complete 10 actions',
     icon: <Trophy className="w-5 h-5" />,
     category: 'completion',
-    points: 150,
+    points: ACHIEVEMENT_POINTS.ACTION_STARTER,
     rarity: 'common',
-    requirements: { type: 'actions_completed', count: 10 },
+    requirements: {
+      type: 'actions_completed',
+      count: ACHIEVEMENT_THRESHOLDS.ACTIONS_COMPLETED_BASIC,
+    },
   },
   {
     id: 'productivity-champion',
@@ -136,9 +171,12 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'unlockedAt' | 'unlockedBy'>[] = [
     description: 'Complete 50 actions',
     icon: <Star className="w-5 h-5" />,
     category: 'completion',
-    points: 400,
+    points: ACHIEVEMENT_POINTS.ACTION_ACHIEVER,
     rarity: 'rare',
-    requirements: { type: 'actions_completed', count: 50 },
+    requirements: {
+      type: 'actions_completed',
+      count: ACHIEVEMENT_THRESHOLDS.ACTIONS_COMPLETED_ADVANCED,
+    },
   },
   {
     id: 'resolution-master',
@@ -146,7 +184,7 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'unlockedAt' | 'unlockedBy'>[] = [
     description: 'Help resolve 5 relationship issues',
     icon: <Heart className="w-5 h-5" />,
     category: 'growth',
-    points: 300,
+    points: ACHIEVEMENT_POINTS.ISSUE_RESOLVER,
     rarity: 'rare',
     requirements: { type: 'issues_resolved', count: 5 },
   },
@@ -157,7 +195,7 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'unlockedAt' | 'unlockedBy'>[] = [
     description: 'Complete 5 actions assigned by your partner',
     icon: <Users className="w-5 h-5" />,
     category: 'collaboration',
-    points: 250,
+    points: ACHIEVEMENT_POINTS.SUPPORTIVE_PARTNER,
     rarity: 'rare',
     requirements: { type: 'partner_actions', count: 5 },
   },
@@ -167,9 +205,9 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'unlockedAt' | 'unlockedBy'>[] = [
     description: 'Create 10 actions for your partner',
     icon: <Gift className="w-5 h-5" />,
     category: 'collaboration',
-    points: 200,
+    points: ACHIEVEMENT_POINTS.TEAM_BUILDER,
     rarity: 'common',
-    requirements: { type: 'actions_created', count: 10 },
+    requirements: { type: 'actions_created', count: ACHIEVEMENT_THRESHOLDS.ACTIONS_CREATED_BASIC },
   },
   // Growth Achievements
   {
@@ -284,7 +322,7 @@ export default function GamificationCenter({
       newlyUnlocked.forEach((achievement) => {
         toast.success(`🏆 Achievement Unlocked: ${achievement.title}!`, {
           description: `+${achievement.points} points`,
-          duration: 5000,
+          duration: UI_CONSTANTS.ACHIEVEMENT_TOAST_DURATION,
         });
 
         // Show celebration animation for first achievement

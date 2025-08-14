@@ -18,6 +18,27 @@ import { Toaster } from '@/components/ui/sonner';
 import MindmapView from '@/components/MindmapView';
 import ActionDashboard from '@/components/ActionDashboard';
 import ProgressView from '@/components/ProgressView';
+
+// App configuration constants
+const APP_CONFIG = {
+  // Database configuration
+  DATABASE_CACHE_TIMEOUT: 10 * 60 * 1000, // 10 minutes for relationship data
+  DATABASE_MAX_CACHE_SIZE: 200, // More cache for better performance
+  DATABASE_DEBOUNCE_MS: 300, // Debounce rapid updates
+  DATABASE_RETRY_ATTEMPTS: 3,
+
+  // Performance monitoring
+  PERFORMANCE_REPORT_DELAY: 2000, // Give app time to load
+
+  // Default values
+  DEFAULT_WEEKLY_GOAL: 50,
+} as const;
+
+// Icon sizes for consistent UI
+const ICON_SIZES = {
+  SMALL: 16,
+  LARGE: 32,
+} as const;
 import PartnerSetup, { Partner } from '@/components/PartnerSetup';
 import PartnerProfile from '@/components/PartnerProfile';
 import NotificationCenter from '@/components/NotificationCenter';
@@ -82,11 +103,11 @@ function App() {
         // Configure database for optimal performance
         updateDatabaseConfig({
           enableCaching: true,
-          cacheTimeout: 10 * 60 * 1000, // 10 minutes for relationship data
-          maxCacheSize: 200, // More cache for better performance
+          cacheTimeout: APP_CONFIG.DATABASE_CACHE_TIMEOUT,
+          maxCacheSize: APP_CONFIG.DATABASE_MAX_CACHE_SIZE,
           enableOptimisticUpdates: true, // Instant UI feedback
-          retryAttempts: 3,
-          debounceMs: 300, // Debounce rapid updates
+          retryAttempts: APP_CONFIG.DATABASE_RETRY_ATTEMPTS,
+          debounceMs: APP_CONFIG.DATABASE_DEBOUNCE_MS,
         });
 
         await initializeDatabase();
@@ -107,7 +128,7 @@ function App() {
           setTimeout(() => {
             console.warn('=== Initial Database Performance ===');
             performanceMonitor.logPerformanceReport();
-          }, 2000); // Give app time to load
+          }, APP_CONFIG.PERFORMANCE_REPORT_DELAY);
         }
       } catch (error) {
         console.error('Failed to initialize app:', error);
@@ -350,7 +371,7 @@ function App() {
         <header className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <Heart className="text-accent" size={32} weight="fill" />
+              <Heart className="text-accent" size={ICON_SIZES.LARGE} weight="fill" />
               <div>
                 <h1 className="text-3xl font-medium text-fg">Together</h1>
                 <p className="text-fg-secondary">
@@ -441,7 +462,7 @@ function App() {
               currentStreak: 0,
               longestStreak: 0,
               achievements: [],
-              weeklyGoal: 50,
+              weeklyGoal: APP_CONFIG.DEFAULT_WEEKLY_GOAL,
               weeklyProgress: 0,
               partnerStats: {},
             }
@@ -453,15 +474,15 @@ function App() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="mindmap" className="flex items-center gap-2">
-              <Heart size={16} />
+              <Heart size={ICON_SIZES.SMALL} />
               Issues Map
             </TabsTrigger>
             <TabsTrigger value="actions" className="flex items-center gap-2">
-              <Target size={16} />
+              <Target size={ICON_SIZES.SMALL} />
               Action Plans
             </TabsTrigger>
             <TabsTrigger value="progress" className="flex items-center gap-2">
-              <ChartBar size={16} />
+              <ChartBar size={ICON_SIZES.SMALL} />
               Progress
             </TabsTrigger>
           </TabsList>
