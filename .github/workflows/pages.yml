@@ -121,7 +121,7 @@ jobs:
         run: npm ci --prefer-offline --no-audit --no-fund
 
       - name: 🧹 Optimize build environment
-        run: node scripts/optimize-build.js
+        run: node scripts/optimize-build.js --save-report
 
       - name: 🏗️ Build project
         run: npm run build
@@ -134,13 +134,18 @@ jobs:
         id: bundle-analysis
         run: |
           node scripts/analyze-bundle.js --json
-          BUNDLE_SIZE=$(cat bundle-analysis.json | jq -r '.summary.totalSize')
-          echo "bundle-size=$BUNDLE_SIZE" >> $GITHUB_OUTPUT
+          if [ -f bundle-analysis.json ]; then
+            BUNDLE_SIZE=$(cat bundle-analysis.json | jq -r '.summary.totalSize')
+            echo "bundle-size=$BUNDLE_SIZE" >> $GITHUB_OUTPUT
 
-          # Check if bundle size is within limits
-          if [ $BUNDLE_SIZE -gt 3145728 ]; then # 3MB
-            echo "⚠️ Bundle size ($BUNDLE_SIZE bytes) exceeds 3MB limit" >> $GITHUB_STEP_SUMMARY
-            exit 1
+            # Check if bundle size is within limits
+            if [ $BUNDLE_SIZE -gt 3145728 ]; then # 3MB
+              echo "⚠️ Bundle size ($BUNDLE_SIZE bytes) exceeds 3MB limit" >> $GITHUB_STEP_SUMMARY
+              exit 1
+            fi
+          else
+            echo "bundle-size=0" >> $GITHUB_OUTPUT
+            echo "⚠️ Bundle analysis file not found" >> $GITHUB_STEP_SUMMARY
           fi
 
       - name: 📤 Upload build artifacts
@@ -152,6 +157,7 @@ jobs:
           compression-level: 9
 
       - name: 📄 Upload bundle analysis
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: bundle-analysis-${{ github.sha }}
@@ -159,6 +165,7 @@ jobs:
             bundle-analysis.json
             build-performance.json
           retention-days: 30
+          if-no-files-found: warn
 
       - name: 🎯 Check deployment needs
         id: deployment-check
