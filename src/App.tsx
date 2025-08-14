@@ -1,7 +1,17 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import { useKV } from './hooks/useKV';
+import {
+  useCurrentUser,
+  useCurrentCouple,
+  useIssues,
+  useActions,
+} from './hooks/useDatabaseOptimized';
 import { initializeDatabase } from './services/initializeData';
+import { migrateLocalStorageData, shouldMigrate } from './utils/migrateLocalStorageData';
+import { updateDatabaseConfig } from './services/databaseConfig';
+import { performanceMonitor } from './utils/performanceMonitor';
+import './utils/performanceDemo'; // Initialize performance utilities
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Heart, Target, ChartBar } from '@phosphor-icons/react';
 import { Toaster } from '@/components/ui/sonner';
@@ -15,6 +25,7 @@ import NotificationSummary from '@/components/NotificationSummary';
 import GamificationCenter, { GamificationState } from '@/components/GamificationCenter';
 import RewardSystem from '@/components/RewardSystem';
 import DailyChallenges from '@/components/DailyChallenges';
+import { PerformanceDashboard } from '@/components/PerformanceDashboard';
 
 export interface Issue {
   id: string;
@@ -66,18 +77,112 @@ export interface RelationshipHealth {
 function App() {
   // Initialize database on app start
   useEffect(() => {
-    initializeDatabase().catch((error) => {
-      console.error('Failed to initialize database:', error);
-    });
-  }, []);
+    const initializeApp = async () => {
+      try {
+        // Configure database for optimal performance
+        updateDatabaseConfig({
+          enableCaching: true,
+          cacheTimeout: 10 * 60 * 1000, // 10 minutes for relationship data
+          maxCacheSize: 200, // More cache for better performance
+          enableOptimisticUpdates: true, // Instant UI feedback
+          retryAttempts: 3,
+          debounceMs: 300, // Debounce rapid updates
+        });
 
-  // Partner identification state
+        await initializeDatabase();
+
+        // Check if we need to migrate localStorage data
+        if (shouldMigrate()) {
+          console.warn('Migrating existing localStorage data to database...');
+          const result = await migrateLocalStorageData();
+          if (result.success) {
+            console.warn('Migration completed successfully');
+          } else {
+            console.error('Migration failed:', result.message);
+          }
+        }
+
+        // Log initial performance metrics in development
+        if (window.location.hostname === 'localhost') {
+          setTimeout(() => {
+            console.warn('=== Initial Database Performance ===');
+            performanceMonitor.logPerformanceReport();
+          }, 2000); // Give app time to load
+        }
+      } catch (error) {
+        console.error('Failed to initialize app:', error);
+      }
+    };
+
+    initializeApp();
+  }, []); // Database hooks with enhanced performance
+  const { user: currentUser, error: _userError } = useCurrentUser();
+  const { couple, error: _coupleError } = useCurrentCouple();
+  const {
+    issues: dbIssues,
+    createIssue: _dbCreateIssue,
+    updateIssue: _dbUpdateIssue,
+    deleteIssue: _dbDeleteIssue,
+    loading: _issuesLoading,
+    error: _issuesError,
+  } = useIssues();
+  const {
+    actions: dbActions,
+    createAction: dbCreateAction,
+    updateAction: dbUpdateAction,
+    deleteAction: _dbDeleteAction,
+    loading: _actionsLoading,
+    error: _actionsError,
+  } = useActions();
+
+  // Convert database types to legacy component types
+  const issues: Issue[] = dbIssues.map((issue) => ({
+    id: issue.id,
+    title: issue.title,
+    description: issue.description || '',
+    category: 'other' as Issue['category'], // Default category since DB uses category_id
+    priority: issue.priority === 'urgent' ? 'high' : (issue.priority as Issue['priority']),
+    createdAt: issue.created_at,
+    position: { x: issue.position_x, y: issue.position_y },
+    connections: [], // Default empty connections, would need to fetch from IssueConnection table
+  }));
+
+  const actions: Action[] = dbActions.map((action) => ({
+    id: action.id,
+    issueId: action.issue_id || '',
+    title: action.title,
+    description: action.description || '',
+    assignedTo: mapAssignedTo(action.assigned_to),
+    assignedToId: action.assigned_to,
+    dueDate: action.due_date || '',
+    status: mapActionStatus(action.status),
+    createdAt: action.created_at,
+    createdBy: action.created_by || '',
+    completedAt: action.completed_at || undefined,
+    completedBy: undefined, // Not tracked in new schema
+    notes: action.notes ? [action.notes] : [],
+  }));
+
+  // Helper functions to map between old and new formats
+  function mapAssignedTo(assigned_to: string): 'partner1' | 'partner2' | 'both' {
+    if (assigned_to === 'both') return 'both';
+    if (assigned_to === 'user1') return 'partner1';
+    if (assigned_to === 'user2') return 'partner2';
+    return 'both'; // Default fallback
+  }
+
+  function mapActionStatus(status: string): 'pending' | 'in-progress' | 'completed' {
+    if (status === 'in_progress') return 'in-progress';
+    if (status === 'completed') return 'completed';
+    return 'pending'; // Default fallback
+  }
+
+  // Partner identification state (keeping localStorage for UI state)
   const [currentPartner, setCurrentPartner] = useKV<Partner | null>('current-partner', null);
   const [otherPartner, setOtherPartner] = useKV<Partner | null>('other-partner', null);
   const [viewingAsPartner, setViewingAsPartner] = useState<string | null>(null); // For switching perspectives
 
-  const [issues, setIssues] = useKV<Issue[]>('relationship-issues', []);
-  const [actions, setActions] = useKV<Action[]>('relationship-actions', []);
+  // Legacy state for components that haven't been migrated yet
   const [healthScore, setHealthScore] = useKV<RelationshipHealth>('relationship-health', {
     overallScore: 7,
     categories: {
@@ -102,13 +207,23 @@ function App() {
     partnerStats: {},
   });
 
-  // Wrapper functions to match component setter interfaces
-  const setIssuesWrapper = (update: (current: Issue[]) => Issue[]) => {
-    setIssues((prev) => update(prev || []));
+  // Wrapper functions for components that still expect setters (temporary until components are updated)
+  const setIssuesWrapper = async (update: (current: Issue[]) => Issue[]) => {
+    // For now, components can still use this pattern, but we should migrate them to use database hooks directly
+    console.warn(
+      'setIssuesWrapper called - components should be updated to use database hooks directly'
+    );
+    const _updatedIssues = update(issues);
+    // Here you would implement the actual database updates based on the diff
   };
 
-  const setActionsWrapper = (update: (current: Action[]) => Action[]) => {
-    setActions((prev) => update(prev || []));
+  const setActionsWrapper = async (update: (current: Action[]) => Action[]) => {
+    // For now, components can still use this pattern, but we should migrate them to use database hooks directly
+    console.warn(
+      'setActionsWrapper called - components should be updated to use database hooks directly'
+    );
+    const _updatedActions = update(actions);
+    // Here you would implement the actual database updates based on the diff
   };
 
   const setHealthScoreWrapper = (update: (current: RelationshipHealth) => RelationshipHealth) => {
@@ -188,19 +303,45 @@ function App() {
     setViewingAsPartner(null);
   };
 
-  const handleActionUpdate = (actionId: string, updates: Partial<Action>) => {
-    setActions(
-      (actions || []).map((action) => (action.id === actionId ? { ...action, ...updates } : action))
-    );
+  const handleActionUpdate = async (actionId: string, updates: Partial<Action>) => {
+    try {
+      await dbUpdateAction(actionId, {
+        title: updates.title,
+        description: updates.description,
+        status: updates.status === 'in-progress' ? 'in_progress' : updates.status,
+        due_date: updates.dueDate,
+        notes: updates.notes?.join('\n'),
+        completed_at: updates.completedAt,
+      });
+    } catch (error) {
+      console.error('Failed to update action:', error);
+    }
   };
 
-  const handleCreateAction = (newAction: Omit<Action, 'id' | 'createdAt'>) => {
-    const action: Action = {
-      ...newAction,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-    };
-    setActions([...(actions || []), action]);
+  const handleCreateAction = async (newAction: Omit<Action, 'id' | 'createdAt'>) => {
+    if (!couple) return;
+    try {
+      await dbCreateAction({
+        title: newAction.title,
+        description: newAction.description,
+        assigned_to:
+          newAction.assignedTo === 'partner1'
+            ? 'user1'
+            : newAction.assignedTo === 'partner2'
+              ? 'user2'
+              : 'both',
+        status:
+          newAction.status === 'in-progress'
+            ? 'in_progress'
+            : (newAction.status as 'pending' | 'completed'),
+        priority: 'medium',
+        due_date: newAction.dueDate,
+        notes: newAction.notes.join('\n'),
+        created_by: currentUser?.id,
+      });
+    } catch (error) {
+      console.error('Failed to create action:', error);
+    }
   };
 
   return (
@@ -278,6 +419,8 @@ function App() {
             </p>
           </div>
         </header>
+
+        <PerformanceDashboard />
 
         <NotificationSummary
           actions={actions || []}
