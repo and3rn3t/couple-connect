@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "lint:warnings": "eslint . --quiet",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "optimize": "vite optimize",
