@@ -9,19 +9,35 @@ This directory contains all documentation for the Couple Connect project, organi
 ### 📋 Project Overview
 
 - [**PRD.md**](./PRD.md) - Product Requirements Document with feature specifications and user experience design
+- [**OPTIMIZATION_JOURNEY.md**](./OPTIMIZATION_JOURNEY.md) - Complete project optimization story and lessons learned
 - [**SECURITY.md**](./SECURITY.md) - Security policy and vulnerability reporting guidelines
 - [**CHANGELOG.md**](./CHANGELOG.md) - Project changelog and documentation reorganization history
 
 ### 🛠️ Development Documentation
 
-- [**DEPLOYMENT.md**](./development/DEPLOYMENT.md) - Comprehensive deployment guide for various platforms
+#### Setup & Configuration
+
 - [**SETUP.md**](./development/SETUP.md) - GitHub repository setup and configuration guide
+- [**QUICK_DEV_REFERENCE.md**](./development/QUICK_DEV_REFERENCE.md) - Fast access to development commands and patterns
+- [**FUN_DEVELOPMENT_GUIDE.md**](./development/FUN_DEVELOPMENT_GUIDE.md) - Engaging development practices and workflows
+- [**CLOUDFLARE_SETUP.md**](./development/CLOUDFLARE_SETUP.md) - Cloudflare D1 and Pages setup guide
+- [**DEPLOYMENT.md**](./development/DEPLOYMENT.md) - Comprehensive deployment guide for various platforms
+
+#### CI/CD & Quality Assurance
+
+- [**CI_CD_OPTIMIZATION.md**](./development/CI_CD_OPTIMIZATION.md) - Complete CI/CD pipeline optimization guide
+- [**LINTING_CONFIGURATION.md**](./development/LINTING_CONFIGURATION.md) - Consistent CI/IDE linting setup documentation
+- [**CI_IDE_LINTING_SUMMARY.md**](./development/CI_IDE_LINTING_SUMMARY.md) - Implementation summary and achievements
+- [**GITHUB_ACTIONS_TROUBLESHOOTING.md**](./development/GITHUB_ACTIONS_TROUBLESHOOTING.md) - CI/CD pipeline debugging guide
+- [**OPTIMIZATION_SUMMARY.md**](./development/OPTIMIZATION_SUMMARY.md) - Overall project optimization achievements
+
+#### Database Development
+
 - [**DATABASE.md**](./development/DATABASE.md) - Database architecture and development guide
 - [**DATABASE_SETUP.md**](./development/DATABASE_SETUP.md) - Complete database setup and implementation status
 - [**DATABASE_OPTIMIZATION.md**](./development/DATABASE_OPTIMIZATION.md) - Database performance optimization guide
 - [**DATABASE_MIGRATION.md**](./development/DATABASE_MIGRATION.md) - Data migration documentation
 - [**DATABASE_OPTIMIZATIONS_STATUS.md**](./development/DATABASE_OPTIMIZATIONS_STATUS.md) - Current optimization status
-- [**CLOUDFLARE_SETUP.md**](./development/CLOUDFLARE_SETUP.md) - Cloudflare D1 and Pages setup guide
 
 ### ✨ Features Documentation
 
@@ -37,7 +53,7 @@ This project includes comprehensive GitHub Copilot instructions in [`.github/.co
 
 ## 📁 Documentation Structure
 
-```
+```text
 docs/
 ├── README.md                                      # This index file
 ├── PRD.md                                        # Product Requirements Document
