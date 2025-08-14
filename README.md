@@ -152,6 +152,16 @@ The project includes comprehensive CI/CD with GitHub Actions:
 - Regular dependency audits via GitHub Actions
 - Automated security scanning
 
+## 📚 Documentation
+
+For detailed documentation, please visit the [`docs`](./docs/) directory:
+
+- **[Product Requirements](./docs/PRD.md)** - Complete feature specifications and user experience design
+- **[Deployment Guide](./docs/development/DEPLOYMENT.md)** - Deploy to Cloudflare Pages, Vercel, and other platforms
+- **[Setup Guide](./docs/development/SETUP.md)** - GitHub repository configuration and secrets
+- **[Gamification System](./docs/features/GAMIFICATION.md)** - Detailed rewards and achievement system
+- **[Security Policy](./docs/SECURITY.md)** - Vulnerability reporting and security guidelines
+
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -161,6 +171,8 @@ The project includes comprehensive CI/CD with GitHub Actions:
 5. Commit your changes: `git commit -m 'Add amazing feature'`
 6. Push to the branch: `git push origin feature/amazing-feature`
 7. Open a Pull Request
+
+For more details, see our [Setup Guide](./docs/development/SETUP.md).
 
 ## 📝 License
 
@@ -173,6 +185,7 @@ If you need help with deployment or have questions:
 1. Check the [Issues](https://github.com/and3rn3t/couple-connect/issues) page
 2. Create a new issue with detailed information
 3. Review the deployment logs in GitHub Actions
+4. Consult our [Documentation](./docs/)
 
 ## 🌟 Acknowledgments
 
