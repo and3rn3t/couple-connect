@@ -60,7 +60,7 @@ function App() {
   const [currentPartner, setCurrentPartner] = useKV<Partner | null>("current-partner", null)
   const [otherPartner, setOtherPartner] = useKV<Partner | null>("other-partner", null)
   const [viewingAsPartner, setViewingAsPartner] = useState<string | null>(null) // For switching perspectives
-  
+
   const [issues, setIssues] = useKV<Issue[]>("relationship-issues", [])
   const [actions, setActions] = useKV<Action[]>("relationship-actions", [])
   const [healthScore, setHealthScore] = useKV<RelationshipHealth>("relationship-health", {
@@ -91,11 +91,11 @@ function App() {
   const setIssuesWrapper = (update: (current: Issue[]) => Issue[]) => {
     setIssues(prev => update(prev || []))
   }
-  
+
   const setActionsWrapper = (update: (current: Action[]) => Action[]) => {
     setActions(prev => update(prev || []))
   }
-  
+
   const setHealthScoreWrapper = (update: (current: RelationshipHealth) => RelationshipHealth) => {
     setHealthScore(prev => update(prev || {
       overallScore: 0,
@@ -110,27 +110,27 @@ function App() {
       lastUpdated: new Date().toISOString()
     }))
   }
-  
+
   const [activeTab, setActiveTab] = useState("mindmap")
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false)
 
   // If no partners are set up, show setup screen
   if (!currentPartner || !otherPartner) {
     return (
-      <PartnerSetup 
+      <PartnerSetup
         onComplete={(current, other) => {
           setCurrentPartner(current)
           setOtherPartner(other)
-        }} 
+        }}
       />
     )
   }
 
   // Determine which partner's perspective we're viewing
-  const activePartner = viewingAsPartner 
+  const activePartner = viewingAsPartner
     ? (viewingAsPartner === currentPartner.id ? currentPartner : otherPartner)
     : currentPartner
-  
+
   const isViewingOwnPerspective = activePartner.id === currentPartner.id
 
   // Filter actions based on current view
@@ -138,15 +138,15 @@ function App() {
     const actionList = actions || []
     if (isViewingOwnPerspective) {
       // Show actions assigned to current user or both
-      return actionList.filter(action => 
-        action.assignedToId === currentPartner.id || 
+      return actionList.filter(action =>
+        action.assignedToId === currentPartner.id ||
         action.assignedTo === 'both' ||
         action.createdBy === currentPartner.id
       )
     } else {
       // Show actions from partner's perspective
-      return actionList.filter(action => 
-        action.assignedToId === otherPartner.id || 
+      return actionList.filter(action =>
+        action.assignedToId === otherPartner.id ||
         action.assignedTo === 'both' ||
         action.createdBy === otherPartner.id
       )
@@ -164,7 +164,7 @@ function App() {
   }
 
   const handleActionUpdate = (actionId: string, updates: Partial<Action>) => {
-    setActions((actions || []).map(action => 
+    setActions((actions || []).map(action =>
         action.id === actionId ? { ...action, ...updates } : action
       )
     )
@@ -180,17 +180,17 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div id="spark-app" className="min-h-screen bg-bg dark-theme">
       <div className="container mx-auto p-6">
         <header className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <Heart className="text-accent" size={32} weight="fill" />
               <div>
-                <h1 className="text-3xl font-medium text-foreground">Together</h1>
-                <p className="text-muted-foreground">
-                  {isViewingOwnPerspective 
-                    ? "Your personal accountability view" 
+                <h1 className="text-3xl font-medium text-fg">Together</h1>
+                <p className="text-fg-secondary">
+                  {isViewingOwnPerspective
+                    ? "Your personal accountability view"
                     : `Viewing ${activePartner.name}'s perspective`
                   }
                 </p>
@@ -202,28 +202,28 @@ function App() {
                 issues={issues || []}
                 currentPartner={currentPartner}
                 otherPartner={otherPartner}
-                gamificationState={gamificationState || { 
-                  totalPoints: 0, 
-                  currentStreak: 0, 
-                  longestStreak: 0, 
-                  achievements: [], 
-                  weeklyGoal: 50, 
-                  weeklyProgress: 0, 
-                  partnerStats: {} 
+                gamificationState={gamificationState || {
+                  totalPoints: 0,
+                  currentStreak: 0,
+                  longestStreak: 0,
+                  achievements: [],
+                  weeklyGoal: 50,
+                  weeklyProgress: 0,
+                  partnerStats: {}
                 }}
                 onUpdateGamification={setGamificationState}
               />
               <RewardSystem
                 currentPartner={currentPartner}
                 otherPartner={otherPartner}
-                gamificationState={gamificationState || { 
-                  totalPoints: 0, 
-                  currentStreak: 0, 
-                  longestStreak: 0, 
-                  achievements: [], 
-                  weeklyGoal: 50, 
-                  weeklyProgress: 0, 
-                  partnerStats: {} 
+                gamificationState={gamificationState || {
+                  totalPoints: 0,
+                  currentStreak: 0,
+                  longestStreak: 0,
+                  achievements: [],
+                  weeklyGoal: 50,
+                  weeklyProgress: 0,
+                  partnerStats: {}
                 }}
                 onUpdateGamification={setGamificationState}
               />
@@ -236,7 +236,7 @@ function App() {
                 isOpen={notificationCenterOpen}
                 onOpenChange={setNotificationCenterOpen}
               />
-              <PartnerProfile 
+              <PartnerProfile
                 currentPartner={currentPartner}
                 otherPartner={otherPartner}
                 onSwitchView={handleSwitchView}
@@ -244,7 +244,7 @@ function App() {
               />
             </div>
           </div>
-          
+
           <div className="text-center">
             <p className="text-muted-foreground text-lg">
               Building stronger relationships through accountability and growth
@@ -295,8 +295,8 @@ function App() {
           </TabsList>
 
           <TabsContent value="mindmap" className="space-y-6">
-            <MindmapView 
-              issues={issues || []} 
+            <MindmapView
+              issues={issues || []}
               setIssues={setIssuesWrapper}
               actions={actions || []}
               setActions={setActionsWrapper}
@@ -307,7 +307,7 @@ function App() {
           </TabsContent>
 
           <TabsContent value="actions" className="space-y-6">
-            <ActionDashboard 
+            <ActionDashboard
               issues={issues || []}
               actions={getPersonalizedActions()}
               setActions={setActionsWrapper}
@@ -318,7 +318,7 @@ function App() {
           </TabsContent>
 
           <TabsContent value="progress" className="space-y-6">
-            <ProgressView 
+            <ProgressView
               issues={issues || []}
               actions={actions || []}
               healthScore={healthScore || {
