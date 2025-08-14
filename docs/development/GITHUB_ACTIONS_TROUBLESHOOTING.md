@@ -101,22 +101,58 @@ npm run format:check
 
 ### 🔄 **Recovery Steps if Workflow Still Fails**
 
-1. **Check the latest workflow run logs**
+1. **Check the latest workflow run logs with GitHub CLI**:
+
+   ```powershell
+   # List recent workflow runs
+   gh run list --limit 10
+
+   # View specific run details
+   gh run view <run-id>
+
+   # Download logs for detailed analysis
+   gh run download <run-id>
+   ```
+
 2. **Identify the failing step**
 3. **Test that step locally if possible**
 4. **Review recent commits for breaking changes**
 5. **Check for dependency updates that might cause issues**
 6. **Verify all required files exist in the repository**
 
+### �️ **GitHub CLI Debugging Commands**
+
+```powershell
+# Repository and workflow management
+gh repo view --web                    # Open repository in browser
+gh workflow list                      # List all workflows
+gh workflow run "Build and Deploy"    # Manually trigger workflow
+
+# Run analysis and debugging
+gh run list --workflow="Build and Deploy" --limit 5  # List recent runs
+gh run view --log                     # View logs for latest run
+gh run rerun <run-id>                 # Rerun a failed workflow
+
+# Check repository status
+gh status                             # Repository status overview
+gh repo view                          # Repository details
+
+# File and artifact management
+Get-ChildItem -Path ".github/workflows" -Filter "*.yml"  # List workflow files
+Test-Path -Path "scripts/optimize-build.js"              # Verify script exists
+```
+
 ### 📞 **Additional Support**
 
 If issues persist:
 
-- Check the GitHub Actions tab for detailed error logs
-- Review the step-by-step execution in the workflow
-- Look for any recent changes to dependencies or scripts
+- Use GitHub CLI to check detailed error logs: `gh run view --log`
+- Review the step-by-step execution in the workflow dashboard
+- Look for any recent changes to dependencies or scripts: `gh pr list --state merged --limit 5`
 - Ensure the repository has proper permissions for GitHub Actions
+- Check for required secrets: `gh secret list`
 
 ---
+
 **Last Updated**: August 14, 2025
 **Next Review**: Check workflow status after this commit is pushed

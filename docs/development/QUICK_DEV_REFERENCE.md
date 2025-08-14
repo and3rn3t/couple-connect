@@ -41,6 +41,62 @@ npm run type-check           # TypeScript type checking
 npm run test                 # Run all tests (type-check + lint)
 ```
 
+## 🔧 GitHub CLI Commands
+
+**Prefer GitHub CLI over git for GitHub operations:**
+
+```powershell
+# Repository Management
+gh repo view                          # View repository details
+gh repo clone and3rn3t/couple-connect # Clone repository
+
+# Pull Requests
+gh pr create --title "feat: new feature" --body "Description"
+gh pr list --state open             # List open PRs
+gh pr view 123                       # View specific PR
+gh pr checkout 123                   # Checkout PR locally
+gh pr merge 123 --merge              # Merge PR
+
+# Issues
+gh issue create --title "Bug: description" --body "Details"
+gh issue list --state open          # List open issues
+gh issue view 456                    # View specific issue
+gh issue close 456                   # Close issue
+
+# Releases & Tags
+gh release create v1.0.0 --title "Release v1.0.0" --notes "Release notes"
+gh release list                      # List all releases
+
+# Workflow & Actions
+gh workflow list                     # List GitHub Actions workflows
+gh run list                          # List workflow runs
+gh run view 789                      # View specific run details
+```
+
+## 💻 PowerShell File Operations
+
+**Use full command names for clarity:**
+
+```powershell
+# File & Directory Operations
+Get-ChildItem -Path "docs" -Recurse -Filter "*.md"  # List markdown files
+New-Item -Path "docs/new-file.md" -ItemType File    # Create new file
+Remove-Item -Path "temp-file.txt" -Force           # Delete file
+Move-Item -Source "old-file.md" -Destination "docs/" # Move file
+Copy-Item -Source "template.md" -Destination "new.md" # Copy file
+Test-Path -Path "package.json"                      # Check if file exists
+
+# Directory Management
+New-Item -Path "docs/new-folder" -ItemType Directory  # Create directory
+Remove-Item -Path "temp-folder" -Recurse -Force      # Delete directory recursively
+Set-Location -Path "docs/development"                # Change directory
+
+# Content Operations
+Get-Content -Path "package.json" | Select-Object -First 10  # Read first 10 lines
+Set-Content -Path "file.txt" -Value "New content"          # Write content
+Add-Content -Path "file.txt" -Value "Append this"          # Append content
+```
+
 ## 📁 Key File Locations
 
 ```text
@@ -201,10 +257,40 @@ npm run db:seed
 
 ## 📖 Documentation Links
 
-- **[Complete Documentation](./docs/README.md)** - Full documentation index
-- **[GitHub Copilot Instructions](./.copilot-instructions.md)** - AI assistant guidelines
-- **[Database Guide](./docs/development/DATABASE.md)** - Database architecture
-- **[Deployment Guide](./docs/development/DEPLOYMENT.md)** - Deployment instructions
+### Core Documentation
+
+- **[Complete Documentation Index](../DOC_INDEX.md)** - Comprehensive documentation catalog
+- **[Documentation README](../README.md)** - Main documentation entry point
+- **[CLI Best Practices](./CLI_BEST_PRACTICES.md)** - Command line standards and documentation organization
+- **[GitHub Copilot Instructions](../../.github/.copilot-instructions.md)** - AI assistant guidelines with documentation standards
+
+### Technical Guides
+
+- **[Database Architecture](./DATABASE.md)** - Database design and patterns
+- **[Deployment Guide](./DEPLOYMENT.md)** - Deployment instructions
+- **[GitHub Actions Troubleshooting](./GITHUB_ACTIONS_TROUBLESHOOTING.md)** - CI/CD debugging
+
+### Documentation Organization
+
+**Always create documentation in `/docs` folder:**
+
+- `docs/development/` - Technical documentation
+- `docs/features/` - Feature specifications
+- `docs/api/` - API documentation (when needed)
+- `docs/user/` - User guides (when needed)
+
+**Quick Documentation Commands:**
+
+```powershell
+# Create new documentation file
+New-Item -Path "docs/development/NEW_GUIDE.md" -ItemType File -Force
+
+# List all documentation files
+Get-ChildItem -Path "docs" -Recurse -Filter "*.md"
+
+# Check documentation organization
+Get-ChildItem -Path "docs" -Recurse -Directory | Sort-Object FullName
+```
 
 ---
 

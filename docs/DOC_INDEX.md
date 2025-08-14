@@ -25,13 +25,14 @@ Welcome to the comprehensive documentation for Couple Connect! This index provid
 
 ## 🛠️ Development Guides
 
-### Setup & Configuration
+### Environment Setup
 
 - **[Repository Setup](./development/SETUP.md)** - GitHub repository configuration
 - **[Cloudflare Setup](./development/CLOUDFLARE_SETUP.md)** - Cloudflare D1 and Pages configuration
 - **[Deployment Guide](./development/DEPLOYMENT.md)** - Multi-platform deployment instructions
+- **[CLI Best Practices](./development/CLI_BEST_PRACTICES.md)** - GitHub CLI and PowerShell command standards
 
-### Quality & CI/CD
+### Development Standards
 
 - **[CI/CD Optimization](./development/CI_CD_OPTIMIZATION.md)** - Complete CI/CD pipeline optimization guide
 - **[Linting Configuration](./development/LINTING_CONFIGURATION.md)** - Consistent CI/IDE linting setup
@@ -71,6 +72,7 @@ docs/
 │   ├── SETUP.md                                 # Repository setup guide
 │   ├── QUICK_DEV_REFERENCE.md                   # Fast development commands
 │   ├── FUN_DEVELOPMENT_GUIDE.md                 # Engaging development practices
+│   ├── CLI_BEST_PRACTICES.md                    # GitHub CLI & PowerShell standards
 │   ├── CI_CD_OPTIMIZATION.md                    # Complete CI/CD optimization
 │   ├── LINTING_CONFIGURATION.md                 # CI/IDE linting consistency
 │   ├── CI_IDE_LINTING_SUMMARY.md                # Linting implementation summary
@@ -83,75 +85,32 @@ docs/
 │   ├── DATABASE_OPTIMIZATIONS_STATUS.md         # Current optimizations
 │   ├── CLOUDFLARE_SETUP.md                      # Cloudflare configuration
 │   └── DEPLOYMENT.md                            # Deployment instructions
-└── features/                                     # Feature specifications
-    └── GAMIFICATION.md                           # Gamification system
+└── features/                                     # Feature-specific documentation
+    └── GAMIFICATION.md                           # Gamification system details
 ```
 
-## 🏃‍♂️ Getting Started Quick Links
+## 🔗 Quick Links
 
-### For New Developers
+### Most Frequently Used
 
-1. Read the [Main README](../README.md)
-2. Follow the [Setup Guide](./development/SETUP.md)
-3. Check the [Quick Development Reference](./development/QUICK_DEV_REFERENCE.md)
-4. Review the [Database Architecture](./development/DATABASE.md)
-5. Check the [Copilot Instructions](../.github/.copilot-instructions.md)
+1. **[Quick Dev Reference](./development/QUICK_DEV_REFERENCE.md)** - Commands and shortcuts
+2. **[CLI Best Practices](./development/CLI_BEST_PRACTICES.md)** - Command standards
+3. **[Setup Guide](./development/SETUP.md)** - Get started developing
+4. **[Deployment](./development/DEPLOYMENT.md)** - Deploy the application
+5. **[GitHub Actions Troubleshooting](./development/GITHUB_ACTIONS_TROUBLESHOOTING.md)** - Fix CI/CD issues
 
-### For CI/CD & Quality Assurance
+### Project Management
 
-1. Review [CI/CD Optimization](./development/CI_CD_OPTIMIZATION.md)
-2. Understand [Linting Configuration](./development/LINTING_CONFIGURATION.md)
-3. Check [GitHub Actions Troubleshooting](./development/GITHUB_ACTIONS_TROUBLESHOOTING.md)
-4. See [Optimization Summary](./development/OPTIMIZATION_SUMMARY.md)
+1. **[PRD](./PRD.md)** - What we're building
+2. **[Changelog](./CHANGELOG.md)** - What's changed
+3. **[Security](./SECURITY.md)** - Keep it secure
 
-### For Feature Development
+### Development Deep Dives
 
-1. Review the [PRD](./PRD.md) for feature requirements
-2. Check relevant feature documentation in `features/`
-3. Follow database patterns in `development/DATABASE.md`
-4. Use the established UI component patterns
-5. Follow the [Fun Development Guide](./development/FUN_DEVELOPMENT_GUIDE.md)
+1. **[Database Architecture](./development/DATABASE.md)** - Data design patterns
+2. **[CI/CD Optimization](./development/CI_CD_OPTIMIZATION.md)** - Build pipeline excellence
+3. **[Gamification](./features/GAMIFICATION.md)** - User engagement features
 
-### For Deployment
+---
 
-1. Follow the [Deployment Guide](./development/DEPLOYMENT.md)
-2. Configure [Cloudflare Setup](./development/CLOUDFLARE_SETUP.md)
-3. Check the [Database Setup Status](./development/DATABASE_SETUP.md)
-
-## 📝 Contributing to Documentation
-
-When adding new documentation:
-
-1. **Development docs** → `./development/`
-2. **Feature specifications** → `./features/`
-3. **General project docs** → Root `./docs/` directory
-4. Update this index file with links to new documentation
-5. Update the main [docs README](./README.md)
-6. Consider updating [Copilot Instructions](../.github/.copilot-instructions.md) if architecture changes
-
-## 🔄 Documentation Maintenance
-
-This documentation is actively maintained. Last updated: **August 14, 2025**
-
-**Recent Documentation Improvements:**
-
-- ✅ Consolidated CI/CD optimization documentation
-- ✅ Added comprehensive linting configuration guides
-- ✅ Created GitHub Actions troubleshooting resources
-- ✅ Moved all documentation to organized `/docs` structure
-- ✅ Enhanced development workflow documentation
-
-If you find outdated information or missing documentation, please:
-
-1. Create an issue describing what needs updating
-2. Submit a PR with documentation improvements
-3. Notify the team about significant architecture changes that need documentation updates
-
-## 🎯 Documentation Categories Summary
-
-- **📚 Core Project**: PRD, Security, Changelog
-- **🛠️ Development**: Setup, configuration, optimization guides
-- **🔧 CI/CD**: Pipeline optimization, linting, troubleshooting
-- **💾 Database**: Architecture, migration, optimization
-- **🎮 Features**: Gamification and upcoming feature specifications
-- **🤖 AI Assistance**: GitHub Copilot integration guidelines
+� **Tip**: Use Ctrl+F (Cmd+F on Mac) to quickly find specific documentation you need!
