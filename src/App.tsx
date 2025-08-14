@@ -381,7 +381,7 @@ function App() {
               />
               <RewardSystem
                 currentPartner={currentPartner}
-                otherPartner={otherPartner}
+                _otherPartner={otherPartner}
                 gamificationState={
                   gamificationState || {
                     totalPoints: 0,

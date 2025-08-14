@@ -1,0 +1,72 @@
+{
+  "timestamp": "2025-08-14T20:37:43.907Z",
+  "buildTime": 10115,
+  "buildSuccess": true,
+  "dependencies": {
+    "dependencies": 61,
+    "devDependencies": 23,
+    "scripts": 38,
+    "hasWorkspaces": true,
+    "hasLintStaged": true
+  },
+  "viteConfig": {
+    "hasAlias": true,
+    "hasPlugins": true,
+    "hasOptimization": true,
+    "hasBuildConfig": true,
+    "usesReactSWC": true,
+    "usesTailwind": true
+  },
+  "steps": [
+    {
+      "message": "Optimizing build cache...",
+      "timestamp": "2025-08-14T20:37:32.758Z",
+      "startTime": 1755203852759,
+      "duration": 9
+    },
+    {
+      "message": "Checking node_modules size...",
+      "timestamp": "2025-08-14T20:37:32.777Z",
+      "startTime": 1755203852779,
+      "duration": 271
+    },
+    {
+      "message": "Analyzing package.json...",
+      "timestamp": "2025-08-14T20:37:33.050Z",
+      "startTime": 1755203853051,
+      "duration": 0
+    },
+    {
+      "message": "Analyzing Vite configuration...",
+      "timestamp": "2025-08-14T20:37:33.051Z",
+      "startTime": 1755203853051,
+      "duration": 1
+    },
+    {
+      "message": "Checking for duplicate dependencies...",
+      "timestamp": "2025-08-14T20:37:33.052Z",
+      "startTime": 1755203853052,
+      "duration": 735
+    },
+    {
+      "message": "Building project with performance monitoring...",
+      "timestamp": "2025-08-14T20:37:33.787Z",
+      "startTime": 1755203853788,
+      "duration": 10115
+    }
+  ],
+  "recommendations": [
+    {
+      "type": "optimization",
+      "category": "Dependencies",
+      "message": "High number of dependencies. Consider bundle analysis and tree shaking.",
+      "priority": "medium"
+    },
+    {
+      "type": "maintenance",
+      "category": "Cache",
+      "message": "Regularly clean build cache and node_modules for optimal performance.",
+      "priority": "low"
+    }
+  ]
+}
