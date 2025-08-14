@@ -156,11 +156,22 @@ The project includes comprehensive CI/CD with GitHub Actions:
 
 For detailed documentation, please visit the [`docs`](./docs/) directory:
 
+- **[📋 Quick Development Reference](./QUICK_DEV_REFERENCE.md)** - Fast access to common commands and patterns
 - **[Product Requirements](./docs/PRD.md)** - Complete feature specifications and user experience design
 - **[Deployment Guide](./docs/development/DEPLOYMENT.md)** - Deploy to Cloudflare Pages, Vercel, and other platforms
 - **[Setup Guide](./docs/development/SETUP.md)** - GitHub repository configuration and secrets
+- **[Database Documentation](./docs/development/DATABASE.md)** - Database architecture and development guide
 - **[Gamification System](./docs/features/GAMIFICATION.md)** - Detailed rewards and achievement system
 - **[Security Policy](./docs/SECURITY.md)** - Vulnerability reporting and security guidelines
+
+### 🤖 Development with GitHub Copilot
+
+This project includes comprehensive GitHub Copilot instructions in [`.copilot-instructions.md`](./.copilot-instructions.md) to help AI assistants understand the project architecture, coding patterns, and best practices. The instructions cover:
+
+- Project structure and tech stack
+- Database layer and TypeScript patterns
+- Component development guidelines
+- Common development tasks and workflows
 
 ## 🤝 Contributing
 
