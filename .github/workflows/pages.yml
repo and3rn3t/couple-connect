@@ -77,7 +77,7 @@ jobs:
     continue-on-error: ${{ github.event_name == 'schedule' }}
 
     steps:
-      - name: � Checkout code
+      - name: 📥 Checkout code
         uses: actions/checkout@v4
 
       - name: 🏗️ Setup Node.js
@@ -92,7 +92,7 @@ jobs:
       - name: 🔒 Security audit
         run: npm audit --audit-level=moderate
 
-      - name: �📋 Dependency review (PR only)
+      - name: 📋 Dependency review (PR only)
         if: github.event_name == 'pull_request'
         uses: actions/dependency-review-action@v4
         with:
@@ -134,17 +134,13 @@ jobs:
         id: bundle-analysis
         run: |
           node scripts/analyze-bundle.js --json
-          if [ -f bundle-analysis.json ]; then
-            BUNDLE_SIZE=$(cat bundle-analysis.json | jq -r '.summary.totalSize // 0')
-            echo "bundle-size=$BUNDLE_SIZE" >> $GITHUB_OUTPUT
+          BUNDLE_SIZE=$(cat bundle-analysis.json | jq -r '.summary.totalSize')
+          echo "bundle-size=$BUNDLE_SIZE" >> $GITHUB_OUTPUT
 
-            # Check if bundle size is within limits
-            if [ $BUNDLE_SIZE -gt 3145728 ]; then # 3MB
-              echo "⚠️ Bundle size ($BUNDLE_SIZE bytes) exceeds 3MB limit" >> $GITHUB_STEP_SUMMARY
-              exit 1
-            fi
-          else
-            echo "bundle-size=0" >> $GITHUB_OUTPUT
+          # Check if bundle size is within limits
+          if [ $BUNDLE_SIZE -gt 3145728 ]; then # 3MB
+            echo "⚠️ Bundle size ($BUNDLE_SIZE bytes) exceeds 3MB limit" >> $GITHUB_STEP_SUMMARY
+            exit 1
           fi
 
       - name: 📤 Upload build artifacts
@@ -156,7 +152,6 @@ jobs:
           compression-level: 9
 
       - name: 📄 Upload bundle analysis
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: bundle-analysis-${{ github.sha }}
@@ -182,6 +177,31 @@ jobs:
           echo "- **Bundle Size**: $((${{ steps.bundle-analysis.outputs.bundle-size }} / 1024))KB" >> $GITHUB_STEP_SUMMARY
           echo "- **Build Status**: ✅ Success" >> $GITHUB_STEP_SUMMARY
           echo "- **Artifacts**: Build files and analysis reports uploaded" >> $GITHUB_STEP_SUMMARY
+
+  # Parallel testing (if tests exist)
+  test:
+    name: 🧪 Tests
+    runs-on: ubuntu-latest
+    if: false # Enable when you add actual tests
+    strategy:
+      matrix:
+        test-type: [unit, integration]
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: 🧪 Run ${{ matrix.test-type }} tests
+        run: npm run test:${{ matrix.test-type }}
 
   # Optimized deployment
   deploy:
@@ -225,7 +245,7 @@ jobs:
             **📊 Bundle Size**: $((${{ needs.build-and-analyze.outputs.bundle-size }} / 1024))KB
             **🔗 Deployment**: ${{ steps.deploy.outputs.url }}
             **📝 Commit**: ${{ github.sha }}
-            **� Message**: ${{ github.event.head_commit.message }}
+            **💬 Message**: ${{ github.event.head_commit.message }}
 
             ---
             This release was automatically created with optimized CI/CD pipeline.
@@ -255,20 +275,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: bundle-analysis-${{ github.sha }}
-        continue-on-error: true
 
       - name: 📈 Performance tracking
         run: |
           # Store performance metrics for trending
           mkdir -p .performance-history
-          if [ -f bundle-analysis.json ]; then
-            cp bundle-analysis.json .performance-history/$(date +%Y-%m-%d-%H-%M)-${{ github.sha }}.json
-          fi
+          cp bundle-analysis.json .performance-history/$(date +%Y-%m-%d-%H-%M)-${{ github.sha }}.json
 
           # Clean up old performance data (keep last 50)
-          if [ -d .performance-history ]; then
-            ls -t .performance-history/*.json 2>/dev/null | tail -n +51 | xargs -r rm
-          fi
+          ls -t .performance-history/*.json | tail -n +51 | xargs -r rm
 
       - name: 📊 Performance trend analysis
         run: |
