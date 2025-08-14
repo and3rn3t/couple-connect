@@ -57,24 +57,26 @@ The application will be available at `http://localhost:5173`
 
 ## 🚀 Deployment
 
-### Cloudflare Pages (Recommended)
+### Automated CI/CD Pipeline ⚡
 
-This project is configured for seamless deployment on Cloudflare Pages:
+This project features an **optimized GitHub Actions pipeline** that automatically handles:
 
-1. **Connect your repository** to Cloudflare Pages
-2. **Set build configuration**:
-   - Build command: `npm run build`
-   - Build output directory: `dist`
-   - Node.js version: `20`
+- **✅ Quality Gates**: ESLint, TypeScript, tests, security scans
+- **🚀 Automatic Deployment**: Cloudflare Pages integration
+- **🔄 Preview Deployments**: For pull requests
+- **📦 Release Management**: Automatic GitHub releases
 
-3. **Configure environment variables** in Cloudflare Pages dashboard:
-   - `VITE_APP_NAME`: Couple Connect
-   - `VITE_ENVIRONMENT`: production
-   - `VITE_API_URL`: Your production API URL
+#### Quick Setup
 
-4. **Deploy**: Push to main branch for automatic deployment
+1. **Fork/clone** the repository
+2. **Add GitHub secrets**:
+   - `CLOUDFLARE_API_TOKEN` - Get from Cloudflare dashboard
+   - `CLOUDFLARE_ACCOUNT_ID` - Found in Cloudflare sidebar
+3. **Push to main** - automatic deployment handles everything!
 
-### Manual Deployment
+For detailed setup, see the [Deployment Guide](./docs/development/DEPLOYMENT.md).
+
+### Manual Deployment (If needed)
 
 ```bash
 npm run build

@@ -1,6 +1,43 @@
 # 🚀 Deployment Guide
 
-This guide covers deploying Couple Connect to various platforms.
+This guide covers deploying Couple Connect to various platforms. The project features an optimized CI/CD pipeline that handles automatic deployments.
+
+## 🤖 Automated Deployment (Recommended)
+
+### GitHub Actions CI/CD Pipeline
+
+The project includes a streamlined CI/CD pipeline that automatically:
+
+- **✅ Quality Checks**: ESLint, TypeScript, tests
+- **🔒 Security Scans**: npm audit, dependency review
+- **🏗️ Build Process**: Optimized production build
+- **🚀 Deployment**: Automatic deployment to Cloudflare Pages
+- **📦 Release Management**: GitHub releases for production
+
+#### Pipeline Triggers
+
+- **Production Deploy**: Push to `main` branch
+- **Preview Deploy**: Pull request to `main` branch
+- **Security Audit**: Weekly automated scans
+
+#### Required Setup
+
+1. **Configure GitHub Secrets**:
+
+   ```
+   CLOUDFLARE_API_TOKEN    # Get from Cloudflare dashboard
+   CLOUDFLARE_ACCOUNT_ID   # Found in Cloudflare sidebar
+   ```
+
+2. **Create Cloudflare Pages Project**:
+   - Use the automatic GitHub integration
+   - The workflow handles all deployments
+
+3. **Environment Protection** (Optional):
+   - Enable branch protection on `main`
+   - Require PR reviews for production
+
+For detailed pipeline information, see [Workflow Documentation](../../.github/workflows/README.md).
 
 ## 📋 Pre-deployment Checklist
 
@@ -9,8 +46,9 @@ This guide covers deploying Couple Connect to various platforms.
 - [ ] Linting passing (`npm run lint`)
 - [ ] Type checking passing (`npm run type-check`)
 - [ ] Production build successful (`npm run build`)
+- [ ] GitHub secrets configured for automated deployment
 
-## 🌟 Cloudflare Pages (Recommended)
+## 🌟 Cloudflare Pages (Primary Platform)
 
 ### Automatic Deployment via GitHub
 
@@ -21,6 +59,7 @@ This guide covers deploying Couple Connect to various platforms.
    - Select the `couple-connect` repository
 
 2. **Configure Build Settings**:
+
    ```
    Framework preset: Vite
    Build command: npm run build
@@ -29,6 +68,7 @@ This guide covers deploying Couple Connect to various platforms.
    ```
 
 3. **Set Environment Variables**:
+
    ```
    VITE_APP_NAME=Couple Connect
    VITE_ENVIRONMENT=production
@@ -36,18 +76,20 @@ This guide covers deploying Couple Connect to various platforms.
    VITE_ENABLE_ANALYTICS=true
    ```
 
-4. **Deploy**: 
+4. **Deploy**:
    - Click "Save and Deploy"
    - Future pushes to `main` will auto-deploy
 
 ### Manual Deployment via Wrangler
 
 1. **Install Wrangler**:
+
    ```bash
    npm install -g wrangler
    ```
 
 2. **Login to Cloudflare**:
+
    ```bash
    wrangler login
    ```
@@ -90,6 +132,7 @@ The project includes automated CI/CD. To enable:
    - Select your repository
 
 2. **Configure Build**:
+
    ```
    Build command: npm run build
    Publish directory: dist
@@ -101,11 +144,13 @@ The project includes automated CI/CD. To enable:
 ### Vercel
 
 1. **Install Vercel CLI**:
+
    ```bash
    npm install -g vercel
    ```
 
 2. **Deploy**:
+
    ```bash
    vercel --prod
    ```
@@ -117,6 +162,7 @@ The project includes automated CI/CD. To enable:
 ### Traditional Hosting
 
 1. **Build the project**:
+
    ```bash
    npm run build
    ```
@@ -161,6 +207,7 @@ Add this to your hosting platform:
 ### Performance Monitoring
 
 Consider integrating:
+
 - **Sentry**: Error tracking
 - **Google Analytics**: Usage analytics
 - **Cloudflare Analytics**: Traffic insights
@@ -170,6 +217,7 @@ Consider integrating:
 ### Common Issues
 
 1. **Build Fails**:
+
    ```bash
    # Clear cache and reinstall
    npm run clean

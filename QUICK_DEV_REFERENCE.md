@@ -22,6 +22,13 @@ npm run db:setup             # Complete database setup (all above)
 # Build & Deploy
 npm run build                # Build for production
 npm run preview              # Preview production build
+
+# Automated CI/CD (via GitHub Actions)
+# - Push to main → Production deployment
+# - Create PR → Preview deployment
+# - Quality gates: ESLint, TypeScript, tests, security
+
+# Manual deployment (if needed)
 npm run deploy               # Deploy to Cloudflare Pages
 npm run deploy:preview       # Deploy to preview environment
 
@@ -42,7 +49,12 @@ npm run test                 # Run all tests (type-check + lint)
 ├── tsconfig.json                   # TypeScript config
 └── tailwind.config.js              # Styling configuration
 
-💾 Database Layer
+� CI/CD Pipeline
+├── .github/workflows/pages.yml     # Optimized CI/CD workflow
+├── .github/workflows/README.md     # Pipeline documentation
+└── .github/dependabot.yml          # Automated dependency updates
+
+�💾 Database Layer
 ├── database/schema.sql             # Database schema
 ├── database/seed.sql               # Sample data
 ├── src/services/database.ts        # Core database service

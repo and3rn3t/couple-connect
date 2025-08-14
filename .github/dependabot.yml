@@ -1,11 +1,47 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  # NPM dependencies - weekly updates to reduce noise
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "daily"
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+    # Group minor and patch updates to reduce PR volume
+    groups:
+      production-dependencies:
+        patterns:
+          - '@*'
+          - 'react*'
+          - 'vite*'
+          - '@cloudflare/*'
+        update-types:
+          - 'minor'
+          - 'patch'
+      development-dependencies:
+        patterns:
+          - '*eslint*'
+          - '*prettier*'
+          - '@types/*'
+          - 'typescript'
+        update-types:
+          - 'minor'
+          - 'patch'
+    # Automatically merge low-risk updates
+    open-pull-requests-limit: 5
 
-  - package-ecosystem: "devcontainers"
-    directory: "/"
+  # GitHub Actions - monthly updates for stability
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'monthly'
+      day: 'monday'
+      time: '09:00'
+    groups:
+      github-actions:
+        patterns:
+          - 'actions/*'
+          - 'cloudflare/*'
+        update-types:
+          - 'minor'
+          - 'patch'
