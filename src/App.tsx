@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import './App.css';
 import { useKV } from './hooks/useKV';
 import {
@@ -13,16 +13,24 @@ import { updateDatabaseConfig } from './services/databaseConfig';
 import { performanceMonitor } from './utils/performanceMonitor';
 import './utils/performanceDemo'; // Initialize performance utilities
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Heart, Target, ChartBar } from '@phosphor-icons/react';
+import { EssentialIcons } from '@/components/LazyIcons';
+import { LazyProgressView, LazyActionDashboard } from '@/components/LazyRoutes';
 import { Toaster } from '@/components/ui/sonner';
 import MindmapView from '@/components/MindmapView';
-import ActionDashboard from '@/components/ActionDashboard';
 import MobileActionDashboard from '@/components/MobileActionDashboardOptimized';
-import ProgressView from '@/components/ProgressView';
 import { MobileTabBar, MobileNavBar } from '@/components/ui/mobile-navigation';
 import { useMobileDetection } from '@/hooks/use-mobile';
 import { OfflineNotification } from '@/components/OfflineNotification';
 import { useServiceWorker, useResourceCaching } from '@/hooks/useServiceWorker';
+
+// Component loading fallbacks
+const ComponentSkeleton = () => (
+  <div className="space-y-4 p-4">
+    <div className="h-8 bg-muted animate-pulse rounded" />
+    <div className="h-32 bg-muted animate-pulse rounded" />
+    <div className="h-16 bg-muted animate-pulse rounded" />
+  </div>
+);
 
 // App configuration constants
 const APP_CONFIG = {
@@ -435,28 +443,30 @@ function App() {
 
           {activeTab === 'progress' && (
             <div className="px-4">
-              <ProgressView
-                issues={issues || []}
-                actions={actions || []}
-                healthScore={
-                  healthScore || {
-                    overallScore: 0,
-                    categories: {
-                      communication: 0,
-                      intimacy: 0,
-                      finance: 0,
-                      time: 0,
-                      family: 0,
-                      personalGrowth: 0,
-                    },
-                    lastUpdated: new Date().toISOString(),
+              <Suspense fallback={<ComponentSkeleton />}>
+                <LazyProgressView
+                  issues={issues || []}
+                  actions={actions || []}
+                  healthScore={
+                    healthScore || {
+                      overallScore: 0,
+                      categories: {
+                        communication: 0,
+                        intimacy: 0,
+                        finance: 0,
+                        time: 0,
+                        family: 0,
+                        personalGrowth: 0,
+                      },
+                      lastUpdated: new Date().toISOString(),
+                    }
                   }
-                }
-                setHealthScore={setHealthScoreWrapper}
-                currentPartner={currentPartner}
-                otherPartner={otherPartner}
-                viewingAsPartner={activePartner}
-              />
+                  setHealthScore={setHealthScoreWrapper}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  viewingAsPartner={activePartner}
+                />
+              </Suspense>
             </div>
           )}
 
@@ -469,7 +479,11 @@ function App() {
           <header className="mb-8">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <Heart className="text-accent" size={ICON_SIZES.LARGE} weight="fill" />
+                <EssentialIcons.Heart
+                  className="text-accent"
+                  size={ICON_SIZES.LARGE}
+                  weight="fill"
+                />
                 <div>
                   <h1 className="text-3xl font-medium text-fg">Together</h1>
                   <p className="text-fg-secondary">
@@ -572,15 +586,15 @@ function App() {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-3 mb-8">
               <TabsTrigger value="mindmap" className="flex items-center gap-2">
-                <Heart size={ICON_SIZES.SMALL} />
+                <EssentialIcons.Heart size={ICON_SIZES.SMALL} />
                 Issues Map
               </TabsTrigger>
               <TabsTrigger value="actions" className="flex items-center gap-2">
-                <Target size={ICON_SIZES.SMALL} />
+                <EssentialIcons.Target size={ICON_SIZES.SMALL} />
                 Action Plans
               </TabsTrigger>
               <TabsTrigger value="progress" className="flex items-center gap-2">
-                <ChartBar size={ICON_SIZES.SMALL} />
+                <EssentialIcons.ChartBar size={ICON_SIZES.SMALL} />
                 Progress
               </TabsTrigger>
             </TabsList>
@@ -598,39 +612,47 @@ function App() {
             </TabsContent>
 
             <TabsContent value="actions" className="space-y-6">
-              <ActionDashboard
-                issues={issues || []}
-                actions={getPersonalizedActions()}
-                setActions={setActionsWrapper}
-                currentPartner={currentPartner}
-                otherPartner={otherPartner}
-                viewingAsPartner={activePartner}
-              />
+              <Suspense
+                fallback={<div className="h-64 animate-pulse bg-surface-light rounded-lg" />}
+              >
+                <LazyActionDashboard
+                  issues={issues || []}
+                  actions={getPersonalizedActions()}
+                  setActions={setActionsWrapper}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  viewingAsPartner={activePartner}
+                />
+              </Suspense>
             </TabsContent>
 
             <TabsContent value="progress" className="space-y-6">
-              <ProgressView
-                issues={issues || []}
-                actions={actions || []}
-                healthScore={
-                  healthScore || {
-                    overallScore: 0,
-                    categories: {
-                      communication: 0,
-                      intimacy: 0,
-                      finance: 0,
-                      time: 0,
-                      family: 0,
-                      personalGrowth: 0,
-                    },
-                    lastUpdated: new Date().toISOString(),
+              <Suspense
+                fallback={<div className="h-64 animate-pulse bg-surface-light rounded-lg" />}
+              >
+                <LazyProgressView
+                  issues={issues || []}
+                  actions={actions || []}
+                  healthScore={
+                    healthScore || {
+                      overallScore: 0,
+                      categories: {
+                        communication: 0,
+                        intimacy: 0,
+                        finance: 0,
+                        time: 0,
+                        family: 0,
+                        personalGrowth: 0,
+                      },
+                      lastUpdated: new Date().toISOString(),
+                    }
                   }
-                }
-                setHealthScore={setHealthScoreWrapper}
-                currentPartner={currentPartner}
-                otherPartner={otherPartner}
-                viewingAsPartner={activePartner}
-              />
+                  setHealthScore={setHealthScoreWrapper}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  viewingAsPartner={activePartner}
+                />
+              </Suspense>
             </TabsContent>
           </Tabs>
         </div>

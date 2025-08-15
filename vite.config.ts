@@ -76,9 +76,79 @@ export default defineConfig(() => {
         output: {
           // Mobile-optimized chunk splitting
           manualChunks: (id) => {
-            // Core React - always needed
+            // Vendor libraries - separate chunks
             if (id.includes('react') && !id.includes('react-router')) {
-              return 'react';
+              return 'react-vendor';
+            }
+
+            if (id.includes('react-router-dom')) {
+              return 'router';
+            }
+
+            // Heavy chart libraries - lazy loaded
+            if (id.includes('recharts')) {
+              return 'charts';
+            }
+
+            if (id.includes('d3')) {
+              return 'charts-d3';
+            }
+
+            // Icon libraries - separate chunks
+            if (id.includes('@phosphor-icons/react')) {
+              return 'icons-phosphor';
+            }
+
+            if (id.includes('lucide-react')) {
+              return 'icons-lucide';
+            }
+
+            // UI component libraries
+            if (id.includes('@radix-ui')) {
+              return 'ui-radix';
+            }
+
+            if (id.includes('@tanstack/react-query')) {
+              return 'react-query';
+            }
+
+            // Mobile-specific components - lazy loaded
+            if (
+              id.includes('mobile-card') ||
+              id.includes('mobile-navigation') ||
+              id.includes('mobile-forms') ||
+              id.includes('mobile-layout') ||
+              id.includes('touch-feedback') ||
+              id.includes('use-mobile') ||
+              id.includes('useMobilePerformance') ||
+              id.includes('useHapticFeedback')
+            ) {
+              return 'mobile-components';
+            }
+
+            // Testing/development components - separate chunk
+            if (
+              id.includes('MobileTestingDashboard') ||
+              id.includes('PerformanceDashboard') ||
+              id.includes('/test/') ||
+              id.includes('vitest')
+            ) {
+              return 'dev-tools';
+            }
+
+            // Progress and charts - lazy loaded
+            if (id.includes('ProgressView') || id.includes('Chart')) {
+              return 'progress-charts';
+            }
+
+            // Action management - lazy loaded
+            if (id.includes('ActionDialog') || id.includes('ActionDashboard')) {
+              return 'action-management';
+            }
+
+            // Default vendor chunk for other node_modules
+            if (id.includes('node_modules')) {
+              return 'vendor';
             }
 
             // Router - loaded early

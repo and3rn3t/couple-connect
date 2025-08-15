@@ -115,7 +115,10 @@
     "build:mobile-optimized": "cross-env TAILWIND_CONFIG=tailwind.mobile-optimized.config.js npm run build",
     "build:css-optimized": "postcss src/index.css -o dist/assets/main.css --config postcss.config.cjs",
     "analyze:css-size": "du -sh dist/assets/*.css",
-    "purge:css": "purgecss --css dist/assets/*.css --content dist/assets/*.js --output dist/assets/"
+    "purge:css": "purgecss --css dist/assets/*.css --content dist/assets/*.js --output dist/assets/",
+    "analyze:lazy": "npm run build:analyze && node scripts/analyze-lazy-loading.js",
+    "test:lazy": "npm run build && node scripts/test-lazy-loading.js",
+    "optimize:js": "node scripts/optimize-js-lazy.js"
   },
   "dependencies": {
     "@cloudflare/workers-types": "^4.20250813.0",
