@@ -76,7 +76,7 @@ export default defineConfig(() => {
         output: {
           // Mobile-optimized chunk splitting
           manualChunks: (id) => {
-            // Vendor libraries - separate chunks
+            // Core React libraries - loaded early
             if (id.includes('react') && !id.includes('react-router')) {
               return 'react-vendor';
             }
@@ -85,25 +85,7 @@ export default defineConfig(() => {
               return 'router';
             }
 
-            // Heavy chart libraries - lazy loaded
-            if (id.includes('recharts')) {
-              return 'charts';
-            }
-
-            if (id.includes('d3')) {
-              return 'charts-d3';
-            }
-
-            // Icon libraries - separate chunks
-            if (id.includes('@phosphor-icons/react')) {
-              return 'icons-phosphor';
-            }
-
-            if (id.includes('lucide-react')) {
-              return 'icons-lucide';
-            }
-
-            // UI component libraries
+            // Large UI libraries - separate chunks
             if (id.includes('@radix-ui')) {
               return 'ui-radix';
             }
@@ -112,76 +94,22 @@ export default defineConfig(() => {
               return 'react-query';
             }
 
-            // Mobile-specific components - lazy loaded
-            if (
-              id.includes('mobile-card') ||
-              id.includes('mobile-navigation') ||
-              id.includes('mobile-forms') ||
-              id.includes('mobile-layout') ||
-              id.includes('touch-feedback') ||
-              id.includes('use-mobile') ||
-              id.includes('useMobilePerformance') ||
-              id.includes('useHapticFeedback')
-            ) {
-              return 'mobile-components';
+            // Icon libraries - separate chunks for lazy loading
+            if (id.includes('@phosphor-icons/react')) {
+              return 'icons-phosphor';
             }
 
-            // Testing/development components - separate chunk
-            if (
-              id.includes('MobileTestingDashboard') ||
-              id.includes('PerformanceDashboard') ||
-              id.includes('/test/') ||
-              id.includes('vitest')
-            ) {
-              return 'dev-tools';
+            if (id.includes('lucide-react')) {
+              return 'icons-lucide';
             }
 
-            // Progress and charts - lazy loaded
-            if (id.includes('ProgressView') || id.includes('Chart')) {
-              return 'progress-charts';
+            // Chart libraries - definitely lazy loaded
+            if (id.includes('recharts')) {
+              return 'charts-recharts';
             }
 
-            // Action management - lazy loaded
-            if (id.includes('ActionDialog') || id.includes('ActionDashboard')) {
-              return 'action-management';
-            }
-
-            // Default vendor chunk for other node_modules
-            if (id.includes('node_modules')) {
-              return 'vendor';
-            }
-
-            // Router - loaded early
-            if (id.includes('react-router-dom')) {
-              return 'router';
-            }
-
-            // Mobile-specific components - lazy loaded
-            if (
-              id.includes('mobile-card') ||
-              id.includes('mobile-navigation') ||
-              id.includes('mobile-forms') ||
-              id.includes('mobile-layout') ||
-              id.includes('touch-feedback') ||
-              id.includes('use-mobile') ||
-              id.includes('useMobilePerformance') ||
-              id.includes('useHapticFeedback')
-            ) {
-              return 'mobile';
-            }
-
-            // UI library chunks - smaller chunks
-            if (id.includes('@radix-ui/react-dialog')) {
-              return 'ui-dialog';
-            }
-            if (id.includes('@radix-ui/react-dropdown')) {
-              return 'ui-dropdown';
-            }
-            if (id.includes('@radix-ui/react-select')) {
-              return 'ui-select';
-            }
-            if (id.includes('@radix-ui')) {
-              return 'ui-base';
+            if (id.includes('d3')) {
+              return 'charts-d3';
             }
 
             // Animation libraries - lazy loaded
@@ -189,30 +117,78 @@ export default defineConfig(() => {
               return 'animations';
             }
 
-            // Icons - can be lazy loaded
-            if (id.includes('@phosphor-icons')) {
-              return 'icons';
-            }
-
-            // Charts - definitely lazy loaded
-            if (id.includes('recharts') || id.includes('d3')) {
-              return 'charts';
-            }
-
-            // Utilities - small and commonly used
+            // Utilities and date libraries
             if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
               return 'utils';
             }
 
-            // Testing dashboard - lazy loaded
-            if (id.includes('MobileTestingDashboard') || id.includes('PerformanceDashboard')) {
-              return 'testing';
+            // App components that can be chunked separately
+            if (id.includes('/src/components/') && !id.includes('node_modules')) {
+              // Partner and relationship components
+              if (id.includes('Partner') || id.includes('Relationship')) {
+                return 'app-partner';
+              }
+
+              // Gamification and rewards
+              if (
+                id.includes('Gamification') ||
+                id.includes('Reward') ||
+                id.includes('Challenge')
+              ) {
+                return 'app-gamification';
+              }
+
+              // Notification system
+              if (id.includes('Notification')) {
+                return 'app-notifications';
+              }
+
+              // Charts and progress components
+              if (id.includes('Chart') || id.includes('Progress') || id.includes('Mindmap')) {
+                return 'app-charts';
+              }
+
+              // Mobile-specific components
+              if (id.includes('Mobile') || id.includes('mobile')) {
+                return 'app-mobile';
+              }
+
+              // Testing and development components
+              if (id.includes('Test') || id.includes('Performance') || id.includes('Dashboard')) {
+                return 'app-dev';
+              }
+
+              // Action and dialog components
+              if (id.includes('Action') || id.includes('Dialog')) {
+                return 'app-actions';
+              }
+
+              // UI components (shared)
+              if (id.includes('/ui/')) {
+                return 'app-ui';
+              }
+
+              // Default app components
+              return 'app-components';
             }
 
-            // Large vendor libraries
+            // Services and hooks
+            if (id.includes('/src/services/') || id.includes('/src/hooks/')) {
+              return 'app-core';
+            }
+
+            // Utilities
+            if (id.includes('/src/utils/')) {
+              return 'app-utils';
+            }
+
+            // All other vendor libraries
             if (id.includes('node_modules')) {
               return 'vendor';
             }
+
+            // Main app entry and remaining files
+            return 'main';
           },
           // Optimize chunk naming
           chunkFileNames: (chunkInfo) => {

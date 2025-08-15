@@ -17,6 +17,15 @@
   "[powershell]": {
     "editor.defaultFormatter": "ms-vscode.powershell"
   },
+  "[markdown]": {
+    "editor.formatOnSave": false,
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "other": false,
+      "comments": false,
+      "strings": false
+    }
+  },
   "testing.openTesting": "neverOpen",
   "vitest.enable": true,
   "vitest.commandLine": "npm run test",
@@ -25,12 +34,33 @@
     "*.test.ts": "typescript",
     "*.test.tsx": "typescriptreact",
     "*.spec.ts": "typescript",
-    "*.spec.tsx": "typescriptreact"
+    "*.spec.tsx": "typescriptreact",
+    "*.mobile.tsx": "typescriptreact",
+    "*.lazy.tsx": "typescriptreact"
   },
   "emmet.includeLanguages": {
     "typescript": "html",
     "typescriptreact": "html"
   },
   "playwright.showTrace": true,
-  "playwright.reuseBrowser": true
+  "playwright.reuseBrowser": true,
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/coverage": true,
+    "**/playwright-report": true,
+    "**/test-results": true,
+    "**/.performance-history": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/coverage/**": true
+  },
+  "typescript.suggest.includeCompletionsForModuleExports": true,
+  "typescript.suggest.includeCompletionsForImportStatements": true,
+  "editor.suggest.showWords": false,
+  "workbench.editor.closeOnFileDelete": true,
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false
 }
