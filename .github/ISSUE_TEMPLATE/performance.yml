@@ -65,10 +65,10 @@ body:
       label: Performance Metrics
       description: If available, provide performance metrics
       placeholder: |
-        - Page Load Time: 
-        - First Contentful Paint: 
-        - Largest Contentful Paint: 
-        - Cumulative Layout Shift: 
+        - Page Load Time:
+        - First Contentful Paint:
+        - Largest Contentful Paint:
+        - Cumulative Layout Shift:
 
   - type: textarea
     id: steps
