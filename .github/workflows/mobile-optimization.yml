@@ -1,0 +1,96 @@
+name: 📱 Mobile-Optimized Build & Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  mobile-optimization-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 📲 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Type checking
+        run: npm run type-check
+
+      - name: 🧹 Lint code
+        run: npm run lint
+
+      - name: 🎨 Check formatting
+        run: npm run format:check
+
+      - name: 🏗️ Build mobile-optimized app
+        run: npm run build
+
+      - name: 📊 Mobile performance analysis
+        run: npm run perf:mobile
+
+      - name: 🧪 Run mobile tests
+        run: npm run test:mobile
+
+      - name: 📱 Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-optimized-build
+          path: dist/
+          retention-days: 7
+
+      - name: 🎯 Bundle size check
+        run: |
+          BUNDLE_SIZE=$(du -sb dist | cut -f1)
+          MAX_SIZE=1572864000  # 1.5MB in bytes
+          if [ $BUNDLE_SIZE -gt $MAX_SIZE ]; then
+            echo "❌ Bundle size ($BUNDLE_SIZE bytes) exceeds mobile limit ($MAX_SIZE bytes)"
+            exit 1
+          else
+            echo "✅ Bundle size ($BUNDLE_SIZE bytes) within mobile limit"
+          fi
+
+  mobile-lighthouse-audit:
+    needs: mobile-optimization-check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 📲 Install dependencies
+        run: npm ci
+
+      - name: 🏗️ Build app
+        run: npm run build
+
+      - name: 🚀 Start preview server
+        run: npm run preview &
+
+      - name: ⏳ Wait for server
+        run: npx wait-on http://localhost:4173
+
+      - name: 🔍 Lighthouse mobile audit
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          urls: |
+            http://localhost:4173
+          configPath: './lighthouse-config.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true

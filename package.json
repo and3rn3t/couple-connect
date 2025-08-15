@@ -3,6 +3,26 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE",
+    "package.json",
+    "public/manifest.json",
+    "public/sw.js"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "browserslist": [
+    "defaults",
+    "last 2 versions",
+    "not dead",
+    "not ie <= 11",
+    "iOS >= 12",
+    "Android >= 8"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -168,7 +188,6 @@
     "jsdom": "^26.1.0",
     "lighthouse": "^12.8.1",
     "playwright": "^1.54.2",
-    "postcss-uncss": "^0.17.0",
     "prettier": "^3.6.2",
     "rollup-plugin-visualizer": "^6.0.3",
     "tailwindcss": "^4.1.11",

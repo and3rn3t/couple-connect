@@ -1,0 +1,56 @@
+# Build outputs
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# Generated files
+coverage/
+playwright-report/
+test-results/
+.wrangler/
+
+# Analysis and report files
+css-analysis.json
+bundle-analysis.json
+build-performance.json
+coverage-report.json
+mobile-lighthouse-report.html
+lighthouse-report*.html
+
+# Cache directories
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Mobile optimization artifacts (temporary analysis files)
+scripts/temp/
+*.analysis.temp
