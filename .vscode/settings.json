@@ -16,5 +16,21 @@
   "files.insertFinalNewline": true,
   "[powershell]": {
     "editor.defaultFormatter": "ms-vscode.powershell"
-  }
+  },
+  "testing.openTesting": "neverOpen",
+  "vitest.enable": true,
+  "vitest.commandLine": "npm run test",
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "files.associations": {
+    "*.test.ts": "typescript",
+    "*.test.tsx": "typescriptreact",
+    "*.spec.ts": "typescript",
+    "*.spec.tsx": "typescriptreact"
+  },
+  "emmet.includeLanguages": {
+    "typescript": "html",
+    "typescriptreact": "html"
+  },
+  "playwright.showTrace": true,
+  "playwright.reuseBrowser": true
 }
