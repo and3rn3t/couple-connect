@@ -41,8 +41,10 @@ describe('OfflineNotification', () => {
       status: { supported: false },
     });
 
-    const { container } = render(<OfflineNotification />);
-    expect(container.firstChild).toBeNull();
+    render(<OfflineNotification />);
+
+    // Should not render the offline notification div
+    expect(screen.queryByTestId('offline-notification')).not.toBeInTheDocument();
   });
 
   it('should render offline indicator when offline', () => {

@@ -123,13 +123,11 @@ describe('useKV', () => {
 
     // Simulate storage event (this would normally happen across tabs)
     act(() => {
-      window.dispatchEvent(
-        new StorageEvent('storage', {
-          key: 'shared-key',
-          newValue: '"updated-by-first"',
-          storageArea: localStorage,
-        })
-      );
+      const event = new Event('storage');
+      Object.defineProperty(event, 'key', { value: 'shared-key' });
+      Object.defineProperty(event, 'newValue', { value: '"updated-by-first"' });
+      Object.defineProperty(event, 'storageArea', { value: localStorage });
+      window.dispatchEvent(event);
     });
 
     expect(result2.current[0]).toBe('updated-by-first');

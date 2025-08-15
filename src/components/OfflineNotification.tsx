@@ -48,7 +48,10 @@ export function OfflineNotification({ className }: OfflineNotificationProps) {
   }
 
   return (
-    <div className={cn('fixed top-0 left-0 right-0 z-50', className)}>
+    <div
+      data-testid="offline-notification"
+      className={cn('fixed top-0 left-0 right-0 z-50', className)}
+    >
       <AnimatePresence>
         {/* Offline Banner */}
         {isOffline && (
@@ -61,9 +64,9 @@ export function OfflineNotification({ className }: OfflineNotificationProps) {
           >
             <div className="flex items-center justify-between max-w-7xl mx-auto">
               <div className="flex items-center gap-3">
-                <WifiSlash className="h-5 w-5" />
+                <WifiSlash data-testid="wifi-slash-icon" className="h-5 w-5" />
                 <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-                  <span className="font-medium">You're offline</span>
+                  <span className="font-medium">Offline</span>
                   {offlineQueue.length > 0 && (
                     <Badge
                       variant="secondary"
@@ -84,7 +87,7 @@ export function OfflineNotification({ className }: OfflineNotificationProps) {
                   className="bg-white/20 hover:bg-white/30 text-white border-white/30"
                 >
                   <CloudArrowUp className="h-4 w-4 mr-1" />
-                  Sync when online
+                  Sync now
                 </Button>
               )}
             </div>
@@ -103,7 +106,7 @@ export function OfflineNotification({ className }: OfflineNotificationProps) {
             <div className="flex items-center justify-between max-w-7xl mx-auto">
               <div className="flex items-center gap-3">
                 <CheckCircle className="h-5 w-5" />
-                <span className="font-medium">App update available</span>
+                <span className="font-medium">Update Available</span>
               </div>
 
               <Button
@@ -130,7 +133,7 @@ export function OfflineNotification({ className }: OfflineNotificationProps) {
           >
             <div className="max-w-7xl mx-auto px-4 py-3">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="font-medium">Pending Changes</h3>
+                <h3 className="font-medium">Offline Changes Queue</h3>
                 <Button
                   variant="ghost"
                   size="sm"
