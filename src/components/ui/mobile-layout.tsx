@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useMobileDetection, useIOSDetection } from '@/hooks/use-mobile';
 import { MobileNavBar } from './mobile-navigation';
-import { ChevronLeft, X } from '@phosphor-icons/react';
+import { X } from '@phosphor-icons/react';
 
 interface MobileLayoutProps {
   children: React.ReactNode;
@@ -58,17 +58,7 @@ export function MobileLayout({
       {title && (
         <MobileNavBar
           title={title}
-          leftAction={
-            backButton ? (
-              <button
-                onClick={onBack}
-                className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-muted transition-colors"
-                aria-label="Go back"
-              >
-                <ChevronLeft size={20} />
-              </button>
-            ) : undefined
-          }
+          onBack={backButton ? onBack : undefined}
           rightAction={rightAction}
         />
       )}
