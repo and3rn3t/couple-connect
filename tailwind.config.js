@@ -181,4 +181,78 @@ const defaultTheme = {
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: { ...defaultTheme, ...theme },
+  plugins: [
+    function ({ addUtilities, addComponents }) {
+      // Add touch target utilities
+      const touchTargetUtilities = {
+        '.touch-target-44': {
+          'min-height': '44px',
+          'min-width': '44px',
+        },
+        '.touch-target-48': {
+          'min-height': '48px',
+          'min-width': '48px',
+        },
+        '.touch-target-56': {
+          'min-height': '56px',
+          'min-width': '56px',
+        },
+      };
+
+      // Add safe area utilities
+      const safeAreaUtilities = {
+        '.safe-area-top': {
+          'padding-top': 'var(--safe-area-top)',
+        },
+        '.safe-area-bottom': {
+          'padding-bottom': 'var(--safe-area-bottom)',
+        },
+        '.safe-area-left': {
+          'padding-left': 'var(--safe-area-left)',
+        },
+        '.safe-area-right': {
+          'padding-right': 'var(--safe-area-right)',
+        },
+        '.safe-area-inset': {
+          'padding-top': 'var(--safe-area-top)',
+          'padding-bottom': 'var(--safe-area-bottom)',
+          'padding-left': 'var(--safe-area-left)',
+          'padding-right': 'var(--safe-area-right)',
+        },
+        '.pb-safe-area-bottom': {
+          'padding-bottom': 'var(--safe-area-bottom)',
+        },
+        '.pt-safe-area-top': {
+          'padding-top': 'var(--safe-area-top)',
+        },
+        '.pl-safe-area-left': {
+          'padding-left': 'var(--safe-area-left)',
+        },
+        '.pr-safe-area-right': {
+          'padding-right': 'var(--safe-area-right)',
+        },
+      };
+
+      // Add iOS components
+      const iosComponents = {
+        '.ios-touch-feedback': {
+          transition: 'all 0.1s ease-out',
+          '&:active': {
+            transform: 'scale(0.97)',
+            opacity: '0.8',
+          },
+        },
+        '.ios-button': {
+          'min-height': '44px',
+          'min-width': '44px',
+          'border-radius': '0.5rem',
+          'font-weight': '500',
+          transition: 'all 0.15s',
+        },
+      };
+
+      addUtilities({ ...touchTargetUtilities, ...safeAreaUtilities });
+      addComponents(iosComponents);
+    },
+  ],
 };
