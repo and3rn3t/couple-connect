@@ -17,14 +17,14 @@ class MockGitHubIntegration {
 
     // Sample performance data
     const performanceData = {
-      totalTime: 360,    // 6 minutes
-      setupTime: 45,     // 45 seconds
-      testTime: 120,     // 2 minutes  
-      buildTime: 90,     // 1.5 minutes
+      totalTime: 360, // 6 minutes
+      setupTime: 45, // 45 seconds
+      testTime: 120, // 2 minutes
+      buildTime: 90, // 1.5 minutes
       runId: this.runId,
       commit: 'abc1234',
       branch: 'main',
-      trigger: 'push'
+      trigger: 'push',
     };
 
     console.log('📊 Performance Data:');
@@ -36,7 +36,7 @@ class MockGitHubIntegration {
     // 1. Commit Status Integration
     await this.simulateCommitStatus(performanceData);
 
-    // 2. Check Run Integration  
+    // 2. Check Run Integration
     await this.simulateCheckRun(performanceData);
 
     // 3. PR Comment Integration
@@ -54,18 +54,20 @@ class MockGitHubIntegration {
   async simulateCommitStatus(data) {
     const score = this.calculateScore(data);
     const state = this.getCommitState(data);
-    
+
     console.log('🎯 Commit Status Integration:');
     console.log(`├─ State: ${state}`);
     console.log(`├─ Description: "Pipeline: ${data.totalTime}s (Score: ${score}/100)"`);
     console.log(`├─ Context: "performance/timing"`);
-    console.log(`└─ URL: https://github.com/${this.owner}/${this.repo}/actions/runs/${this.runId}\n`);
+    console.log(
+      `└─ URL: https://github.com/${this.owner}/${this.repo}/actions/runs/${this.runId}\n`
+    );
   }
 
   async simulateCheckRun(data) {
     const score = this.calculateScore(data);
     const grade = this.getGrade(data);
-    
+
     console.log('📊 Check Run Integration:');
     console.log(`├─ Title: "${grade} - Total time: ${data.totalTime}s"`);
     console.log(`├─ Conclusion: ${this.getCheckConclusion(data)}`);
@@ -77,7 +79,7 @@ class MockGitHubIntegration {
   async simulatePRComment(data) {
     const score = this.calculateScore(data);
     const grade = this.getGrade(data);
-    
+
     console.log('💬 PR Comment Integration:');
     console.log(`├─ Performance Score: ${score}/100 (${grade})`);
     console.log(`├─ Timing Table: All phases with target comparison`);
@@ -87,7 +89,7 @@ class MockGitHubIntegration {
 
   async simulateDeploymentStatus(data) {
     const score = this.calculateScore(data);
-    
+
     console.log('🚀 Deployment Status Integration:');
     console.log(`├─ Environment: production`);
     console.log(`├─ Description: "Deployment to production - ${data.totalTime}s build time"`);
@@ -116,7 +118,7 @@ class MockGitHubIntegration {
   generateSampleStepSummary(data) {
     const score = this.calculateScore(data);
     const grade = this.getGrade(data);
-    
+
     return `## 🚀 Advanced Performance Dashboard
 
 ### 📊 Performance Metrics
@@ -138,7 +140,9 @@ class MockGitHubIntegration {
 | **Deployment** | ✅ Enhanced | Performance data in environment |
 
 ### 💡 Smart Recommendations
-${this.getRecommendations(data).map(rec => `- ${rec}`).join('\n')}
+${this.getRecommendations(data)
+  .map((rec) => `- ${rec}`)
+  .join('\n')}
 
 ### 📈 Performance Benefits
 - **Time Savings**: ${this.calculateTimeSavings(data)} per run
