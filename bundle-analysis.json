@@ -1,16 +1,16 @@
 {
-  "timestamp": "2025-08-14T20:36:31.693Z",
+  "timestamp": "2025-08-15T00:28:14.831Z",
   "summary": {
-    "totalFiles": 7,
-    "totalSize": 1094794,
+    "totalFiles": 9,
+    "totalSize": 1189130,
     "categories": {
       "javascript": {
-        "count": 5,
-        "size": 724826
+        "count": 6,
+        "size": 780620
       },
       "css": {
         "count": 1,
-        "size": 369081
+        "size": 400452
       },
       "images": {
         "count": 0,
@@ -21,29 +21,29 @@
         "size": 0
       },
       "other": {
-        "count": 1,
-        "size": 887
+        "count": 2,
+        "size": 8058
       }
     }
   },
   "files": [
     {
-      "name": "index-Jd2zn3OH.js",
-      "size": 606504,
+      "name": "index-V_B6qBY1.js",
+      "size": 652230,
       "category": ".js",
-      "path": "dist\\assets\\index-Jd2zn3OH.js"
+      "path": "dist\\assets\\index-V_B6qBY1.js"
     },
     {
-      "name": "index-DINV4KCs.css",
-      "size": 369081,
+      "name": "index-BWVvVcX1.css",
+      "size": 400452,
       "category": ".css",
-      "path": "dist\\assets\\index-DINV4KCs.css"
+      "path": "dist\\assets\\index-BWVvVcX1.css"
     },
     {
-      "name": "chunk-CLQm3FC_.js",
+      "name": "chunk-DvDPWzQP.js",
       "size": 81641,
       "category": ".js",
-      "path": "dist\\js\\chunk-CLQm3FC_.js"
+      "path": "dist\\js\\chunk-DvDPWzQP.js"
     },
     {
       "name": "chunk-BJeS7sC5.js",
@@ -58,23 +58,35 @@
       "path": "dist\\js\\chunk-gH-7aFTg.js"
     },
     {
+      "name": "sw.js",
+      "size": 10068,
+      "category": ".js",
+      "path": "dist\\sw.js"
+    },
+    {
       "name": "index.html",
-      "size": 887,
+      "size": 4503,
       "category": ".html",
       "path": "dist\\index.html"
     },
     {
-      "name": "chunk-B5GZzgjQ.js",
+      "name": "manifest.json",
+      "size": 3555,
+      "category": ".json",
+      "path": "dist\\manifest.json"
+    },
+    {
+      "name": "chunk-BLPU16Je.js",
       "size": 29,
       "category": ".js",
-      "path": "dist\\js\\chunk-B5GZzgjQ.js"
+      "path": "dist\\js\\chunk-BLPU16Je.js"
     }
   ],
   "recommendations": [
     {
       "type": "info",
       "category": "CSS",
-      "message": "CSS bundle (360.43 KB) could be optimized. Consider purging unused styles."
+      "message": "CSS bundle (391.07 KB) could be optimized. Consider purging unused styles."
     }
   ]
 }
