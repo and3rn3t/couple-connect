@@ -33,24 +33,27 @@ Rollup uses optional dependencies for platform-specific native binaries to impro
 
 ## Impact on Performance
 
-| Approach | Speed | Reliability | Recommended For |
-|----------|-------|-------------|-----------------|
-| Include Optional Deps | Slightly slower install | ✅ Reliable builds | **Build steps** |
-| Exclude Optional Deps | ⚡ Faster install | ❌ Breaks Rollup | Quality checks only |
+| Approach              | Speed                   | Reliability        | Recommended For     |
+| --------------------- | ----------------------- | ------------------ | ------------------- |
+| Include Optional Deps | Slightly slower install | ✅ Reliable builds | **Build steps**     |
+| Exclude Optional Deps | ⚡ Faster install       | ❌ Breaks Rollup   | Quality checks only |
 
 ## Best Practices
 
 ### 1. **Build Steps**: Always include optional dependencies
+
 ```yaml
 npm ci --prefer-offline --no-audit --no-fund
 ```
 
 ### 2. **Quality Checks**: Can exclude optional deps for speed
+
 ```yaml
 npm ci --omit=optional --prefer-offline --no-audit --no-fund
 ```
 
 ### 3. **Test Steps**: Depends on test requirements
+
 ```yaml
 # For unit tests (no build needed)
 npm ci --omit=optional --prefer-offline --no-audit --no-fund
@@ -62,21 +65,24 @@ npm ci --prefer-offline --no-audit --no-fund
 ## Alternative Solutions
 
 ### Option 1: Force Install Native Dependencies
+
 ```yaml
 - name: Install Rollup native deps
   run: npm install @rollup/rollup-linux-x64-gnu --no-save
 ```
 
 ### Option 2: Use Rollup JavaScript Fallback
+
 ```javascript
 // rollup.config.js
 export default {
   // Force JS implementation
-  external: ['@rollup/rollup-linux-x64-gnu']
-}
+  external: ['@rollup/rollup-linux-x64-gnu'],
+};
 ```
 
 ### Option 3: Conditional Dependency Installation
+
 ```yaml
 - name: Smart dependency installation
   run: |
