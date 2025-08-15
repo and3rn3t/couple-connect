@@ -110,6 +110,16 @@ build-performance.json
 coverage-report.json
 .performance-history/
 
+# Mobile optimization temporary files
+scripts/temp/
+*.analysis.temp
+mobile-optimization-*.log
+
+# Lighthouse and performance reports
+lighthouse-report*.html
+mobile-lighthouse-report.html
+performance-report*.json
+
 # Lock files (choose one based on your package manager)
 # package-lock.json
 # yarn.lock

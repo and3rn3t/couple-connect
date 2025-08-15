@@ -197,6 +197,12 @@ export default defineConfig(() => {
         '@/components/ui/mobile-card',
         '@/components/ui/mobile-navigation',
         '@/components/ui/mobile-forms',
+        // Exclude analysis and testing utilities from build
+        '@/scripts/analyze-css',
+        '@/scripts/mobile-performance',
+        // Exclude large development-only utilities
+        '@/components/MobileTestingDashboard',
+        '@/components/PerformanceDashboard',
       ],
     },
   };

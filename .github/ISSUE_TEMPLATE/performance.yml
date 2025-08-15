@@ -1,0 +1,96 @@
+name: 🐛 Performance Issue
+description: Report a performance problem with the mobile app
+title: '[PERF] '
+labels: ['performance', 'mobile', 'bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 📱 Performance Issue
+        Thanks for reporting a performance issue! Please provide as much detail as possible.
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device Type
+      description: What device are you using?
+      options:
+        - Mobile Phone
+        - Tablet
+        - Desktop
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: device-info
+    attributes:
+      label: Device Information
+      description: Specific device model and OS version
+      placeholder: e.g., iPhone 14 (iOS 17.1), Samsung Galaxy S23 (Android 13)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      description: Which browser are you using?
+      options:
+        - Safari
+        - Chrome
+        - Firefox
+        - Edge
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: network
+    attributes:
+      label: Network Connection
+      description: What type of network connection?
+      options:
+        - WiFi
+        - 4G/LTE
+        - 3G
+        - Slow 3G
+        - Offline
+    validations:
+      required: true
+
+  - type: textarea
+    id: performance-metrics
+    attributes:
+      label: Performance Metrics
+      description: If available, provide performance metrics
+      placeholder: |
+        - Page Load Time:
+        - First Contentful Paint:
+        - Largest Contentful Paint:
+        - Cumulative Layout Shift:
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this performance issue?
+      placeholder: |
+        1. Go to...
+        2. Click on...
+        3. Notice slow...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Performance
+      description: What performance were you expecting?
+      placeholder: Describe the expected load times or smoothness
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or performance traces

@@ -1,0 +1,52 @@
+# Build outputs
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# Generated and analysis files
+coverage/
+playwright-report/
+test-results/
+.wrangler/
+css-analysis.json
+bundle-analysis.json
+build-performance.json
+coverage-report.json
+mobile-lighthouse-report.html
+lighthouse-report*.html
+
+# Cache directories
+.cache/
+.parcel-cache/
+.performance-history/
+
+# Lock files (don't format these)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Generated documentation
+docs/api/
+docs/build/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Binary files and images
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.svg
+*.webp
+
+# OS generated files
+.DS_Store
+Thumbs.db
