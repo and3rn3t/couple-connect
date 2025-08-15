@@ -2,15 +2,17 @@ module.exports = {
   ci: {
     collect: {
       // Use deployed URL in CI, localhost for local development
-      url: process.env.CI ? [
-        'https://couple-connect.pages.dev',
-        'https://couple-connect.pages.dev/dashboard',
-        'https://couple-connect.pages.dev/actions',
-      ] : [
-        'http://localhost:3000',
-        'http://localhost:3000/dashboard',
-        'http://localhost:3000/actions',
-      ],
+      url: process.env.CI
+        ? [
+            'https://couple-connect.pages.dev',
+            'https://couple-connect.pages.dev/dashboard',
+            'https://couple-connect.pages.dev/actions',
+          ]
+        : [
+            'http://localhost:3000',
+            'http://localhost:3000/dashboard',
+            'http://localhost:3000/actions',
+          ],
       // Only start server for local development
       startServerCommand: process.env.CI ? undefined : 'npm run preview',
       startServerReadyPattern: process.env.CI ? undefined : 'Local:',
