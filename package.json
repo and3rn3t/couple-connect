@@ -111,7 +111,11 @@
     "💝": "echo '💝 Gift-wrapping the code with prettier! 💝' && npm run format",
     "🌟": "echo '🌟 Optimizing for maximum love efficiency! 🌟' && npm run optimize",
     "❤️": "echo '❤️ Checking the pulse of our relationship app! ❤️' && npm run type-check",
-    "🎪": "echo '🎪 Love circus preview! Step right up! 🎪' && npm run preview"
+    "🎪": "echo '🎪 Love circus preview! Step right up! 🎪' && npm run preview",
+    "build:mobile-optimized": "cross-env TAILWIND_CONFIG=tailwind.mobile-optimized.config.js npm run build",
+    "build:css-optimized": "postcss src/index.css -o dist/assets/main.css --config postcss.config.cjs",
+    "analyze:css-size": "du -sh dist/assets/*.css",
+    "purge:css": "purgecss --css dist/assets/*.css --content dist/assets/*.js --output dist/assets/"
   },
   "dependencies": {
     "@cloudflare/workers-types": "^4.20250813.0",
@@ -207,6 +211,7 @@
     "lighthouse": "^12.8.1",
     "playwright": "^1.54.2",
     "prettier": "^3.6.2",
+    "purgecss": "^7.0.2",
     "rollup-plugin-visualizer": "^6.0.3",
     "tailwindcss": "^4.1.11",
     "terser": "^5.43.1",
