@@ -5,11 +5,6 @@ compatibility_date = "2024-08-14"
 # Pages build configuration
 pages_build_output_dir = "dist"
 
-[build]
-command = "npm run build"
-cwd = "."
-watch_dir = "src"
-
 # D1 Database configuration
 [[d1_databases]]
 binding = "DB"
@@ -28,13 +23,3 @@ NODE_ENV = "development"
 # [[env.production.routes]]
 # pattern = "couple-connect.com"
 # zone_name = "couple-connect.com"
-
-# Custom headers for security
-[[headers]]
-for = "/*"
-
-[headers.values]
-X-Frame-Options = "DENY"
-X-Content-Type-Options = "nosniff"
-Referrer-Policy = "strict-origin-when-cross-origin"
-Permissions-Policy = "camera=(), microphone=(), geolocation=()"
