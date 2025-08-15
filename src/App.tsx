@@ -21,6 +21,8 @@ import MobileActionDashboard from '@/components/MobileActionDashboard';
 import ProgressView from '@/components/ProgressView';
 import { MobileTabBar, MobileNavBar } from '@/components/ui/mobile-navigation';
 import { useMobileDetection } from '@/hooks/use-mobile';
+import { OfflineNotification } from '@/components/OfflineNotification';
+import { useServiceWorker, useResourceCaching } from '@/hooks/useServiceWorker';
 
 // App configuration constants
 const APP_CONFIG = {
@@ -101,6 +103,10 @@ export interface RelationshipHealth {
 function App() {
   const { isMobile } = useMobileDetection();
 
+  // Initialize service worker and offline capabilities
+  const { status: swStatus } = useServiceWorker();
+  const { preloadCriticalResources } = useResourceCaching();
+
   // Initialize database on app start
   useEffect(() => {
     const initializeApp = async () => {
@@ -128,6 +134,11 @@ function App() {
           }
         }
 
+        // Preload critical resources for offline use
+        if (swStatus.active) {
+          await preloadCriticalResources();
+        }
+
         // Log initial performance metrics in development
         if (window.location.hostname === 'localhost') {
           setTimeout(() => {
@@ -141,7 +152,7 @@ function App() {
     };
 
     initializeApp();
-  }, []); // Database hooks with enhanced performance
+  }, [swStatus.active, preloadCriticalResources]); // Database hooks with enhanced performance
   const { user: currentUser, error: _userError } = useCurrentUser();
   const { couple, error: _coupleError } = useCurrentCouple();
   const {
@@ -375,6 +386,9 @@ function App() {
       id="spark-app"
       className={`min-h-screen bg-bg dark-theme ${isMobile ? 'pb-safe-area-bottom' : ''}`}
     >
+      {/* Offline notification */}
+      <OfflineNotification />
+
       {/* Mobile Navigation */}
       {isMobile && (
         <MobileNavBar
