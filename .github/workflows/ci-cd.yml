@@ -127,7 +127,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        check: [lint, type-check, format-check]
+        check: [lint, type-check, format:check]
 
     steps:
       - name: 📥 Checkout code

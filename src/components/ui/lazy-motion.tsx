@@ -1,36 +1,67 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, forwardRef } from 'react';
+import type { ComponentProps } from 'react';
 
-// Lazy load the entire framer-motion library
-const LazyFramerMotion = lazy(() => import('framer-motion'));
+// Lazy load framer-motion components
+const LazyMotionDiv = lazy(() =>
+  import('framer-motion').then((module) => ({
+    default: module.motion.div,
+  }))
+);
 
-// Create a proper motion component that's lazy loaded
-export const createLazyMotion = () => {
-  const LazyMotionDiv = lazy(() =>
-    import('framer-motion').then((module) => ({
-      default: module.motion.div,
-    }))
-  );
+const LazyAnimatePresence = lazy(() =>
+  import('framer-motion').then((module) => ({
+    default: module.AnimatePresence,
+  }))
+);
 
-  const LazyAnimatePresence = lazy(() =>
-    import('framer-motion').then((module) => ({
-      default: module.AnimatePresence,
-    }))
-  );
-
-  return {
-    MotionDiv: (props: any) => (
-      <Suspense fallback={<div {...props} />}>
-        <LazyMotionDiv {...props} />
-      </Suspense>
-    ),
-    AnimatePresence: (props: any) => (
-      <Suspense fallback={<>{props.children}</>}>
-        <LazyAnimatePresence {...props} />
-      </Suspense>
-    ),
-  };
+// Props type for motion.div
+type MotionDivProps = ComponentProps<'div'> & {
+  initial?: any;
+  animate?: any;
+  exit?: any;
+  transition?: any;
+  whileHover?: any;
+  whileTap?: any;
+  variants?: any;
+  layout?: boolean;
+  layoutId?: string;
+  drag?: boolean | 'x' | 'y';
+  dragConstraints?: any;
+  onDragEnd?: any;
+  onDrag?: any;
+  style?: any;
 };
 
-// Export the lazy motion components
-const { MotionDiv, AnimatePresence } = createLazyMotion();
-export { MotionDiv, AnimatePresence };
+// Fallback component while motion loads
+const MotionFallback = forwardRef<HTMLDivElement, MotionDivProps>(
+  ({ children, className, style, ...props }, ref) => (
+    <div ref={ref} className={className} style={style} {...props}>
+      {children}
+    </div>
+  )
+);
+
+MotionFallback.displayName = 'MotionFallback';
+
+// Lazy motion div with fallback
+export const MotionDiv = forwardRef<HTMLDivElement, MotionDivProps>((props, ref) => (
+  <Suspense fallback={<MotionFallback {...props} ref={ref} />}>
+    <LazyMotionDiv {...props} ref={ref} />
+  </Suspense>
+));
+
+MotionDiv.displayName = 'MotionDiv';
+
+// Lazy AnimatePresence
+export const AnimatePresence = ({
+  children,
+  ...props
+}: {
+  children: React.ReactNode;
+  mode?: 'wait' | 'sync' | 'popLayout';
+  initial?: boolean;
+}) => (
+  <Suspense fallback={<>{children}</>}>
+    <LazyAnimatePresence {...props}>{children}</LazyAnimatePresence>
+  </Suspense>
+);
