@@ -432,7 +432,7 @@ jobs:
           echo "Starting bundle analysis at $(date)"
           start_time=$(date +%s)
 
-          npm run analyze:bundle
+          npm run build:analyze
 
           end_time=$(date +%s)
           analysis_time=$((end_time - start_time))
