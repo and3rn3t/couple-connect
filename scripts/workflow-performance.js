@@ -98,6 +98,11 @@ class WorkflowPerformanceMonitor {
     console.log(`└─ Build Time: ${this.formatTime(latest.buildTime)}\n`);
 
     console.log('📈 Average Performance (Last 10 runs):');
+
+    // Generate GitHub Step Summary if in CI environment
+    if (process.env.GITHUB_STEP_SUMMARY) {
+      this.generateGitHubSummary(latest, averages);
+    }
     console.log(`├─ Total Time: ${this.formatTime(averages.totalTime)}`);
     console.log(`├─ Setup Time: ${this.formatTime(averages.setupTime)}`);
     console.log(`├─ Test Time: ${this.formatTime(averages.testTime)}`);
@@ -136,6 +141,99 @@ class WorkflowPerformanceMonitor {
     }
 
     console.log('└─ 📚 See workflow optimization docs for more tips\n');
+  }
+
+  generateGitHubSummary(latest, averages) {
+    const summaryContent = `
+## 📊 Workflow Performance Summary
+
+### 🚀 Latest Run Metrics
+| Metric | Time | Status |
+|--------|------|--------|
+| Total Time | ${this.formatTime(latest.totalTime)} | ${latest.totalTime < 300 ? '✅ Excellent' : latest.totalTime < 600 ? '⚠️ Good' : '❌ Needs Optimization'} |
+| Setup Time | ${this.formatTime(latest.setupTime)} | ${latest.setupTime < 60 ? '✅ Fast' : latest.setupTime < 120 ? '⚠️ Moderate' : '❌ Slow'} |
+| Test Time | ${this.formatTime(latest.testTime)} | ${latest.testTime < 180 ? '✅ Fast' : latest.testTime < 300 ? '⚠️ Moderate' : '❌ Slow'} |
+| Build Time | ${this.formatTime(latest.buildTime)} | ${latest.buildTime < 120 ? '✅ Fast' : latest.buildTime < 240 ? '⚠️ Moderate' : '❌ Slow'} |
+
+### 📈 Performance Trends (Last 10 runs)
+| Metric | Average | Trend |
+|--------|---------|-------|
+| Total Time | ${this.formatTime(averages.totalTime)} | ${this.data.trends.totalTime ? (this.data.trends.totalTime.direction === 'improved' ? '📈 Improving' : '📉 Degrading') : '➡️ Stable'} |
+| Setup Time | ${this.formatTime(averages.setupTime)} | ➡️ Stable |
+| Test Time | ${this.formatTime(averages.testTime)} | ➡️ Stable |
+| Build Time | ${this.formatTime(averages.buildTime)} | ➡️ Stable |
+
+### 💡 Performance Insights
+${this.generateInsights(latest, averages)}
+
+### 🎯 Optimization Score
+**${this.calculateOptimizationScore(latest)}/100** - ${this.getOptimizationGrade(latest)}
+`;
+
+    // Write to GitHub Step Summary
+    try {
+      writeFileSync(process.env.GITHUB_STEP_SUMMARY, summaryContent, { flag: 'a' });
+      console.log('📝 GitHub Step Summary updated with performance data');
+    } catch (error) {
+      console.log('Failed to write GitHub Step Summary:', error.message);
+    }
+  }
+
+  generateInsights(latest, averages) {
+    const insights = [];
+
+    if (latest.totalTime < averages.totalTime * 0.9) {
+      insights.push('🚀 This run was significantly faster than average!');
+    } else if (latest.totalTime > averages.totalTime * 1.1) {
+      insights.push('⚠️ This run was slower than average - check for issues');
+    }
+
+    if (latest.setupTime > 90) {
+      insights.push('⚡ Setup optimization opportunity: Consider better dependency caching');
+    }
+
+    if (latest.testTime > 300) {
+      insights.push('🧪 Test optimization opportunity: Consider parallel execution');
+    }
+
+    if (latest.buildTime > 180) {
+      insights.push('🏗️ Build optimization opportunity: Consider incremental builds');
+    }
+
+    if (insights.length === 0) {
+      insights.push('✅ All metrics look good! Performance is within optimal ranges.');
+    }
+
+    return insights.map((insight) => `- ${insight}`).join('\n');
+  }
+
+  calculateOptimizationScore(run) {
+    let score = 100;
+
+    // Deduct points for performance issues
+    if (run.totalTime > 600) score -= 30;
+    else if (run.totalTime > 300) score -= 15;
+
+    if (run.setupTime > 90) score -= 20;
+    else if (run.setupTime > 60) score -= 10;
+
+    if (run.testTime > 300) score -= 20;
+    else if (run.testTime > 180) score -= 10;
+
+    if (run.buildTime > 180) score -= 20;
+    else if (run.buildTime > 120) score -= 10;
+
+    return Math.max(0, score);
+  }
+
+  getOptimizationGrade(run) {
+    const score = this.calculateOptimizationScore(run);
+
+    if (score >= 90) return '🏆 Excellent';
+    if (score >= 80) return '🥈 Very Good';
+    if (score >= 70) return '🥉 Good';
+    if (score >= 60) return '⚠️ Fair';
+    return '❌ Needs Improvement';
   }
 
   formatTime(seconds) {
