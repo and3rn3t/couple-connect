@@ -6,6 +6,14 @@ on:
   workflow_dispatch:
   deployment_status:
 
+# Grant necessary permissions for performance monitoring
+permissions:
+  contents: read
+  actions: read
+  checks: write
+  pull-requests: write
+  issues: write
+
 jobs:
   lighthouse-monitoring:
     name: 🚦 Lighthouse Performance Audit

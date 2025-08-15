@@ -18,6 +18,15 @@ on:
           - production
           - preview
 
+# Grant necessary permissions for deployment
+permissions:
+  contents: read
+  deployments: write
+  actions: read
+  checks: write
+  pull-requests: write
+  issues: write
+
 jobs:
   determine-environment:
     name: 🎯 Environment Selection
