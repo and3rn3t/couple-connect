@@ -48,26 +48,101 @@ export default defineConfig(() => {
       },
     },
     build: {
-      // Optimize build performance
-      target: 'esnext',
-      minify: 'esbuild',
+      // Mobile-optimized build target
+      target: 'es2015', // Better mobile compatibility
+      minify: 'terser', // Better compression than esbuild
       sourcemap: process.env.NODE_ENV === 'development',
 
-      // Bundle size optimizations
-      chunkSizeWarningLimit: BUILD_CONSTANTS.CHUNK_SIZE_WARNING_LIMIT,
+      // Bundle size optimizations for mobile
+      chunkSizeWarningLimit: 500, // Stricter limit for mobile
+
+      // Terser options for mobile optimization
+      terserOptions: {
+        compress: {
+          drop_console: process.env.NODE_ENV === 'production',
+          drop_debugger: true,
+          pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        },
+      },
+
       rollupOptions: {
+        // Enable tree shaking
+        treeshake: {
+          preset: 'recommended',
+          moduleSideEffects: false,
+          propertyReadSideEffects: false,
+          tryCatchDeoptimization: false,
+        },
         output: {
-          // Optimize chunk splitting
-          manualChunks: {
-            // Vendor chunks
-            vendor: ['react', 'react-dom'],
-            ui: [
-              '@radix-ui/react-dialog',
-              '@radix-ui/react-dropdown-menu',
-              '@radix-ui/react-popover',
-            ],
-            charts: ['recharts', 'd3'],
-            utils: ['date-fns', 'clsx', 'tailwind-merge'],
+          // Mobile-optimized chunk splitting
+          manualChunks: (id) => {
+            // Core React - always needed
+            if (id.includes('react') && !id.includes('react-router')) {
+              return 'react';
+            }
+
+            // Router - loaded early
+            if (id.includes('react-router-dom')) {
+              return 'router';
+            }
+
+            // Mobile-specific components - lazy loaded
+            if (
+              id.includes('mobile-card') ||
+              id.includes('mobile-navigation') ||
+              id.includes('mobile-forms') ||
+              id.includes('mobile-layout') ||
+              id.includes('touch-feedback') ||
+              id.includes('use-mobile') ||
+              id.includes('useMobilePerformance') ||
+              id.includes('useHapticFeedback')
+            ) {
+              return 'mobile';
+            }
+
+            // UI library chunks - smaller chunks
+            if (id.includes('@radix-ui/react-dialog')) {
+              return 'ui-dialog';
+            }
+            if (id.includes('@radix-ui/react-dropdown')) {
+              return 'ui-dropdown';
+            }
+            if (id.includes('@radix-ui/react-select')) {
+              return 'ui-select';
+            }
+            if (id.includes('@radix-ui')) {
+              return 'ui-base';
+            }
+
+            // Animation libraries - lazy loaded
+            if (id.includes('framer-motion')) {
+              return 'animations';
+            }
+
+            // Icons - can be lazy loaded
+            if (id.includes('@phosphor-icons')) {
+              return 'icons';
+            }
+
+            // Charts - definitely lazy loaded
+            if (id.includes('recharts') || id.includes('d3')) {
+              return 'charts';
+            }
+
+            // Utilities - small and commonly used
+            if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
+              return 'utils';
+            }
+
+            // Testing dashboard - lazy loaded
+            if (id.includes('MobileTestingDashboard') || id.includes('PerformanceDashboard')) {
+              return 'testing';
+            }
+
+            // Large vendor libraries
+            if (id.includes('node_modules')) {
+              return 'vendor';
+            }
           },
           // Optimize chunk naming
           chunkFileNames: (chunkInfo) => {
@@ -91,6 +166,12 @@ export default defineConfig(() => {
       },
     },
 
+    // CSS optimization
+    css: {
+      postcss: './postcss.config.cjs',
+      devSourcemap: true,
+    },
+
     // Development optimizations
     server: {
       hmr: {
@@ -98,11 +179,24 @@ export default defineConfig(() => {
       },
     },
 
-    // Optimize dependency pre-bundling
+    // Mobile-optimized dependency pre-bundling
     optimizeDeps: {
-      include: ['react', 'react-dom', 'framer-motion', '@tanstack/react-query'],
+      include: [
+        'react',
+        'react-dom',
+        'react-router-dom',
+        'framer-motion',
+        '@tanstack/react-query',
+        // Pre-bundle commonly used mobile utilities
+        'clsx',
+        'date-fns',
+      ],
       exclude: [
-        // Exclude large dependencies that don't need pre-bundling
+        // Exclude mobile-specific components from pre-bundling
+        // to enable better code splitting
+        '@/components/ui/mobile-card',
+        '@/components/ui/mobile-navigation',
+        '@/components/ui/mobile-forms',
       ],
     },
   };

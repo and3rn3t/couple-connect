@@ -16,8 +16,18 @@ const defaultTheme = {
   container: {
     center: true,
     padding: '2rem',
+    screens: {
+      '2xl': '1400px',
+    },
   },
   extend: {
+    // Mobile-first optimized breakpoints (reduce responsive variants)
+    screens: {
+      sm: '640px', // Mobile landscape and small tablets
+      md: '768px', // Tablets
+      lg: '1024px', // Desktop
+      // Remove xl and 2xl to reduce CSS size
+    },
     screens: {
       coarse: { raw: '(pointer: coarse)' },
       fine: { raw: '(pointer: fine)' },
@@ -179,7 +189,19 @@ const defaultTheme = {
 };
 
 export default {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  content: [
+    './index.html',
+    './src/**/*.{js,ts,jsx,tsx}',
+    // More specific content paths for better purging
+    './src/components/**/*.{js,ts,jsx,tsx}',
+    './src/pages/**/*.{js,ts,jsx,tsx}',
+    './src/lib/**/*.{js,ts,jsx,tsx}',
+    // Exclude large components that might not be mobile-critical
+    '!./src/components/charts/**',
+    '!./src/components/admin/**',
+    '!./src/components/MobileTestingDashboard.tsx',
+    '!./src/components/PerformanceDashboard.tsx',
+  ],
   theme: { ...defaultTheme, ...theme },
   plugins: [
     function ({ addUtilities, addComponents }) {

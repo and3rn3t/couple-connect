@@ -95,6 +95,21 @@ temp/
 **/agent-eval-report*
 packages
 
+# Testing outputs and reports
+test-results/
+playwright-report/
+coverage/
+*.lcov
+lighthouse-report*.html
+mobile-lighthouse-report.html
+
+# Performance analysis files
+css-analysis.json
+bundle-analysis.json
+build-performance.json
+coverage-report.json
+.performance-history/
+
 # Lock files (choose one based on your package manager)
 # package-lock.json
 # yarn.lock
