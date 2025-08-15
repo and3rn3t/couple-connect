@@ -1,0 +1,178 @@
+name: 🐳 Docker Compose CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'docker-compose*.yml'
+      - 'Dockerfile*'
+      - 'nginx.conf'
+      - '.dockerignore'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docker-compose*.yml'
+      - 'Dockerfile*'
+      - 'nginx.conf'
+      - '.dockerignore'
+  workflow_dispatch:
+    inputs:
+      test_environment:
+        description: 'Test environment'
+        required: false
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
+          - both
+
+env:
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+
+jobs:
+  test-docker-compose:
+    name: 🧪 Test Docker Compose
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compose-file:
+          - docker-compose.yml
+          - docker-compose.dev.yml
+        include:
+          - compose-file: docker-compose.yml
+            environment: production
+            port: 3000
+          - compose-file: docker-compose.dev.yml
+            environment: development
+            port: 5173
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Set up Docker Compose environment
+        run: |
+          echo "Testing ${{ matrix.environment }} environment with ${{ matrix.compose-file }}"
+
+          # Set environment-specific variables
+          if [ "${{ matrix.environment }}" = "development" ]; then
+            echo "NODE_ENV=development" >> .env
+            echo "VITE_DEV_SERVER_PORT=5173" >> .env
+          else
+            echo "NODE_ENV=production" >> .env
+          fi
+
+      - name: 🏗️ Build with Docker Compose
+        run: |
+          if [ "${{ matrix.compose-file }}" = "docker-compose.dev.yml" ]; then
+            docker-compose -f ${{ matrix.compose-file }} build
+          else
+            docker-compose -f ${{ matrix.compose-file }} build
+          fi
+
+      - name: 🚀 Start services
+        run: |
+          docker-compose -f ${{ matrix.compose-file }} up -d
+
+          # Wait for services to be ready
+          timeout 120 bash -c 'while ! curl -f http://localhost:${{ matrix.port }}/health 2>/dev/null; do
+            echo "Waiting for service to be ready..."
+            sleep 5
+          done' || {
+            echo "❌ Service failed to start"
+            docker-compose -f ${{ matrix.compose-file }} logs
+            exit 1
+          }
+
+      - name: 🧪 Run service tests
+        run: |
+          echo "🧪 Testing ${{ matrix.environment }} service on port ${{ matrix.port }}"
+
+          # Test health endpoint
+          curl -f http://localhost:${{ matrix.port }}/health || {
+            echo "❌ Health check failed"
+            exit 1
+          }
+
+          # Test main application
+          response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:${{ matrix.port }}/)
+          if [ "$response" != "200" ]; then
+            echo "❌ Main page test failed with status: $response"
+            exit 1
+          fi
+
+          echo "✅ All tests passed for ${{ matrix.environment }} environment"
+
+      - name: 📋 Service information
+        run: |
+          echo "## 🐳 Docker Compose Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: ${{ matrix.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Compose File**: ${{ matrix.compose-file }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Port**: ${{ matrix.port }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ✅ Tests Passed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Show running containers
+          echo "### Running Containers" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          docker-compose -f ${{ matrix.compose-file }} ps >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: 🧹 Cleanup
+        if: always()
+        run: |
+          docker-compose -f ${{ matrix.compose-file }} down -v
+          docker system prune -f
+
+  # Multi-service integration test
+  integration-test:
+    name: 🔗 Integration Test
+    runs-on: ubuntu-latest
+    needs: test-docker-compose
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🚀 Start full stack
+        run: |
+          echo "🚀 Starting full application stack..."
+
+          # Start production environment
+          docker-compose up -d
+
+          # Wait for all services
+          timeout 120 bash -c 'while ! curl -f http://localhost:3000/health; do sleep 5; done'
+
+      - name: 🧪 Run integration tests
+        run: |
+          echo "🧪 Running integration tests..."
+
+          # Test application flow
+          curl -f http://localhost:3000/ > /dev/null
+          curl -f http://localhost:3000/health > /dev/null
+
+          # Test static assets
+          curl -f http://localhost:3000/manifest.json > /dev/null
+
+          echo "✅ Integration tests passed"
+
+      - name: 📊 Generate summary
+        run: |
+          echo "## 🔗 Integration Test Summary" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Full stack deployment**: Successful" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Health checks**: Passing" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Static assets**: Accessible" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Service Status" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          docker-compose ps >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: 🧹 Cleanup
+        if: always()
+        run: |
+          docker-compose down -v
+          docker system prune -f
