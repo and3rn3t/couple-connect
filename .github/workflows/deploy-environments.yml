@@ -17,6 +17,15 @@ on:
           - staging
           - production
           - preview
+      deployment_method:
+        description: 'Deployment method'
+        required: false
+        default: 'cloudflare'
+        type: choice
+        options:
+          - cloudflare
+          - docker
+          - both
 
 # Grant necessary permissions for deployment
 permissions:
@@ -147,3 +156,81 @@ jobs:
           else
             echo "❌ Deployment to ${{ needs.determine-environment.outputs.environment }} failed!"
           fi
+
+  # Docker deployment (when docker method is selected)
+  deploy-docker:
+    name: 🐳 Deploy Docker Image
+    runs-on: ubuntu-latest
+    needs: determine-environment
+    if: github.event.inputs.deployment_method == 'docker' || github.event.inputs.deployment_method == 'both'
+    environment:
+      name: ${{ needs.determine-environment.outputs.environment }}-docker
+      url: ${{ steps.docker-deploy.outputs.url }}
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔑 Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: 🏗️ Build and push environment-specific image
+        id: docker-deploy
+        run: |
+          ENV="${{ needs.determine-environment.outputs.environment }}"
+          IMAGE_TAG="${{ secrets.DOCKER_USERNAME }}/couple-connect:${ENV}-${{ github.sha }}"
+          LATEST_TAG="${{ secrets.DOCKER_USERNAME }}/couple-connect:${ENV}-latest"
+
+          # Build with environment-specific configuration
+          docker build \
+            --build-arg NODE_ENV=${{ needs.determine-environment.outputs.environment }} \
+            --build-arg VITE_ENV=${{ needs.determine-environment.outputs.environment }} \
+            -t $IMAGE_TAG \
+            -t $LATEST_TAG \
+            .
+
+          # Push images
+          docker push $IMAGE_TAG
+          docker push $LATEST_TAG
+
+          echo "url=https://${ENV}-docker.couple-connect.com" >> $GITHUB_OUTPUT
+
+          echo "## 🐳 Docker Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: $ENV" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image**: $IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
+          echo "- **Latest Tag**: $LATEST_TAG" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Run Commands" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "# Run specific version" >> $GITHUB_STEP_SUMMARY
+          echo "docker run -p 3000:80 $IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# Run latest for environment" >> $GITHUB_STEP_SUMMARY
+          echo "docker run -p 3000:80 $LATEST_TAG" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: 🧪 Test Docker deployment
+        run: |
+          ENV="${{ needs.determine-environment.outputs.environment }}"
+          IMAGE_TAG="${{ secrets.DOCKER_USERNAME }}/couple-connect:${ENV}-${{ github.sha }}"
+
+          # Test the deployed image
+          docker run -d -p 3001:80 --name test-env-container $IMAGE_TAG
+
+          # Wait for container to be ready
+          timeout 30 bash -c 'while ! curl -f http://localhost:3001/health; do sleep 1; done'
+
+          # Test main page
+          curl -f http://localhost:3001/ > /dev/null
+
+          echo "✅ Docker deployment test passed for $ENV environment"
+
+          # Cleanup
+          docker stop test-env-container
+          docker rm test-env-container
