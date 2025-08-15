@@ -25,7 +25,7 @@ jobs:
     outputs:
       environment: ${{ steps.env.outputs.environment }}
       url: ${{ steps.env.outputs.url }}
-    
+
     steps:
       - name: 🎯 Determine deployment environment
         id: env
@@ -41,7 +41,7 @@ jobs:
           else
             echo "environment=preview" >> $GITHUB_OUTPUT
           fi
-          
+
           # Set environment URLs
           case "$environment" in
             production)
@@ -62,7 +62,7 @@ jobs:
     environment:
       name: ${{ needs.determine-environment.outputs.environment }}
       url: ${{ needs.determine-environment.outputs.url }}
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -117,11 +117,11 @@ jobs:
         run: |
           echo "🧪 Running smoke tests..."
           sleep 10  # Wait for deployment to propagate
-          
+
           # Basic URL check
           url="${{ needs.determine-environment.outputs.url }}"
           status_code=$(curl -s -o /dev/null -w "%{http_code}" "$url" || echo "000")
-          
+
           echo "## 🚀 Deployment Results" >> $GITHUB_STEP_SUMMARY
           echo "- **Environment**: ${{ needs.determine-environment.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
           echo "- **URL**: $url" >> $GITHUB_STEP_SUMMARY

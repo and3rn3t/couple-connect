@@ -68,19 +68,19 @@ jobs:
           echo "## 🔐 Secret Detection" >> $GITHUB_STEP_SUMMARY
           # Check for common secret patterns
           secret_count=0
-          
+
           # API keys
           if grep -r "AKIA[0-9A-Z]{16}" src/ --include="*.js" --include="*.ts" --include="*.jsx" --include="*.tsx" 2>/dev/null; then
             echo "⚠️ Potential AWS API key found" >> $GITHUB_STEP_SUMMARY
             secret_count=$((secret_count + 1))
           fi
-          
+
           # Tokens
           if grep -r "[0-9a-f]{40}" src/ --include="*.js" --include="*.ts" --include="*.jsx" --include="*.tsx" 2>/dev/null; then
             echo "⚠️ Potential API token found" >> $GITHUB_STEP_SUMMARY
             secret_count=$((secret_count + 1))
           fi
-          
+
           if [ $secret_count -eq 0 ]; then
             echo "✅ No hardcoded secrets detected" >> $GITHUB_STEP_SUMMARY
           else

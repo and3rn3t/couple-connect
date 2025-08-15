@@ -11,7 +11,7 @@ jobs:
     name: 🚦 Lighthouse Performance Audit
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success')
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -31,7 +31,7 @@ jobs:
           configPath: './lighthouse.config.js'
           temporaryPublicStorage: true
           uploadArtifacts: true
-          
+
       - name: 📱 Mobile Performance Test
         run: |
           echo "## 📱 Mobile Performance Report" >> $GITHUB_STEP_SUMMARY
@@ -66,7 +66,7 @@ jobs:
     name: 📦 Bundle Size Monitoring
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -86,26 +86,26 @@ jobs:
       - name: 📊 Analyze bundle size trends
         run: |
           echo "## 📦 Bundle Size Analysis" >> $GITHUB_STEP_SUMMARY
-          
+
           total_size=0
           js_size=0
           css_size=0
-          
+
           if [ -d "dist" ]; then
             cd dist
-            
+
             for file in $(find . -name "*.js" -type f); do
               size=$(stat -c%s "$file" 2>/dev/null || stat -f%z "$file")
               js_size=$((js_size + size))
               total_size=$((total_size + size))
             done
-            
+
             for file in $(find . -name "*.css" -type f); do
               size=$(stat -c%s "$file" 2>/dev/null || stat -f%z "$file")
               css_size=$((css_size + size))
               total_size=$((total_size + size))
             done
-            
+
             echo "| Component | Size (KB) | Limit (KB) | Usage | Status |" >> $GITHUB_STEP_SUMMARY
             echo "|-----------|-----------|------------|-------|--------|" >> $GITHUB_STEP_SUMMARY
             echo "| JavaScript | $((js_size / 1024)) | 800 | $((js_size * 100 / 800000))% | $([ $js_size -le 800000 ] && echo "✅" || echo "⚠️") |" >> $GITHUB_STEP_SUMMARY
@@ -118,7 +118,7 @@ jobs:
           # Check if bundle size exceeds 80% of limits
           total_size=$(find dist -type f \( -name "*.js" -o -name "*.css" \) -exec stat -c%s {} + | awk '{sum+=$1} END {print sum}')
           threshold=1200000  # 80% of 1.5MB
-          
+
           if [ $total_size -gt $threshold ]; then
             echo "⚠️ Bundle size approaching limit: $((total_size / 1024))KB / 1500KB"
             echo "Consider optimizing imports and dependencies"
