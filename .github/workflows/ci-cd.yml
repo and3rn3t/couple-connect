@@ -190,8 +190,10 @@ jobs:
             mobile-build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
             mobile-build-${{ runner.os }}-
 
-      - name: �📦 Install dependencies (optimized)
-        run: npm ci --omit=optional --prefer-offline --no-audit --no-fund
+      - name: 📦 Install dependencies (mobile build with Rollup)
+        run: |
+          # Include optional dependencies for Rollup native binaries
+          npm ci --prefer-offline --no-audit --no-fund
 
       - name: 🏗️ Build for PWA validation
         run: npm run build
@@ -352,10 +354,11 @@ jobs:
             build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
             build-${{ runner.os }}-
 
-      - name: 📦 Install dependencies (optimized)
+      - name: 📦 Install dependencies (build with Rollup support)
         run: |
-          # Use npm ci with optimizations for build
-          npm ci --omit=optional --omit=dev --prefer-offline --no-audit --no-fund --ignore-scripts
+          # Install dependencies including optional ones needed for Rollup native binaries
+          # Fixes: Error: Cannot find module @rollup/rollup-linux-x64-gnu
+          npm ci --prefer-offline --no-audit --no-fund
 
       - name: 🏗️ Build application (optimized)
         run: |
