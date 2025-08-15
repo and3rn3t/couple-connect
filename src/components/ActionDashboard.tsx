@@ -9,7 +9,7 @@ import { CheckCircle, Clock, User, Users, Calendar, Plus } from '@phosphor-icons
 import { Issue, Action } from '@/App';
 import { Partner } from '@/components/PartnerSetup';
 import { toast } from 'sonner';
-import ActionDialog from '@/components/ActionDialog';
+import ActionDialog from '@/components/ActionDialogOptimized';
 
 interface ActionDashboardProps {
   issues: Issue[];
@@ -161,9 +161,7 @@ export default function ActionDashboard({
             <div className="flex items-center gap-2">
               {assigned.avatar ? (
                 <Avatar className="h-4 w-4">
-                  <AvatarFallback className="text-xs text-xs bg-muted">
-                    {assigned.avatar}
-                  </AvatarFallback>
+                  <AvatarFallback className="text-xs bg-muted">{assigned.avatar}</AvatarFallback>
                 </Avatar>
               ) : (
                 <AssignedIcon size={14} />

@@ -17,7 +17,7 @@ import { Heart, Target, ChartBar } from '@phosphor-icons/react';
 import { Toaster } from '@/components/ui/sonner';
 import MindmapView from '@/components/MindmapView';
 import ActionDashboard from '@/components/ActionDashboard';
-import MobileActionDashboard from '@/components/MobileActionDashboard';
+import MobileActionDashboard from '@/components/MobileActionDashboardOptimized';
 import ProgressView from '@/components/ProgressView';
 import { MobileTabBar, MobileNavBar } from '@/components/ui/mobile-navigation';
 import { useMobileDetection } from '@/hooks/use-mobile';

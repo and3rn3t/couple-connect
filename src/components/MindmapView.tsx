@@ -15,7 +15,7 @@ import {
 import { Issue, Action } from '@/App';
 import { Partner } from '@/components/PartnerSetup';
 import IssueDialog from '@/components/IssueDialog';
-import ActionDialog from '@/components/ActionDialog';
+import ActionDialog from '@/components/ActionDialogOptimized';
 
 interface MindmapViewProps {
   issues: Issue[];

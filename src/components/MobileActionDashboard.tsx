@@ -6,11 +6,14 @@ import { toast } from 'sonner';
 import ActionDialog from '@/components/ActionDialog';
 import { useMobileDetection } from '@/hooks/use-mobile';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
+import { useMobilePerformance } from '@/hooks/useMobilePerformance';
 import { cn } from '@/lib/utils';
 import { ACTION_CONSTRAINTS, NOTIFICATION_MESSAGES } from '@/constants/mobile';
-import { FloatingActionButton } from '@/components/EnhancedMobileNavigation';
-import { SwipeableActionCard } from '@/components/SwipeableActionCard';
+import { MobileActionCard, MobileListCard } from '@/components/ui/mobile-card';
+import { TouchButton } from '@/components/ui/touch-feedback';
+import { MobileLayout, MobileStack } from '@/components/ui/mobile-layout';
 import { PullToRefresh } from '@/components/PullToRefresh';
+import { Badge } from '@/components/ui/badge';
 
 interface MobileActionDashboardProps {
   issues: Issue[];
