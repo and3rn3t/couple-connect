@@ -20,7 +20,9 @@ main {
 
 /* Add smooth transitions for theme switching */
 * {
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 /* Focus styles for accessibility */

@@ -1,0 +1,59 @@
+# Development and Testing
+e2e/
+test-results/
+coverage/
+playwright-report/
+.vscode/
+.idea/
+
+# Analysis and Performance Files
+bundle-analysis.json
+build-performance.json
+coverage-report.json
+html.meta.json.gz
+
+# Build and Development Dependencies
+node_modules/
+.cache/
+.temp/
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment and Config Files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+wrangler.toml
+
+# Documentation (keep README.md)
+docs/
+CHANGELOG.md
+*.md
+!README.md
+
+# Scripts (keep essential ones)
+scripts/analyze-bundle.js
+scripts/optimize-build.js
+scripts/migrate-env.ps1
+scripts/organize-docs.ps1
+PowerShell-Love-Profile.ps1
+
+# IDE and OS Files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Cloudflare and Deployment
+.wrangler/
+functions/
+
+# Mobile Development Files
+mobile-analysis.json
+lighthouse-reports/
+performance-snapshots/

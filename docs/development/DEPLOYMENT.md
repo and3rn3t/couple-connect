@@ -24,7 +24,7 @@ The project includes a streamlined CI/CD pipeline that automatically:
 
 1. **Configure GitHub Secrets**:
 
-   ```
+   ```text
    CLOUDFLARE_API_TOKEN    # Get from Cloudflare dashboard
    CLOUDFLARE_ACCOUNT_ID   # Found in Cloudflare sidebar
    ```
@@ -60,7 +60,7 @@ For detailed pipeline information, see [Workflow Documentation](../../.github/wo
 
 2. **Configure Build Settings**:
 
-   ```
+   ```text
    Framework preset: Vite
    Build command: npm run build
    Build output directory: dist
@@ -69,12 +69,17 @@ For detailed pipeline information, see [Workflow Documentation](../../.github/wo
 
 3. **Set Environment Variables**:
 
-   ```
+   Use values from `.env/.env.production` as reference:
+
+   ```text
    VITE_APP_NAME=Couple Connect
    VITE_ENVIRONMENT=production
-   VITE_API_URL=https://your-api-url.com
+   VITE_API_URL=https://api.couple-connect.com/api
    VITE_ENABLE_ANALYTICS=true
+   VITE_ENABLE_PWA=true
    ```
+
+   For a complete list of production environment variables, see [.env/.env.production](../../.env/.env.production).
 
 4. **Deploy**:
    - Click "Save and Deploy"
@@ -95,19 +100,44 @@ For detailed pipeline information, see [Workflow Documentation](../../.github/wo
    ```
 
 3. **Deploy**:
+
    ```bash
    npm run build
    wrangler pages deploy dist --project-name=couple-connect
    ```
 
-## 🔧 GitHub Actions Setup
+## 🔧 GitHub CLI & Actions Setup
 
-The project includes automated CI/CD. To enable:
+### Using GitHub CLI for Repository Management
+
+**Preferred approach using GitHub CLI**:
+
+```powershell
+# Set up repository secrets using GitHub CLI
+gh secret set CLOUDFLARE_API_TOKEN --body "your-api-token-here"
+gh secret set CLOUDFLARE_ACCOUNT_ID --body "your-account-id-here"
+
+# List existing secrets to verify
+gh secret list
+
+# View repository settings
+gh repo view --web
+
+# Monitor deployment status
+gh workflow list
+gh run list --workflow="Build and Deploy" --limit 5
+gh run view --log  # View latest run logs
+```
+
+### Traditional GitHub UI Setup
+
+The project includes automated CI/CD. To enable via GitHub UI:
 
 1. **Set Repository Secrets**:
    - Go to GitHub repo → Settings → Secrets and variables → Actions
    - Add these secrets:
-     ```
+
+     ```text
      CLOUDFLARE_API_TOKEN: Your Cloudflare API token
      CLOUDFLARE_ACCOUNT_ID: Your Cloudflare account ID
      ```
@@ -117,7 +147,22 @@ The project includes automated CI/CD. To enable:
      - Use "Cloudflare Pages:Edit" template
    - **Account ID**: Cloudflare Dashboard → Right sidebar
 
-3. **Verify Workflows**:
+3. **Verify Workflows with GitHub CLI**:
+
+   ```powershell
+   # Check workflow status
+   gh workflow list
+
+   # View recent runs
+   gh run list --limit 10
+
+   # Manually trigger deployment if needed
+   gh workflow run "Build and Deploy"
+
+   # Monitor deployment progress
+   gh run watch
+   ```
+
    - Push to `main` triggers production deployment
    - Pull requests trigger preview deployments
    - Security audits run weekly
@@ -133,7 +178,7 @@ The project includes automated CI/CD. To enable:
 
 2. **Configure Build**:
 
-   ```
+   ```bash
    Build command: npm run build
    Publish directory: dist
    ```
@@ -190,7 +235,7 @@ Referrer-Policy = "strict-origin-when-cross-origin"
 
 Add to your hosting platform:
 
-```
+```powershell
 Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.couple-connect.com;
 ```
 
@@ -200,7 +245,7 @@ Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; 
 
 Add this to your hosting platform:
 
-```
+```text
 /_health → returns 200 OK
 ```
 

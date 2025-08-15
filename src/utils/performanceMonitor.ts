@@ -1,6 +1,15 @@
 // Performance monitoring and optimization utilities for database operations
 import { useState } from 'react';
 
+// Performance monitoring constants
+const PERFORMANCE_CONSTANTS = {
+  MAX_METRICS: 1000,
+  ANALYSIS_WINDOW_24H: 24 * 60 * 60 * 1000, // 24 hours
+  MAX_SLOW_OPERATIONS_SHOWN: 10,
+  REPORT_TIME_RANGE: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+  DEVELOPMENT_REPORT_INTERVAL: 5 * 60 * 1000, // 5 minutes
+} as const;
+
 interface PerformanceMetric {
   operation: string;
   duration: number;
@@ -11,7 +20,7 @@ interface PerformanceMetric {
 
 class DatabasePerformanceMonitor {
   private metrics: PerformanceMetric[] = [];
-  private maxMetrics = 1000;
+  private maxMetrics = PERFORMANCE_CONSTANTS.MAX_METRICS;
 
   startTimer(operation: string): (success?: boolean, cacheHit?: boolean) => PerformanceMetric {
     const startTime = performance.now();
@@ -96,7 +105,9 @@ class DatabasePerformanceMonitor {
   } {
     const metrics = this.getMetrics(undefined, timeRange);
 
-    const slowestOperations = metrics.sort((a, b) => b.duration - a.duration).slice(0, 10);
+    const slowestOperations = metrics
+      .sort((a, b) => b.duration - a.duration)
+      .slice(0, PERFORMANCE_CONSTANTS.MAX_SLOW_OPERATIONS_SHOWN);
 
     const operationBreakdown: Record<
       string,
@@ -140,7 +151,7 @@ class DatabasePerformanceMonitor {
   }
 
   logPerformanceReport(): void {
-    const last24Hours = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    const last24Hours = PERFORMANCE_CONSTANTS.REPORT_TIME_RANGE; // 24 hours in milliseconds
     const summary = this.getSummary(last24Hours);
 
     // Use console.warn to comply with linting rules
@@ -220,12 +231,9 @@ export function usePerformanceMetrics() {
 try {
   if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
     // Log performance report every 5 minutes in development
-    setInterval(
-      () => {
-        performanceMonitor.logPerformanceReport();
-      },
-      5 * 60 * 1000
-    );
+    setInterval(() => {
+      performanceMonitor.logPerformanceReport();
+    }, PERFORMANCE_CONSTANTS.DEVELOPMENT_REPORT_INTERVAL);
   }
 } catch {
   // Ignore errors in environments where window is not available

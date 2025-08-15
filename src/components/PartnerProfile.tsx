@@ -1,28 +1,28 @@
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu'
-import { User, SignOut, Gear } from '@phosphor-icons/react'
-import { Partner } from './PartnerSetup'
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { User, SignOut, Gear } from '@phosphor-icons/react';
+import { Partner } from './PartnerSetup';
 
 interface PartnerProfileProps {
-  currentPartner: Partner
-  otherPartner: Partner
-  onSwitchView: () => void
-  onSignOut: () => void
+  currentPartner: Partner;
+  otherPartner: Partner;
+  onSwitchView: () => void;
+  onSignOut: () => void;
 }
 
-export default function PartnerProfile({ 
-  currentPartner, 
-  otherPartner, 
-  onSwitchView, 
-  onSignOut 
+export default function PartnerProfile({
+  currentPartner,
+  otherPartner,
+  onSwitchView,
+  onSignOut,
 }: PartnerProfileProps) {
   return (
     <div className="flex items-center gap-3">
@@ -33,9 +33,7 @@ export default function PartnerProfile({
           </AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
-          <span className="text-sm font-medium text-foreground">
-            {currentPartner.name}
-          </span>
+          <span className="text-sm font-medium text-foreground">{currentPartner.name}</span>
           <Badge variant="secondary" className="text-xs w-fit">
             Your View
           </Badge>
@@ -78,5 +76,5 @@ export default function PartnerProfile({
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  )
+  );
 }

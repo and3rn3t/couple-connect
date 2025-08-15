@@ -1,19 +1,22 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { MagicWand, ArrowRight } from '@phosphor-icons/react'
-import { ActionTemplate, getTemplatesByCategory } from '@/data/actionTemplates'
-import { Issue } from '@/App'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { MagicWand, ArrowRight } from '@phosphor-icons/react';
+import { ActionTemplate, getTemplatesByCategory } from '@/data/actionTemplates';
+import { Issue } from '@/App';
 
 interface QuickTemplateSuggestionsProps {
-  issue: Issue
-  onSelectTemplate: (template: ActionTemplate) => void
+  issue: Issue;
+  onSelectTemplate: (template: ActionTemplate) => void;
 }
 
-export default function QuickTemplateSuggestions({ issue, onSelectTemplate }: QuickTemplateSuggestionsProps) {
-  const relevantTemplates = getTemplatesByCategory(issue.category).slice(0, 3)
+export default function QuickTemplateSuggestions({
+  issue,
+  onSelectTemplate,
+}: QuickTemplateSuggestionsProps) {
+  const relevantTemplates = getTemplatesByCategory(issue.category).slice(0, 3);
 
-  if (relevantTemplates.length === 0) return null
+  if (relevantTemplates.length === 0) return null;
 
   return (
     <Card className="border-primary/20 bg-primary/5">
@@ -27,8 +30,8 @@ export default function QuickTemplateSuggestions({ issue, onSelectTemplate }: Qu
         </p>
       </CardHeader>
       <CardContent className="space-y-2">
-        {relevantTemplates.map(template => (
-          <div 
+        {relevantTemplates.map((template) => (
+          <div
             key={template.id}
             className="flex items-center justify-between p-2 rounded bg-background/50 hover:bg-background/80 transition-colors"
           >
@@ -43,8 +46,8 @@ export default function QuickTemplateSuggestions({ issue, onSelectTemplate }: Qu
                 </span>
               </div>
             </div>
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               variant="outline"
               onClick={() => onSelectTemplate(template)}
               className="shrink-0"
@@ -55,5 +58,5 @@ export default function QuickTemplateSuggestions({ issue, onSelectTemplate }: Qu
         ))}
       </CardContent>
     </Card>
-  )
+  );
 }

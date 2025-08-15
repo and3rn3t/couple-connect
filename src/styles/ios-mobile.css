@@ -1,0 +1,392 @@
+/* Mobile-First iOS Optimizations */
+/* Following Apple Human Interface Guidelines */
+
+:root {
+  /* iOS Touch Targets */
+  --ios-touch-target-min: 44px;
+  --ios-touch-target-comfortable: 48px;
+  --ios-touch-target-large: 56px;
+
+  /* iOS Safe Areas */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+
+  /* Mobile Spacing System */
+  --mobile-spacing-xs: 4px;
+  --mobile-spacing-sm: 8px;
+  --mobile-spacing-md: 16px;
+  --mobile-spacing-lg: 24px;
+  --mobile-spacing-xl: 32px;
+
+  /* Mobile Typography */
+  --mobile-text-xs: 12px;
+  --mobile-text-sm: 14px;
+  --mobile-text-base: 16px;
+  --mobile-text-lg: 18px;
+  --mobile-text-xl: 20px;
+  --mobile-text-2xl: 24px;
+  --mobile-text-3xl: 32px;
+
+  /* iOS Specific Colors */
+  --ios-system-blue: #007aff;
+  --ios-system-green: #34c759;
+  --ios-system-red: #ff3b30;
+  --ios-system-orange: #ff9500;
+  --ios-system-yellow: #ffcc00;
+  --ios-system-purple: #af52de;
+  --ios-system-pink: #ff2d92;
+
+  /* iOS Layout */
+  --ios-nav-height: 44px;
+  --ios-tab-bar-height: 83px; /* 49px + safe area */
+  --ios-status-bar-height: 44px; /* including Dynamic Island area */
+
+  /* Haptic Feedback Duration */
+  --ios-haptic-light: 10ms;
+  --ios-haptic-medium: 20ms;
+  --ios-haptic-heavy: 30ms;
+}
+
+/* Safe Area Utilities */
+.safe-area-top {
+  padding-top: var(--safe-area-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: var(--safe-area-bottom);
+}
+
+.safe-area-left {
+  padding-left: var(--safe-area-left);
+}
+
+.safe-area-right {
+  padding-right: var(--safe-area-right);
+}
+
+.safe-area-inset {
+  padding-top: var(--safe-area-top);
+  padding-bottom: var(--safe-area-bottom);
+  padding-left: var(--safe-area-left);
+  padding-right: var(--safe-area-right);
+}
+
+/* Touch Target Utilities */
+.touch-target-44 {
+  min-height: var(--ios-touch-target-min);
+  min-width: var(--ios-touch-target-min);
+}
+
+.touch-target-48 {
+  min-height: var(--ios-touch-target-comfortable);
+  min-width: var(--ios-touch-target-comfortable);
+}
+
+.touch-target-56 {
+  min-height: var(--ios-touch-target-large);
+  min-width: var(--ios-touch-target-large);
+}
+
+/* Mobile-First Responsive Design */
+
+/* iPhone SE and smaller (375px) */
+@media (max-width: 374px) {
+  .mobile-xs\:text-sm {
+    font-size: var(--mobile-text-sm);
+  }
+  .mobile-xs\:p-2 {
+    padding: var(--mobile-spacing-sm);
+  }
+  .mobile-xs\:gap-1 {
+    gap: var(--mobile-spacing-xs);
+  }
+  .mobile-xs\:hidden {
+    display: none;
+  }
+  .mobile-xs\:block {
+    display: block;
+  }
+}
+
+/* iPhone Standard (375px - 389px) */
+@media (min-width: 375px) and (max-width: 389px) {
+  .mobile-sm\:text-base {
+    font-size: var(--mobile-text-base);
+  }
+  .mobile-sm\:p-3 {
+    padding: var(--mobile-spacing-md);
+  }
+  .mobile-sm\:gap-2 {
+    gap: var(--mobile-spacing-sm);
+  }
+  .mobile-sm\:grid-cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* iPhone Standard+ (390px - 427px) */
+@media (min-width: 390px) and (max-width: 427px) {
+  .mobile-md\:text-lg {
+    font-size: var(--mobile-text-lg);
+  }
+  .mobile-md\:p-4 {
+    padding: var(--mobile-spacing-lg);
+  }
+  .mobile-md\:gap-3 {
+    gap: var(--mobile-spacing-md);
+  }
+  .mobile-md\:grid-cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* iPhone Plus/Pro Max (428px+) */
+@media (min-width: 428px) and (max-width: 767px) {
+  .mobile-lg\:text-xl {
+    font-size: var(--mobile-text-xl);
+  }
+  .mobile-lg\:p-5 {
+    padding: var(--mobile-spacing-xl);
+  }
+  .mobile-lg\:gap-4 {
+    gap: var(--mobile-spacing-lg);
+  }
+  .mobile-lg\:grid-cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* iOS-Specific Animations */
+@keyframes ios-bounce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes ios-slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes ios-slide-down {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes ios-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* iOS Touch Feedback */
+.ios-touch-feedback {
+  transition: all 0.1s ease-out;
+}
+
+.ios-touch-feedback:active {
+  transform: scale(0.97);
+  opacity: 0.8;
+}
+
+/* iOS Button Styles */
+.ios-button {
+  @apply touch-target-44 rounded-lg font-medium transition-all duration-150;
+}
+
+.ios-button-primary {
+  @apply ios-button bg-blue-500 text-white;
+  background-color: var(--ios-system-blue);
+}
+
+.ios-button-primary:active {
+  @apply ios-touch-feedback;
+  background-color: color-mix(in srgb, var(--ios-system-blue) 80%, black);
+}
+
+.ios-button-secondary {
+  @apply ios-button bg-gray-100 text-gray-900 border;
+}
+
+.ios-button-destructive {
+  @apply ios-button text-red-500;
+  color: var(--ios-system-red);
+}
+
+/* iOS Card Styles */
+.ios-card {
+  @apply bg-white rounded-xl shadow-sm border border-gray-200;
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.dark .ios-card {
+  @apply bg-gray-900 border-gray-800;
+  background-color: rgba(28, 28, 30, 0.8);
+}
+
+/* iOS Navigation */
+.ios-nav-bar {
+  height: var(--ios-nav-height);
+  padding-top: var(--safe-area-top);
+  @apply bg-white/80 backdrop-blur-md border-b border-gray-200;
+}
+
+.ios-tab-bar {
+  height: var(--ios-tab-bar-height);
+  padding-bottom: var(--safe-area-bottom);
+  @apply bg-white/80 backdrop-blur-md border-t border-gray-200;
+}
+
+/* iOS Haptic Feedback Simulation */
+.haptic-light {
+  animation: ios-bounce 100ms ease-out;
+}
+
+.haptic-medium {
+  animation: ios-bounce 150ms ease-out;
+}
+
+.haptic-heavy {
+  animation: ios-bounce 200ms ease-out;
+}
+
+/* iOS Modal/Sheet Styles */
+.ios-sheet {
+  animation: ios-slide-up 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  @apply rounded-t-xl;
+}
+
+.ios-sheet-backdrop {
+  @apply bg-black/20;
+  backdrop-filter: blur(4px);
+}
+
+/* iOS List Styles */
+.ios-list-item {
+  @apply touch-target-44 px-4 flex items-center justify-between;
+  @apply border-b border-gray-200 bg-white;
+}
+
+.ios-list-item:last-child {
+  @apply border-b-0;
+}
+
+.dark .ios-list-item {
+  @apply border-gray-700 bg-gray-900;
+}
+
+/* Thumb-Friendly Navigation Zones */
+.thumb-zone-bottom {
+  /* Area easily reachable by thumb on larger phones */
+  @apply pb-safe-area-bottom;
+  min-height: 120px;
+}
+
+.thumb-zone-sides {
+  /* Comfortable reach zones on sides */
+  @apply px-4;
+}
+
+/* One-Handed Operation Optimizations */
+@media (max-width: 767px) {
+  .one-handed-reachable {
+    /* Keep important actions in bottom 60% of screen */
+    position: relative;
+    bottom: 0;
+  }
+
+  .one-handed-header {
+    /* Make headers tappable to scroll to top */
+    @apply cursor-pointer touch-target-44;
+  }
+}
+
+/* iOS Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .ios-touch-feedback,
+  .haptic-light,
+  .haptic-medium,
+  .haptic-heavy {
+    animation: none;
+    transition: none;
+  }
+
+  .ios-sheet {
+    animation: ios-fade-in 0.2s ease-out;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .ios-button-primary {
+    @apply border-2 border-blue-600;
+  }
+
+  .ios-card {
+    @apply border-2 border-gray-400;
+  }
+
+  .ios-list-item {
+    @apply border-b-2 border-gray-400;
+  }
+}
+
+/* Large Text Support (iOS Dynamic Type) */
+@media (prefers-reduced-data: reduce) {
+  /* Optimize for users on limited data plans */
+  .ios-card {
+    backdrop-filter: none;
+    @apply bg-white;
+  }
+}
+
+/* Landscape Orientation */
+@media (orientation: landscape) and (max-height: 500px) {
+  .ios-nav-bar {
+    height: 32px;
+  }
+
+  .ios-tab-bar {
+    height: 32px;
+    padding-bottom: 0;
+  }
+
+  .landscape-compact {
+    @apply text-sm p-2;
+  }
+}
+
+/* Dark Mode Optimizations */
+.dark {
+  --ios-system-blue: #0a84ff;
+  --ios-system-green: #30d158;
+  --ios-system-red: #ff453a;
+  --ios-system-orange: #ff9f0a;
+  --ios-system-yellow: #ffd60a;
+  --ios-system-purple: #bf5af2;
+  --ios-system-pink: #ff375f;
+}

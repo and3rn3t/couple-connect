@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive documentation structure in `docs/` directory
 - Documentation index with clear navigation
 - Organized development and feature documentation
-- **GitHub Copilot Instructions** (`.copilot-instructions.md`) - Comprehensive AI assistant guidelines
+- **GitHub Copilot Instructions** (`.github/.copilot-instructions.md`) - Comprehensive AI assistant guidelines
 - **Complete Documentation Index** (`docs/DOC_INDEX.md`) - Full documentation catalog
 - **Quick Development Reference** (`QUICK_DEV_REFERENCE.md`) - Fast access to commands and patterns
 - **Optimized CI/CD Pipeline** - Streamlined GitHub Actions workflow

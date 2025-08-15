@@ -1,5 +1,16 @@
 // Database configuration and optimization utilities
 
+// Local constants to avoid circular dependencies
+const DATABASE_DEFAULTS = {
+  CACHE_TIMEOUT: 5 * 60 * 1000, // 5 minutes
+  MAX_CACHE_SIZE: 100,
+  BATCH_SIZE: 10,
+  DEBOUNCE_MS: 300,
+  RETRY_ATTEMPTS: 3,
+  RETRY_DELAY: 1000,
+  STORAGE_PREFIX: 'cc_v2',
+} as const;
+
 // Configuration for database operations
 export interface DatabaseConfig {
   // Caching configuration
@@ -24,14 +35,14 @@ export interface DatabaseConfig {
 
 export const DEFAULT_CONFIG: DatabaseConfig = {
   enableCaching: true,
-  cacheTimeout: 5 * 60 * 1000, // 5 minutes
-  maxCacheSize: 100,
-  batchSize: 10,
-  debounceMs: 300,
+  cacheTimeout: DATABASE_DEFAULTS.CACHE_TIMEOUT,
+  maxCacheSize: DATABASE_DEFAULTS.MAX_CACHE_SIZE,
+  batchSize: DATABASE_DEFAULTS.BATCH_SIZE,
+  debounceMs: DATABASE_DEFAULTS.DEBOUNCE_MS,
   enableOptimisticUpdates: true,
-  retryAttempts: 3,
-  retryDelay: 1000,
-  storagePrefix: 'cc_v2',
+  retryAttempts: DATABASE_DEFAULTS.RETRY_ATTEMPTS,
+  retryDelay: DATABASE_DEFAULTS.RETRY_DELAY,
+  storagePrefix: DATABASE_DEFAULTS.STORAGE_PREFIX,
   enableCompression: false,
   enableBackgroundSync: true,
 };

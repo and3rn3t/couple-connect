@@ -31,11 +31,28 @@ coverage/
 *.lcov
 
 # Environment variables
-.env
 .env.local
+.env.*.local
 .env.development.local
 .env.test.local
 .env.production.local
+.env.staging.local
+
+# Keep .env folder structure but ignore sensitive files
+.env/.env.local
+.env/.env.*.local
+
+# Allow example and template files
+!.env/.env.example
+!.env/.env.base
+!.env/.env.development
+!.env/.env.production
+!.env/.env.staging
+!.env/.env.test
+!.env/README.md
+
+# Legacy env files (will be removed)
+.env
 .env.*
 !.env.example
 
@@ -77,6 +94,31 @@ temp/
 # Build outputs
 **/agent-eval-report*
 packages
+
+# Testing outputs and reports
+test-results/
+playwright-report/
+coverage/
+*.lcov
+lighthouse-report*.html
+mobile-lighthouse-report.html
+
+# Performance analysis files
+css-analysis.json
+bundle-analysis.json
+build-performance.json
+coverage-report.json
+.performance-history/
+
+# Mobile optimization temporary files
+scripts/temp/
+*.analysis.temp
+mobile-optimization-*.log
+
+# Lighthouse and performance reports
+lighthouse-report*.html
+mobile-lighthouse-report.html
+performance-report*.json
 
 # Lock files (choose one based on your package manager)
 # package-lock.json

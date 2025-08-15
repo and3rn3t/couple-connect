@@ -17,10 +17,11 @@ export function useKV<T>(key: string, defaultValue?: T) {
 
   const setStoredValue = (newValue: T | undefined | ((prev: T | undefined) => T | undefined)) => {
     try {
-      const valueToStore = typeof newValue === 'function' 
-        ? (newValue as (prev: T | undefined) => T | undefined)(value)
-        : newValue;
-      
+      const valueToStore =
+        typeof newValue === 'function'
+          ? (newValue as (prev: T | undefined) => T | undefined)(value)
+          : newValue;
+
       setValue(valueToStore);
       if (valueToStore === undefined) {
         localStorage.removeItem(key);
