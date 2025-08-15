@@ -1,0 +1,139 @@
+name: 🚀 Multi-Environment Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'release/*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+          - preview
+
+jobs:
+  determine-environment:
+    name: 🎯 Environment Selection
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.env.outputs.environment }}
+      url: ${{ steps.env.outputs.url }}
+    
+    steps:
+      - name: 🎯 Determine deployment environment
+        id: env
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "environment=production" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+            echo "environment=staging" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == refs/heads/release/* ]]; then
+            echo "environment=preview" >> $GITHUB_OUTPUT
+          else
+            echo "environment=preview" >> $GITHUB_OUTPUT
+          fi
+          
+          # Set environment URLs
+          case "$environment" in
+            production)
+              echo "url=https://couple-connect.pages.dev" >> $GITHUB_OUTPUT
+              ;;
+            staging)
+              echo "url=https://staging.couple-connect.pages.dev" >> $GITHUB_OUTPUT
+              ;;
+            preview)
+              echo "url=https://preview-${{ github.sha }}.couple-connect.pages.dev" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
+  deploy:
+    name: 🚀 Deploy to ${{ needs.determine-environment.outputs.environment }}
+    runs-on: ubuntu-latest
+    needs: determine-environment
+    environment:
+      name: ${{ needs.determine-environment.outputs.environment }}
+      url: ${{ needs.determine-environment.outputs.url }}
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔧 Configure environment
+        run: |
+          case "${{ needs.determine-environment.outputs.environment }}" in
+            production)
+              echo "VITE_API_URL=https://api.couple-connect.com" >> .env.production
+              echo "VITE_ANALYTICS_ID=G-PROD123456" >> .env.production
+              echo "VITE_ENV=production" >> .env.production
+              ;;
+            staging)
+              echo "VITE_API_URL=https://api-staging.couple-connect.com" >> .env.staging
+              echo "VITE_ANALYTICS_ID=G-STAGE123456" >> .env.staging
+              echo "VITE_ENV=staging" >> .env.staging
+              ;;
+            preview)
+              echo "VITE_API_URL=https://api-preview.couple-connect.com" >> .env.preview
+              echo "VITE_ANALYTICS_ID=G-PREVIEW123456" >> .env.preview
+              echo "VITE_ENV=preview" >> .env.preview
+              ;;
+          esac
+
+      - name: 🏗️ Build for ${{ needs.determine-environment.outputs.environment }}
+        run: |
+          if [ "${{ needs.determine-environment.outputs.environment }}" = "production" ]; then
+            NODE_ENV=production npm run build
+          else
+            NODE_ENV=development npm run build
+          fi
+
+      - name: 🚀 Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: couple-connect
+          directory: dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🧪 Post-deployment smoke tests
+        run: |
+          echo "🧪 Running smoke tests..."
+          sleep 10  # Wait for deployment to propagate
+          
+          # Basic URL check
+          url="${{ needs.determine-environment.outputs.url }}"
+          status_code=$(curl -s -o /dev/null -w "%{http_code}" "$url" || echo "000")
+          
+          echo "## 🚀 Deployment Results" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: ${{ needs.determine-environment.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL**: $url" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: $([ "$status_code" = "200" ] && echo "✅ Healthy" || echo "❌ Failed")" >> $GITHUB_STEP_SUMMARY
+          echo "- **Response Code**: $status_code" >> $GITHUB_STEP_SUMMARY
+
+      - name: 📊 Deployment notification
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "✅ Deployment to ${{ needs.determine-environment.outputs.environment }} successful!"
+            echo "🔗 Available at: ${{ needs.determine-environment.outputs.url }}"
+          else
+            echo "❌ Deployment to ${{ needs.determine-environment.outputs.environment }} failed!"
+          fi
