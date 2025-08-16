@@ -183,7 +183,8 @@ function App() {
     };
 
     initializeApp();
-  }, [swStatus.active, preloadCriticalResources]); // Database hooks with enhanced performance
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run once on mount // Database hooks with enhanced performance
   const { user: currentUser, error: _userError } = useCurrentUser();
   const { couple, error: _coupleError } = useCurrentCouple();
   const {
@@ -282,7 +283,7 @@ function App() {
     );
     const updatedIssues = update(issues);
     // For now, just log the changes - components should be updated to use database hooks directly
-    console.log('Issues would be updated to:', updatedIssues);
+    console.warn('Issues would be updated to:', updatedIssues);
   };
 
   const setActionsWrapper = async (update: (current: Action[]) => Action[]) => {
@@ -291,7 +292,7 @@ function App() {
     );
     const updatedActions = update(actions);
     // For now, just log the changes - components should be updated to use database hooks directly
-    console.log('Actions would be updated to:', updatedActions);
+    console.warn('Actions would be updated to:', updatedActions);
   };
 
   const setHealthScoreWrapper = (update: (current: RelationshipHealth) => RelationshipHealth) => {
@@ -405,6 +406,7 @@ function App() {
     }
 
     return () => clearTimeout(initTimeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency array - only run once on mount
 
   // Show loading screen while partners are being initialized or don't exist

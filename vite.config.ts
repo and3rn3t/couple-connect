@@ -66,6 +66,9 @@ export default defineConfig(() => {
       },
 
       rollupOptions: {
+        // Explicit input specification to fix script injection
+        input: resolve(__dirname, 'index.html'),
+
         // Enable tree shaking
         treeshake: {
           preset: 'recommended',

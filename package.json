@@ -26,7 +26,8 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/fix-html.mjs",
+    "build:only": "vite build",
     "lint": "eslint . --max-warnings 200",
     "lint:fix": "eslint . --fix",
     "lint:warnings": "eslint . --quiet",
