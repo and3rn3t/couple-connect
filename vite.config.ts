@@ -78,24 +78,24 @@ export default defineConfig(() => {
           manualChunks: (id) => {
             // Debug: Log what's being chunked
             if (process.env.VITE_BUILD_ANALYZE) {
-              console.log('🔍 Chunking:', id);
+              // console.log('🔍 Chunking:', id);
             }
 
             // Log uncaught large files that go to main chunk
             if (id.includes('node_modules') && process.env.VITE_BUILD_ANALYZE) {
               const chunks = id.split('/');
-              const packageName = chunks.find((chunk) => chunk.includes('@') || chunk.length > 3);
-              console.log('📦 Package:', packageName, '- Size estimate: checking...');
+              const _packageName = chunks.find((chunk) => chunk.includes('@') || chunk.length > 3);
+              // console.log('📦 Package:', packageName, '- Size estimate: checking...');
             }
 
             // Core React libraries - loaded early
             if (id.includes('react') && !id.includes('react-router') && !id.includes('react-dom')) {
-              if (process.env.VITE_BUILD_ANALYZE) console.log('  → react-vendor');
+              // if (process.env.VITE_BUILD_ANALYZE) console.log('  → react-vendor');
               return 'react-vendor';
             }
 
             if (id.includes('react-dom')) {
-              if (process.env.VITE_BUILD_ANALYZE) console.log('  → react-dom');
+              // if (process.env.VITE_BUILD_ANALYZE) console.log('  → react-dom');
               return 'react-dom';
             }
 
@@ -127,7 +127,8 @@ export default defineConfig(() => {
             }
 
             // Animation libraries - lazy loaded
-            if (id.includes('framer-motion')) {
+            if (id.includes('framer-motion') || id.includes('motion-dom')) {
+              // if (process.env.VITE_BUILD_ANALYZE) console.log('  → animations');
               return 'animations';
             }
 

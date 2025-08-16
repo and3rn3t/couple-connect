@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { MotionDiv } from '@/components/ui/lazy-motion';
 import {
   CheckCircle,
   Warning,
@@ -257,7 +257,7 @@ export function MobileTestingDashboard() {
               <h3 className="font-semibold">Test Results</h3>
               <MobileStack spacing="sm">
                 {testResults.map((result, index) => (
-                  <motion.div
+                  <MotionDiv
                     key={result.name}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -269,7 +269,7 @@ export function MobileTestingDashboard() {
                       <p className="font-medium text-sm">{result.name}</p>
                       <p className={`text-xs ${getStatusColor(result.status)}`}>{result.message}</p>
                     </div>
-                  </motion.div>
+                  </MotionDiv>
                 ))}
               </MobileStack>
 
@@ -318,3 +318,5 @@ export function MobileTestingDashboard() {
     </div>
   );
 }
+
+export default MobileTestingDashboard;

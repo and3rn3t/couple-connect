@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { MotionDiv, LazyAnimatePresence, MotionH2, MotionP } from '@/components/ui/lazy-motion';
 import { Trophy, Star, MagicWand, Heart, Gift } from '@/components/ui/InlineIcons';
 
 interface CelebrationAnimationProps {
@@ -69,9 +69,9 @@ export default function CelebrationAnimation({
   };
 
   return (
-    <AnimatePresence>
+    <LazyAnimatePresence>
       {show && (
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -80,7 +80,7 @@ export default function CelebrationAnimation({
         >
           {/* Confetti Particles */}
           {particles.map((particle) => (
-            <motion.div
+            <MotionDiv
               key={particle.id}
               initial={{
                 opacity: 0,
@@ -109,7 +109,7 @@ export default function CelebrationAnimation({
           ))}
 
           {/* Main Celebration Card */}
-          <motion.div
+          <MotionDiv
             initial={{ scale: 0, rotate: -10 }}
             animate={{ scale: 1, rotate: 0 }}
             exit={{ scale: 0, rotate: 10 }}
@@ -122,7 +122,7 @@ export default function CelebrationAnimation({
             className="bg-card border border-border rounded-2xl p-8 shadow-2xl text-center max-w-sm mx-4"
           >
             {/* Pulsing Icon */}
-            <motion.div
+            <MotionDiv
               animate={{
                 scale: [1, 1.1, 1],
                 rotateY: [0, 180, 360],
@@ -135,21 +135,21 @@ export default function CelebrationAnimation({
               className="mb-4 flex justify-center"
             >
               {getIcon()}
-            </motion.div>
+            </MotionDiv>
 
             {/* Title */}
-            <motion.h2
+            <MotionH2
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5 }}
               className="text-2xl font-bold text-foreground mb-2"
             >
               {title}
-            </motion.h2>
+            </MotionH2>
 
             {/* Points */}
             {points && (
-              <motion.div
+              <MotionDiv
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{
@@ -161,11 +161,11 @@ export default function CelebrationAnimation({
               >
                 <Star className="w-5 h-5" weight="fill" />
                 <span className="font-semibold">+{points} points</span>
-              </motion.div>
+              </MotionDiv>
             )}
 
             {/* Celebration Text */}
-            <motion.p
+            <MotionP
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.9 }}
@@ -175,10 +175,10 @@ export default function CelebrationAnimation({
               {type === 'streak' && 'Keep the momentum going!'}
               {type === 'reward' && 'Enjoy your well-earned reward!'}
               {type === 'challenge' && 'Challenge completed successfully!'}
-            </motion.p>
+            </MotionP>
 
             {/* Animated Border */}
-            <motion.div
+            <MotionDiv
               animate={{
                 background: [
                   `linear-gradient(45deg, ${getColors()[0]}, ${getColors()[1]})`,
@@ -193,19 +193,19 @@ export default function CelebrationAnimation({
               }}
               className="absolute inset-0 rounded-2xl opacity-20 -z-10"
             />
-          </motion.div>
+          </MotionDiv>
 
           {/* Click to dismiss hint */}
-          <motion.p
+          <MotionP
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2 }}
             className="absolute bottom-8 text-white/70 text-sm"
           >
             Tap anywhere to continue
-          </motion.p>
-        </motion.div>
+          </MotionP>
+        </MotionDiv>
       )}
-    </AnimatePresence>
+    </LazyAnimatePresence>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { MotionDiv, MotionSpan } from '@/components/ui/lazy-motion';
 import { ArrowClockwise, CheckCircle } from '@/components/ui/InlineIcons';
 import { cn } from '@/lib/utils';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
@@ -149,7 +149,7 @@ export function PullToRefresh({
   return (
     <div className={cn('relative overflow-hidden', className)} ref={scrollElement}>
       {/* Pull-to-refresh indicator */}
-      <motion.div
+      <MotionDiv
         className="absolute top-0 left-0 right-0 z-10 flex flex-col items-center justify-center bg-background/95 backdrop-blur-sm border-b"
         initial={{ height: 0, opacity: 0 }}
         animate={{
@@ -194,19 +194,19 @@ export function PullToRefresh({
           </div>
 
           {/* Refresh text */}
-          <motion.span
+          <MotionSpan
             className="text-xs text-muted-foreground font-medium"
             initial={{ opacity: 0 }}
             animate={{ opacity: pullDistance > 20 ? 1 : 0 }}
             transition={{ duration: 0.1 }}
           >
             {getRefreshText()}
-          </motion.span>
+          </MotionSpan>
         </div>
-      </motion.div>
+      </MotionDiv>
 
       {/* Content area */}
-      <motion.div
+      <MotionDiv
         className="relative"
         animate={{
           y: isRefreshing ? refreshThreshold : pullDistance,
@@ -221,7 +221,7 @@ export function PullToRefresh({
         style={{ touchAction: pullDistance > 10 ? 'none' : 'auto' }}
       >
         {children}
-      </motion.div>
+      </MotionDiv>
     </div>
   );
 }

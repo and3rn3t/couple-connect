@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { MotionDiv, LazyAnimatePresence } from '@/components/ui/lazy-motion';
 import { cn } from '@/lib/utils';
 import { useMobileDetection } from '@/hooks/use-mobile';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
@@ -150,7 +150,7 @@ export function TouchFeedback({
   };
 
   return (
-    <motion.div
+    <MotionDiv
       className={cn(
         'relative overflow-hidden touch-manipulation select-none',
         disabled && 'opacity-50 pointer-events-none',
@@ -175,9 +175,9 @@ export function TouchFeedback({
       {children}
 
       {/* Ripple effects */}
-      <AnimatePresence>
+      <LazyAnimatePresence>
         {ripples.map((ripple) => (
-          <motion.div
+          <MotionDiv
             key={ripple.id}
             className="absolute pointer-events-none"
             style={{
@@ -206,8 +206,8 @@ export function TouchFeedback({
             }}
           />
         ))}
-      </AnimatePresence>
-    </motion.div>
+      </LazyAnimatePresence>
+    </MotionDiv>
   );
 }
 

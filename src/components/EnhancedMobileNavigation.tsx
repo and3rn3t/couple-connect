@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import {
+  MotionDiv,
+  LazyAnimatePresence,
+  MotionSpan,
+  MotionButton,
+} from '@/components/ui/lazy-motion';
 import { Heart, Target, ChartBar, User, Gear, X } from '@/components/ui/InlineIcons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -84,7 +89,7 @@ export function EnhancedMobileTabBar({
 
   return (
     <>
-      <motion.div
+      <MotionDiv
         ref={swipeRef}
         className={cn(
           'fixed bottom-0 left-0 right-0 z-50',
@@ -120,7 +125,7 @@ export function EnhancedMobileTabBar({
                 )}
               >
                 <div className="relative">
-                  <motion.div
+                  <MotionDiv
                     animate={{
                       scale: isActive ? 1.1 : 1,
                       color: isActive ? 'rgb(var(--primary))' : 'rgb(var(--muted-foreground))',
@@ -128,21 +133,21 @@ export function EnhancedMobileTabBar({
                     transition={{ duration: 0.2 }}
                   >
                     <Icon className="h-5 w-5" />
-                  </motion.div>
+                  </MotionDiv>
 
                   {/* Badge */}
                   {tab.badge && tab.badge > 0 && (
-                    <motion.div
+                    <MotionDiv
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center px-1"
                     >
                       {tab.badge > 99 ? '99+' : tab.badge}
-                    </motion.div>
+                    </MotionDiv>
                   )}
                 </div>
 
-                <motion.span
+                <MotionSpan
                   className={cn(
                     'text-[10px] font-medium transition-colors',
                     isActive ? 'text-primary' : 'text-muted-foreground'
@@ -152,10 +157,10 @@ export function EnhancedMobileTabBar({
                   }}
                 >
                   {tab.label}
-                </motion.span>
+                </MotionSpan>
 
                 {/* Active indicator */}
-                <motion.div
+                <MotionDiv
                   className="absolute bottom-0 left-1/2 w-1 h-1 bg-primary rounded-full"
                   initial={{ scale: 0, x: '-50%' }}
                   animate={{ scale: isActive ? 1 : 0 }}
@@ -187,7 +192,7 @@ export function EnhancedMobileTabBar({
         {/* Navigation dots */}
         <div className="flex justify-center gap-1 pb-2">
           {tabs.map((_, index) => (
-            <motion.div
+            <MotionDiv
               key={index}
               className={cn(
                 'w-1.5 h-1.5 rounded-full transition-all duration-200',
@@ -200,14 +205,14 @@ export function EnhancedMobileTabBar({
             />
           ))}
         </div>
-      </motion.div>
+      </MotionDiv>
 
       {/* More menu overlay */}
-      <AnimatePresence>
+      <LazyAnimatePresence>
         {showMoreMenu && (
           <>
             {/* Backdrop */}
-            <motion.div
+            <MotionDiv
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -216,7 +221,7 @@ export function EnhancedMobileTabBar({
             />
 
             {/* More menu */}
-            <motion.div
+            <MotionDiv
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
@@ -273,10 +278,10 @@ export function EnhancedMobileTabBar({
                   </p>
                 </div>
               </div>
-            </motion.div>
+            </MotionDiv>
           </>
         )}
-      </AnimatePresence>
+      </LazyAnimatePresence>
     </>
   );
 }
@@ -320,7 +325,7 @@ export function FloatingActionButton({
   });
 
   return (
-    <motion.div
+    <MotionDiv
       className={cn('fixed bottom-20 right-4 z-40', 'pb-safe-area-bottom', className)}
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
@@ -328,9 +333,9 @@ export function FloatingActionButton({
     >
       <div className="relative">
         {/* Label tooltip */}
-        <AnimatePresence>
+        <LazyAnimatePresence>
           {showLabel && (
-            <motion.div
+            <MotionDiv
               initial={{ opacity: 0, x: 20, scale: 0.8 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 20, scale: 0.8 }}
@@ -338,13 +343,13 @@ export function FloatingActionButton({
             >
               <span className="text-sm font-medium whitespace-nowrap">{label}</span>
               <div className="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-l-4 border-l-border border-y-4 border-y-transparent" />
-            </motion.div>
+            </MotionDiv>
           )}
-        </AnimatePresence>
+        </LazyAnimatePresence>
 
         {/* FAB button */}
-        <motion.div ref={longPressRef}>
-          <motion.button
+        <MotionDiv ref={longPressRef}>
+          <MotionButton
             onClick={handlePress}
             onTouchStart={handleLongPress}
             disabled={disabled}
@@ -361,9 +366,9 @@ export function FloatingActionButton({
             whileTap={{ scale: 0.95 }}
           >
             {icon}
-          </motion.button>
-        </motion.div>
+          </MotionButton>
+        </MotionDiv>
       </div>
-    </motion.div>
+    </MotionDiv>
   );
 }

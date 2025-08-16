@@ -1,14 +1,11 @@
 import React from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { User, SignOut, Gear } from '@/components/ui/InlineIcons';
 import { Partner } from './PartnerSetup';
 import { useMobileDetection } from '@/hooks/use-mobile';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { TouchButton } from '@/components/ui/touch-feedback';
-import { MobileCard } from '@/components/ui/mobile-card';
-import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
