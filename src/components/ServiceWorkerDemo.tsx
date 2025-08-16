@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { WifiSlash, CloudArrowUp, CheckCircle, Download } from '@phosphor-icons/react';
+import { WifiSlash, CloudArrowUp, CheckCircle, Download } from '@/components/ui/InlineIcons';
 import { useServiceWorker } from '@/hooks/useServiceWorker';
 import { useOfflineActionManager } from '@/utils/offlineActionManager';
 import { toast } from 'sonner';

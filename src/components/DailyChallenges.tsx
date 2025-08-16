@@ -3,16 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import {
-  CheckCircle,
-  Circle,
-  Lightning,
-  Heart,
-  Target,
-  ChatCircle,
-  Clock,
-  Gift,
-} from '@phosphor-icons/react';
+import { CheckCircle, Lightning, Heart, Target, Clock, Gift } from '@/components/ui/InlineIcons';
 import { Action, Issue } from '@/App';
 import { Partner } from './PartnerSetup';
 import { GamificationState } from './GamificationCenter';

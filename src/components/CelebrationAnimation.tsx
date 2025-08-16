@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Star, MagicWand, Heart, Gift } from '@phosphor-icons/react';
+import { Trophy, Star, MagicWand, Heart, Gift } from '@/components/ui/InlineIcons';
 
 interface CelebrationAnimationProps {
   show: boolean;

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Clock, Users, User, MagicWand, MagnifyingGlass } from '@phosphor-icons/react';
+import { Clock, Users, User, MagicWand, MagnifyingGlass } from '@/components/ui/InlineIcons';
 import { ActionTemplate, getTemplatesByCategory, searchTemplates } from '@/data/actionTemplates';
 
 interface ActionTemplatePickerProps {

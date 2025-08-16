@@ -76,12 +76,31 @@ export default defineConfig(() => {
         output: {
           // Mobile-optimized chunk splitting
           manualChunks: (id) => {
+            // Debug: Log what's being chunked
+            if (process.env.VITE_BUILD_ANALYZE) {
+              console.log('🔍 Chunking:', id);
+            }
+
+            // Log uncaught large files that go to main chunk
+            if (id.includes('node_modules') && process.env.VITE_BUILD_ANALYZE) {
+              const chunks = id.split('/');
+              const packageName = chunks.find((chunk) => chunk.includes('@') || chunk.length > 3);
+              console.log('📦 Package:', packageName, '- Size estimate: checking...');
+            }
+
             // Core React libraries - loaded early
-            if (id.includes('react') && !id.includes('react-router')) {
+            if (id.includes('react') && !id.includes('react-router') && !id.includes('react-dom')) {
+              if (process.env.VITE_BUILD_ANALYZE) console.log('  → react-vendor');
               return 'react-vendor';
             }
 
+            if (id.includes('react-dom')) {
+              if (process.env.VITE_BUILD_ANALYZE) console.log('  → react-dom');
+              return 'react-dom';
+            }
+
             if (id.includes('react-router-dom')) {
+              if (process.env.VITE_BUILD_ANALYZE) console.log('  → router');
               return 'router';
             }
 
@@ -117,9 +136,48 @@ export default defineConfig(() => {
               return 'animations';
             }
 
+            // Database and data libraries
+            if (id.includes('dexie') || id.includes('idb')) {
+              return 'database';
+            }
+
+            // Service worker and PWA libraries
+            if (id.includes('workbox') || id.includes('sw-')) {
+              return 'pwa';
+            }
+
+            // Testing and development libraries (should not be in production)
+            if (
+              id.includes('@testing-library') ||
+              id.includes('vitest') ||
+              id.includes('playwright')
+            ) {
+              return 'testing';
+            }
+
             // Utilities and date libraries
             if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
               return 'utils';
+            }
+
+            // CSS and styling libraries
+            if (
+              id.includes('tailwindcss') ||
+              id.includes('@tailwindcss') ||
+              id.includes('postcss')
+            ) {
+              return 'css-tools';
+            }
+
+            // Generic large node_modules - catch remaining vendor code
+            if (id.includes('node_modules')) {
+              // Split large libraries into separate chunks
+              if (id.includes('lodash') || id.includes('moment') || id.includes('axios')) {
+                return 'vendor-large';
+              }
+
+              // Generic vendor chunk for smaller libraries
+              return 'vendor';
             }
 
             // App components that can be chunked separately

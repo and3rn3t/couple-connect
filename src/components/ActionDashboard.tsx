@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { CheckCircle, Clock, User, Users, Calendar, Plus } from '@phosphor-icons/react';
+import { CheckCircle, Clock, User, Users, Calendar, Plus } from '@/components/ui/InlineIcons';
 import { Issue, Action } from '@/App';
 import { Partner } from '@/components/PartnerSetup';
 import { toast } from 'sonner';

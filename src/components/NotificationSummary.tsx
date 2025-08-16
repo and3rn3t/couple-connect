@@ -1,4 +1,4 @@
-import { Clock, Warning, CheckCircle } from '@phosphor-icons/react';
+import { Clock, Warning, CheckCircle } from '@/components/ui/InlineIcons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

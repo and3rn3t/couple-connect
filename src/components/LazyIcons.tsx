@@ -116,13 +116,6 @@ export const EssentialIcons = {
 
 // Lazy icon components for heavy icon libraries
 export const LazyIcons = {
-  // Phosphor icons (lazy) - only load when specifically needed
-  Target: lazy(() => import('@phosphor-icons/react').then((m) => ({ default: m.Target }))),
-  ChartBar: lazy(() => import('@phosphor-icons/react').then((m) => ({ default: m.ChartBar }))),
-  User: lazy(() => import('@phosphor-icons/react').then((m) => ({ default: m.User }))),
-  Gear: lazy(() => import('@phosphor-icons/react').then((m) => ({ default: m.Gear }))),
-  Clock: lazy(() => import('@phosphor-icons/react').then((m) => ({ default: m.Clock }))),
-
   // Lucide icons (lazy) - only load when specifically needed
   ChevronDown: lazy(() => import('lucide-react').then((m) => ({ default: m.ChevronDown }))),
   ArrowLeft: lazy(() => import('lucide-react').then((m) => ({ default: m.ArrowLeft }))),
@@ -131,8 +124,7 @@ export const LazyIcons = {
 
 // Hook for preloading icons when needed
 export const usePreloadIcons = () => {
-  const preloadPhosphor = () => import('@phosphor-icons/react');
   const preloadLucide = () => import('lucide-react');
 
-  return { preloadPhosphor, preloadLucide };
+  return { preloadLucide };
 };
