@@ -1,4 +1,4 @@
-# Cloudflare Pages configuration
+# 💕 Cloudflare Pages configuration for Couple Connect
 name = "couple-connect"
 compatibility_date = "2024-08-14"
 
@@ -9,9 +9,23 @@ pages_build_output_dir = "dist"
 [build]
 command = "npm run build"
 
+# 🌟 Performance optimizations
+[build.environment]
+NODE_ENV = "production"
+VITE_CLOUDFLARE_ANALYTICS_TOKEN = "YOUR_ANALYTICS_TOKEN_HERE"
+VITE_CLOUDFLARE_IMAGES_ACCOUNT_HASH = "plxxk0i1H1TUBzR_HC65xQ"
+
 # Environment variables for production
 [env.production.vars]
 NODE_ENV = "production"
+ENVIRONMENT = "production"
+# Analytics and optimization tokens
+CLOUDFLARE_ANALYTICS_TOKEN = "YOUR_ANALYTICS_TOKEN_HERE"
+CLOUDFLARE_IMAGES_ACCOUNT_HASH = "plxxk0i1H1TUBzR_HC65xQ"
+# Feature flags for relationship app
+ENABLE_REAL_TIME_SYNC = "true"
+ENABLE_ADVANCED_ANALYTICS = "true"
+ENABLE_IMAGE_OPTIMIZATION = "true"
 
 # D1 Database configuration for production
 [[env.production.d1_databases]]
@@ -19,17 +33,72 @@ binding = "DB"
 database_name = "couple-connect-db"
 database_id = "your-database-id-here"  # Replace with actual database ID after creation
 
+# 🎯 KV namespaces for caching and sessions
+[[env.production.kv_namespaces]]
+binding = "COUPLE_CACHE"
+id = "your-kv-namespace-id-here"
+preview_id = "your-kv-preview-id-here"
+
+# 📊 Analytics Engine for custom metrics
+[[env.production.analytics_engine_datasets]]
+binding = "LOVE_METRICS"
+dataset = "couple_connect_analytics"
+
 # Environment variables for preview
 [env.preview.vars]
 NODE_ENV = "development"
+ENVIRONMENT = "preview"
+CLOUDFLARE_ANALYTICS_TOKEN = "YOUR_PREVIEW_ANALYTICS_TOKEN_HERE"
+CLOUDFLARE_IMAGES_ACCOUNT_HASH = "plxxk0i1H1TUBzR_HC65xQ"
+ENABLE_REAL_TIME_SYNC = "false"
+ENABLE_ADVANCED_ANALYTICS = "true"
+ENABLE_IMAGE_OPTIMIZATION = "true"
 
 # D1 Database configuration for preview
 [[env.preview.d1_databases]]
 binding = "DB"
-database_name = "couple-connect-db"
-database_id = "your-database-id-here"  # Replace with actual database ID after creation
+database_name = "couple-connect-db-preview"
+database_id = "your-preview-database-id-here"  # Replace with actual preview database ID
 
-# Custom domains (uncomment and configure when ready)
+# KV namespaces for preview
+[[env.preview.kv_namespaces]]
+binding = "COUPLE_CACHE"
+id = "your-preview-kv-namespace-id-here"
+preview_id = "your-preview-kv-preview-id-here"
+
+# Analytics Engine for preview
+[[env.preview.analytics_engine_datasets]]
+binding = "LOVE_METRICS"
+dataset = "couple_connect_analytics_preview"
+
+# 🚀 Custom domains (configure when ready)
 # [[env.production.routes]]
 # pattern = "couple-connect.com"
 # zone_name = "couple-connect.com"
+
+# [[env.production.routes]]
+# pattern = "www.couple-connect.com"
+# zone_name = "couple-connect.com"
+
+# 🛡️ Security and performance headers (handled by _headers file)
+# Additional Cloudflare-specific optimizations can be configured here
+
+# 📱 Mobile-first optimizations
+[build.caching]
+include = ["dist/**/*"]
+exclude = ["dist/**/*.map"]
+
+# 🔄 Scheduled events for relationship insights
+# Uncomment when ready to implement background workers
+# [[triggers]]
+# cron = "0 9 * * *"  # Daily at 9 AM
+# handler = "scheduled"
+
+# 💾 Durable Objects for real-time couple sync (advanced feature)
+# [[migrations]]
+# tag = "v1"
+# new_classes = ["CoupleSync"]
+
+# 🌐 Custom error pages
+# [env.production]
+# compatibility_flags = ["streams_enable_constructors"]

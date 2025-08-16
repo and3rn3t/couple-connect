@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { CheckCircle, Clock, User, Users, Calendar, Plus } from '@/components/ui/InlineIcons';
+import { PartnerAvatar } from '@/components/PartnerAvatar';
 import { Issue, Action } from '@/App';
 import { Partner } from '@/components/PartnerSetup';
 import { toast } from 'sonner';
@@ -93,17 +93,25 @@ export default function ActionDashboard({
       return {
         text: assignedPartner.name,
         icon: User,
-        avatar: assignedPartner.name.charAt(0).toUpperCase(),
+        partner: assignedPartner,
       };
     }
 
     switch (action.assignedTo) {
       case 'partner1':
-        return { text: 'Partner 1', icon: User, avatar: 'P1' };
+        return {
+          text: 'Partner 1',
+          icon: User,
+          partner: { id: 'p1', name: 'Partner 1', avatar: 'P1' },
+        };
       case 'partner2':
-        return { text: 'Partner 2', icon: User, avatar: 'P2' };
+        return {
+          text: 'Partner 2',
+          icon: User,
+          partner: { id: 'p2', name: 'Partner 2', avatar: 'P2' },
+        };
       case 'both':
-        return { text: 'Both Partners', icon: Users, avatar: null };
+        return { text: 'Both Partners', icon: Users, partner: null };
     }
   };
 
@@ -159,10 +167,8 @@ export default function ActionDashboard({
 
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <div className="flex items-center gap-2">
-              {assigned.avatar ? (
-                <Avatar className="h-4 w-4">
-                  <AvatarFallback className="text-xs bg-muted">{assigned.avatar}</AvatarFallback>
-                </Avatar>
+              {assigned.partner ? (
+                <PartnerAvatar partner={assigned.partner} size="sm" className="h-4 w-4" />
               ) : (
                 <AssignedIcon size={14} />
               )}

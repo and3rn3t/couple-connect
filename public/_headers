@@ -1,8 +1,65 @@
 /*
+  # Security Headers 🛡️
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   X-XSS-Protection: 1; mode=block
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https:
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https: wss:
+
+  # Performance Headers ⚡
+  Cache-Control: public, max-age=31536000, immutable
+
+  # Progressive Web App Headers 📱
+  X-UA-Compatible: IE=edge
+
+  # Relationship App Specific 💕
+  X-Powered-By: Love and TypeScript
+  X-Relationship-Status: In a committed relationship with performance
+
+# Static Assets - Cache for 1 year 🎨
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+
+# Images - Optimize for couples! 📸
+/*.png
+  Cache-Control: public, max-age=2592000
+  X-Content-Type-Options: nosniff
+
+/*.jpg
+  Cache-Control: public, max-age=2592000
+  X-Content-Type-Options: nosniff
+
+/*.svg
+  Cache-Control: public, max-age=2592000
+  X-Content-Type-Options: nosniff
+
+/*.webp
+  Cache-Control: public, max-age=2592000
+  X-Content-Type-Options: nosniff
+
+# Fonts - Cache for long term love 💝
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+/*.woff
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+# Service Worker - Fresh love updates 🔄
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Manifest - App identity ✨
+/manifest.json
+  Cache-Control: public, max-age=86400
+  X-Content-Type-Options: nosniff
+
+# API Routes - Dynamic love data 🔄
+/api/*
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0

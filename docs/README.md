@@ -30,6 +30,7 @@ This directory contains all documentation for the Couple Connect project, organi
 - [**CI_IDE_LINTING_SUMMARY.md**](./development/CI_IDE_LINTING_SUMMARY.md) - Implementation summary and achievements
 - [**GITHUB_ACTIONS_TROUBLESHOOTING.md**](./development/GITHUB_ACTIONS_TROUBLESHOOTING.md) - CI/CD pipeline debugging guide
 - [**OPTIMIZATION_SUMMARY.md**](./development/OPTIMIZATION_SUMMARY.md) - Overall project optimization achievements
+- [**REACT_TROUBLESHOOTING.md**](./development/REACT_TROUBLESHOOTING.md) - 🚨 Critical React bugs and debugging strategies
 
 #### Database Development
 
