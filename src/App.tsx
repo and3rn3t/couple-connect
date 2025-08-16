@@ -339,34 +339,72 @@ function App() {
     // Only run this effect once
     if (partnersInitialized) return;
 
+    console.warn('🚀 Initializing partners...', {
+      currentPartner: currentPartner?.name,
+      otherPartner: otherPartner?.name,
+    });
+
+    // Set a timeout to ensure this doesn't hang indefinitely
+    const initTimeout = setTimeout(() => {
+      console.warn('⚠️ Partner initialization timeout, forcing initialization');
+      if (!partnersInitialized) {
+        const defaultCurrentPartner: Partner = {
+          id: 'partner-1',
+          name: 'You',
+          email: 'you@example.com',
+          isCurrentUser: true,
+        };
+        const defaultOtherPartner: Partner = {
+          id: 'partner-2',
+          name: 'Your Partner',
+          email: 'partner@example.com',
+          isCurrentUser: false,
+        };
+
+        setCurrentPartner(defaultCurrentPartner);
+        setOtherPartner(defaultOtherPartner);
+        setPartnersInitialized(true);
+        console.warn('✅ Forced partner initialization complete');
+      }
+    }, 2000); // Force initialization after 2 seconds max
+
     // If partners already exist, just mark as initialized
     if (currentPartner && otherPartner) {
       console.warn('✅ Partners already exist, marking as initialized');
       setPartnersInitialized(true);
+      clearTimeout(initTimeout);
       return;
     }
 
     // Create default partners if none exist
-    console.warn('🚀 Initializing default partners...');
+    try {
+      const defaultCurrentPartner: Partner = {
+        id: 'partner-1',
+        name: 'You',
+        email: 'you@example.com',
+        isCurrentUser: true,
+      };
+      const defaultOtherPartner: Partner = {
+        id: 'partner-2',
+        name: 'Your Partner',
+        email: 'partner@example.com',
+        isCurrentUser: false,
+      };
 
-    const defaultCurrentPartner: Partner = {
-      id: 'partner-1',
-      name: 'You',
-      email: 'you@example.com',
-      isCurrentUser: true,
-    };
-    const defaultOtherPartner: Partner = {
-      id: 'partner-2',
-      name: 'Your Partner',
-      email: 'partner@example.com',
-      isCurrentUser: false,
-    };
+      // Set partners and mark as initialized
+      setCurrentPartner(defaultCurrentPartner);
+      setOtherPartner(defaultOtherPartner);
+      setPartnersInitialized(true);
+      console.warn('✅ Default partners created successfully');
+      clearTimeout(initTimeout);
+    } catch (error) {
+      console.error('❌ Error creating default partners:', error);
+      // Force initialization anyway to prevent infinite loading
+      setPartnersInitialized(true);
+      clearTimeout(initTimeout);
+    }
 
-    // Set partners and mark as initialized
-    setCurrentPartner(defaultCurrentPartner);
-    setOtherPartner(defaultOtherPartner);
-    setPartnersInitialized(true);
-    console.warn('✅ Default partners created successfully');
+    return () => clearTimeout(initTimeout);
   }, []); // Empty dependency array - only run once on mount
 
   // Show loading screen while partners are being initialized or don't exist
@@ -377,20 +415,59 @@ function App() {
       otherPartner: otherPartner?.name,
     });
     return (
-      <div className="p-8 bg-gray-100 min-h-screen">
-        <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold mb-4">🚀 Setting up your account...</h2>
-          <p className="text-gray-600">
-            Creating default partners for demo. This will only take a moment.
+      <div style={{ 
+        padding: '32px', 
+        backgroundColor: '#f0f0f0', 
+        minHeight: '100vh',
+        fontFamily: 'Arial, sans-serif'
+      }}>
+        <div style={{
+          maxWidth: '500px',
+          margin: '0 auto',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          padding: '24px'
+        }}>
+          <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px', color: '#333' }}>
+            🚀 Couple Connect Loading...
+          </h2>
+          <p style={{ color: '#666', marginBottom: '16px' }}>
+            Setting up your relationship dashboard. This should only take a moment.
           </p>
-          <div className="mt-4">
-            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div style={{ marginTop: '16px', textAlign: 'center' }}>
+            <div style={{
+              width: '24px',
+              height: '24px',
+              border: '3px solid #e3e3e3',
+              borderTop: '3px solid #3498db',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto'
+            }} />
           </div>
-          <div className="mt-4 text-xs text-gray-500">
-            Debug: partnersInitialized={partnersInitialized.toString()}, currentPartner=
-            {currentPartner?.name || 'null'}, otherPartner={otherPartner?.name || 'null'}
+          <div style={{ 
+            marginTop: '16px', 
+            fontSize: '12px', 
+            color: '#999',
+            backgroundColor: '#f8f8f8',
+            padding: '8px',
+            borderRadius: '4px'
+          }}>
+            Debug Info:<br/>
+            • partnersInitialized: {partnersInitialized.toString()}<br/>
+            • currentPartner: {currentPartner?.name || 'null'}<br/>
+            • otherPartner: {otherPartner?.name || 'null'}
           </div>
         </div>
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `
+        }} />
       </div>
     );
   }
