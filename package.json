@@ -148,7 +148,12 @@
     "purge:css": "purgecss --css dist/assets/*.css --content dist/assets/*.js --output dist/assets/",
     "analyze:lazy": "npm run build:analyze && node scripts/analyze-lazy-loading.js",
     "test:lazy": "npm run build && node scripts/test-lazy-loading.js",
-    "optimize:js": "node scripts/optimize-js-lazy.js"
+    "optimize:js": "node scripts/optimize-js-lazy.js",
+    "test:unit": "vitest run --reporter=verbose",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "security:check": "npm audit --audit-level high && node scripts/dependency-manager.js security",
+    "validate:production": "node scripts/validate-production.js",
+    "validate:pipeline": "node scripts/validate-pipeline.js"
   },
   "dependencies": {
     "@cloudflare/workers-types": "^4.20250813.0",

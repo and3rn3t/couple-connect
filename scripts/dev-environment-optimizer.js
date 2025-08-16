@@ -2,7 +2,7 @@
 
 /**
  * ⚙️ Development Environment Optimizer
- * 
+ *
  * Features:
  * - IDE configuration optimization
  * - Git hooks setup
@@ -33,7 +33,7 @@ class DevEnvironmentOptimizer {
     await this.setupDevWorkflows();
     await this.configurePrettier();
     await this.optimizeViteConfig();
-    
+
     this.generateOptimizationReport();
   }
 
@@ -47,44 +47,44 @@ class DevEnvironmentOptimizer {
 
     // VS Code settings
     const settings = {
-      "editor.formatOnSave": true,
-      "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": true,
-        "source.organizeImports": true
+      'editor.formatOnSave': true,
+      'editor.codeActionsOnSave': {
+        'source.fixAll.eslint': true,
+        'source.organizeImports': true,
       },
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "typescript.preferences.importModuleSpecifier": "relative",
-      "typescript.suggest.autoImports": true,
-      "emmet.includeLanguages": {
-        "typescript": "typescriptreact",
-        "javascript": "javascriptreact"
+      'editor.defaultFormatter': 'esbenp.prettier-vscode',
+      'typescript.preferences.importModuleSpecifier': 'relative',
+      'typescript.suggest.autoImports': true,
+      'emmet.includeLanguages': {
+        typescript: 'typescriptreact',
+        javascript: 'javascriptreact',
       },
-      "files.associations": {
-        "*.css": "tailwindcss"
+      'files.associations': {
+        '*.css': 'tailwindcss',
       },
-      "tailwindCSS.includeLanguages": {
-        "typescript": "typescript",
-        "typescriptreact": "typescriptreact"
+      'tailwindCSS.includeLanguages': {
+        typescript: 'typescript',
+        typescriptreact: 'typescriptreact',
       },
-      "tailwindCSS.experimental.classRegex": [
-        ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
-        ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+      'tailwindCSS.experimental.classRegex': [
+        ['cva\\(([^)]*)\\)', '["\'`]([^"\'`]*).*?["\'`]'],
+        ['cx\\(([^)]*)\\)', "(?:'|\"|`)([^']*)(?:'|\"|`)"],
       ],
-      "search.exclude": {
-        "**/node_modules": true,
-        "**/dist": true,
-        "**/build": true,
-        "**/.git": true,
-        "**/coverage": true,
-        "**/playwright-report": true,
-        "**/.performance-history": true
+      'search.exclude': {
+        '**/node_modules': true,
+        '**/dist': true,
+        '**/build': true,
+        '**/.git': true,
+        '**/coverage': true,
+        '**/playwright-report': true,
+        '**/.performance-history': true,
       },
-      "files.watcherExclude": {
-        "**/node_modules/**": true,
-        "**/dist/**": true,
-        "**/build/**": true,
-        "**/.git/**": true
-      }
+      'files.watcherExclude': {
+        '**/node_modules/**': true,
+        '**/dist/**': true,
+        '**/build/**': true,
+        '**/.git/**': true,
+      },
     };
 
     const settingsPath = resolve(this.vscodeDir, 'settings.json');
@@ -92,20 +92,20 @@ class DevEnvironmentOptimizer {
 
     // VS Code extensions recommendations
     const extensions = {
-      "recommendations": [
-        "esbenp.prettier-vscode",
-        "dbaeumer.vscode-eslint",
-        "bradlc.vscode-tailwindcss",
-        "ms-vscode.vscode-typescript-next",
-        "formulahendry.auto-rename-tag",
-        "christian-kohler.path-intellisense",
-        "ms-playwright.playwright",
-        "ms-vscode.vscode-json",
-        "usernamehw.errorlens",
-        "gruntfuggly.todo-tree",
-        "streetsidesoftware.code-spell-checker",
-        "ms-vscode.vscode-eslint-remote"
-      ]
+      recommendations: [
+        'esbenp.prettier-vscode',
+        'dbaeumer.vscode-eslint',
+        'bradlc.vscode-tailwindcss',
+        'ms-vscode.vscode-typescript-next',
+        'formulahendry.auto-rename-tag',
+        'christian-kohler.path-intellisense',
+        'ms-playwright.playwright',
+        'ms-vscode.vscode-json',
+        'usernamehw.errorlens',
+        'gruntfuggly.todo-tree',
+        'streetsidesoftware.code-spell-checker',
+        'ms-vscode.vscode-eslint-remote',
+      ],
     };
 
     const extensionsPath = resolve(this.vscodeDir, 'extensions.json');
@@ -113,29 +113,29 @@ class DevEnvironmentOptimizer {
 
     // VS Code launch configuration for debugging
     const launch = {
-      "version": "0.2.0",
-      "configurations": [
+      version: '0.2.0',
+      configurations: [
         {
-          "name": "Launch Chrome",
-          "request": "launch",
-          "type": "chrome",
-          "url": "http://localhost:5173",
-          "webRoot": "${workspaceFolder}/src",
-          "sourceMapPathOverrides": {
-            "webpack:///src/*": "${webRoot}/*"
-          }
+          name: 'Launch Chrome',
+          request: 'launch',
+          type: 'chrome',
+          url: 'http://localhost:5173',
+          webRoot: '${workspaceFolder}/src',
+          sourceMapPathOverrides: {
+            'webpack:///src/*': '${webRoot}/*',
+          },
         },
         {
-          "name": "Debug Node Script",
-          "type": "node",
-          "request": "launch",
-          "program": "${file}",
-          "cwd": "${workspaceFolder}",
-          "env": {
-            "NODE_ENV": "development"
-          }
-        }
-      ]
+          name: 'Debug Node Script',
+          type: 'node',
+          request: 'launch',
+          program: '${file}',
+          cwd: '${workspaceFolder}',
+          env: {
+            NODE_ENV: 'development',
+          },
+        },
+      ],
     };
 
     const launchPath = resolve(this.vscodeDir, 'launch.json');
@@ -143,79 +143,79 @@ class DevEnvironmentOptimizer {
 
     // VS Code tasks
     const tasks = {
-      "version": "2.0.0",
-      "tasks": [
+      version: '2.0.0',
+      tasks: [
         {
-          "label": "Dev Server",
-          "type": "npm",
-          "script": "dev",
-          "group": "build",
-          "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "new"
+          label: 'Dev Server',
+          type: 'npm',
+          script: 'dev',
+          group: 'build',
+          presentation: {
+            echo: true,
+            reveal: 'always',
+            focus: false,
+            panel: 'new',
           },
-          "isBackground": true,
-          "problemMatcher": {
-            "fileLocation": "relative",
-            "pattern": {
-              "regexp": "ERROR\\s+(.*):(\\d+):(\\d+)\\s+(.*)",
-              "file": 1,
-              "line": 2,
-              "column": 3,
-              "message": 4
+          isBackground: true,
+          problemMatcher: {
+            fileLocation: 'relative',
+            pattern: {
+              regexp: 'ERROR\\s+(.*):(\\d+):(\\d+)\\s+(.*)',
+              file: 1,
+              line: 2,
+              column: 3,
+              message: 4,
             },
-            "background": {
-              "activeOnStart": true,
-              "beginsPattern": "Local:\\s+http://localhost",
-              "endsPattern": "ready in"
-            }
-          }
-        },
-        {
-          "label": "Build",
-          "type": "npm",
-          "script": "build",
-          "group": {
-            "kind": "build",
-            "isDefault": true
+            background: {
+              activeOnStart: true,
+              beginsPattern: 'Local:\\s+http://localhost',
+              endsPattern: 'ready in',
+            },
           },
-          "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared"
-          }
         },
         {
-          "label": "Test",
-          "type": "npm",
-          "script": "test",
-          "group": {
-            "kind": "test",
-            "isDefault": true
+          label: 'Build',
+          type: 'npm',
+          script: 'build',
+          group: {
+            kind: 'build',
+            isDefault: true,
           },
-          "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared"
-          }
+          presentation: {
+            echo: true,
+            reveal: 'always',
+            focus: false,
+            panel: 'shared',
+          },
         },
         {
-          "label": "Quality Check",
-          "type": "npm",
-          "script": "quality:analyze",
-          "group": "build",
-          "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared"
-          }
-        }
-      ]
+          label: 'Test',
+          type: 'npm',
+          script: 'test',
+          group: {
+            kind: 'test',
+            isDefault: true,
+          },
+          presentation: {
+            echo: true,
+            reveal: 'always',
+            focus: false,
+            panel: 'shared',
+          },
+        },
+        {
+          label: 'Quality Check',
+          type: 'npm',
+          script: 'quality:analyze',
+          group: 'build',
+          presentation: {
+            echo: true,
+            reveal: 'always',
+            focus: false,
+            panel: 'shared',
+          },
+        },
+      ],
     };
 
     const tasksPath = resolve(this.vscodeDir, 'tasks.json');
@@ -318,13 +318,13 @@ fi
       const hooks = [
         { name: 'pre-commit', content: preCommitHook },
         { name: 'pre-push', content: prePushHook },
-        { name: 'commit-msg', content: commitMsgHook }
+        { name: 'commit-msg', content: commitMsgHook },
       ];
 
-      hooks.forEach(hook => {
+      hooks.forEach((hook) => {
         const hookPath = resolve(this.gitHooksDir, hook.name);
         writeFileSync(hookPath, hook.content);
-        
+
         try {
           execSync(`chmod +x "${hookPath}"`);
         } catch (error) {
@@ -337,7 +337,7 @@ fi
     } else {
       console.log('   ⚠️  Git repository not found, skipping Git hooks');
     }
-    
+
     console.log();
   }
 
@@ -345,65 +345,63 @@ fi
     console.log('📋 Optimizing ESLint configuration...');
 
     const eslintConfig = {
-      "extends": [
-        "eslint:recommended",
-        "@typescript-eslint/recommended",
-        "plugin:react/recommended",
-        "plugin:react-hooks/recommended",
-        "plugin:jsx-a11y/recommended",
-        "prettier"
+      extends: [
+        'eslint:recommended',
+        '@typescript-eslint/recommended',
+        'plugin:react/recommended',
+        'plugin:react-hooks/recommended',
+        'plugin:jsx-a11y/recommended',
+        'prettier',
       ],
-      "plugins": [
-        "@typescript-eslint",
-        "react",
-        "react-hooks",
-        "jsx-a11y"
-      ],
-      "rules": {
+      plugins: ['@typescript-eslint', 'react', 'react-hooks', 'jsx-a11y'],
+      rules: {
         // React specific
-        "react/react-in-jsx-scope": "off",
-        "react/prop-types": "off",
-        "react-hooks/exhaustive-deps": "error",
-        
+        'react/react-in-jsx-scope': 'off',
+        'react/prop-types': 'off',
+        'react-hooks/exhaustive-deps': 'error',
+
         // TypeScript specific
-        "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-        "@typescript-eslint/no-explicit-any": "warn",
-        "@typescript-eslint/explicit-function-return-type": "off",
-        
+        '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+        '@typescript-eslint/no-explicit-any': 'warn',
+        '@typescript-eslint/explicit-function-return-type': 'off',
+
         // General code quality
-        "no-console": ["warn", { "allow": ["warn", "error"] }],
-        "no-debugger": "error",
-        "prefer-const": "error",
-        "no-var": "error",
-        
+        'no-console': ['warn', { allow: ['warn', 'error'] }],
+        'no-debugger': 'error',
+        'prefer-const': 'error',
+        'no-var': 'error',
+
         // Performance
-        "react/jsx-no-bind": ["warn", {
-          "allowArrowFunctions": true,
-          "allowBind": false,
-          "ignoreRefs": true
-        }],
-        
+        'react/jsx-no-bind': [
+          'warn',
+          {
+            allowArrowFunctions: true,
+            allowBind: false,
+            ignoreRefs: true,
+          },
+        ],
+
         // Accessibility
-        "jsx-a11y/anchor-is-valid": "warn"
+        'jsx-a11y/anchor-is-valid': 'warn',
       },
-      "settings": {
-        "react": {
-          "version": "detect"
-        }
+      settings: {
+        react: {
+          version: 'detect',
+        },
       },
-      "env": {
-        "browser": true,
-        "es2022": true,
-        "node": true
+      env: {
+        browser: true,
+        es2022: true,
+        node: true,
       },
-      "parser": "@typescript-eslint/parser",
-      "parserOptions": {
-        "ecmaVersion": "latest",
-        "sourceType": "module",
-        "ecmaFeatures": {
-          "jsx": true
-        }
-      }
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
     };
 
     const eslintPath = resolve(this.projectRoot, '.eslintrc.json');
@@ -464,7 +462,7 @@ esac
 
     const devScriptPath = resolve(this.projectRoot, 'dev.sh');
     writeFileSync(devScriptPath, devScript);
-    
+
     try {
       execSync(`chmod +x "${devScriptPath}"`);
     } catch (error) {
@@ -561,24 +559,24 @@ if (allPassed) {
     console.log('💄 Configuring Prettier...');
 
     const prettierConfig = {
-      "semi": true,
-      "trailingComma": "es5",
-      "singleQuote": true,
-      "printWidth": 100,
-      "tabWidth": 2,
-      "useTabs": false,
-      "quoteProps": "as-needed",
-      "bracketSpacing": true,
-      "bracketSameLine": false,
-      "arrowParens": "avoid",
-      "endOfLine": "lf",
-      "embeddedLanguageFormatting": "auto",
-      "htmlWhitespaceSensitivity": "css",
-      "insertPragma": false,
-      "jsxSingleQuote": true,
-      "proseWrap": "preserve",
-      "requirePragma": false,
-      "vueIndentScriptAndStyle": false
+      semi: true,
+      trailingComma: 'es5',
+      singleQuote: true,
+      printWidth: 100,
+      tabWidth: 2,
+      useTabs: false,
+      quoteProps: 'as-needed',
+      bracketSpacing: true,
+      bracketSameLine: false,
+      arrowParens: 'avoid',
+      endOfLine: 'lf',
+      embeddedLanguageFormatting: 'auto',
+      htmlWhitespaceSensitivity: 'css',
+      insertPragma: false,
+      jsxSingleQuote: true,
+      proseWrap: 'preserve',
+      requirePragma: false,
+      vueIndentScriptAndStyle: false,
     };
 
     const prettierPath = resolve(this.projectRoot, '.prettierrc.json');
@@ -649,7 +647,7 @@ test-results/
 
     if (existsSync(viteConfigPath)) {
       const currentConfig = readFileSync(viteConfigPath, 'utf8');
-      
+
       // Check if development optimizations are already present
       if (!currentConfig.includes('server:') || !currentConfig.includes('hmr:')) {
         needsOptimization = true;
@@ -697,7 +695,9 @@ esbuild: {
       const viteDevConfigPath = resolve(this.projectRoot, 'vite.dev-optimizations.js');
       writeFileSync(viteDevConfigPath, viteDevConfig);
 
-      this.optimizations.push('⚠️ Vite development optimizations suggested (see vite.dev-optimizations.js)');
+      this.optimizations.push(
+        '⚠️ Vite development optimizations suggested (see vite.dev-optimizations.js)'
+      );
       console.log('   ✅ Vite development optimization suggestions created');
     } else {
       this.optimizations.push('✅ Vite configuration appears to be optimized');
@@ -713,12 +713,12 @@ esbuild: {
       optimizations: this.optimizations,
       summary: {
         totalOptimizations: this.optimizations.length,
-        vscodeConfigured: this.optimizations.some(opt => opt.includes('VS Code')),
-        gitHooksConfigured: this.optimizations.some(opt => opt.includes('Git hooks')),
-        eslintOptimized: this.optimizations.some(opt => opt.includes('ESLint')),
-        prettierConfigured: this.optimizations.some(opt => opt.includes('Prettier')),
-        workflowsSetup: this.optimizations.some(opt => opt.includes('workflow'))
-      }
+        vscodeConfigured: this.optimizations.some((opt) => opt.includes('VS Code')),
+        gitHooksConfigured: this.optimizations.some((opt) => opt.includes('Git hooks')),
+        eslintOptimized: this.optimizations.some((opt) => opt.includes('ESLint')),
+        prettierConfigured: this.optimizations.some((opt) => opt.includes('Prettier')),
+        workflowsSetup: this.optimizations.some((opt) => opt.includes('workflow')),
+      },
     };
 
     // Save report
@@ -733,9 +733,13 @@ esbuild: {
     console.log('================================================');
     console.log(`🔧 Optimizations Applied: ${report.summary.totalOptimizations}`);
     console.log(`💻 VS Code: ${report.summary.vscodeConfigured ? 'Configured' : 'Not configured'}`);
-    console.log(`🪝 Git Hooks: ${report.summary.gitHooksConfigured ? 'Configured' : 'Not configured'}`);
+    console.log(
+      `🪝 Git Hooks: ${report.summary.gitHooksConfigured ? 'Configured' : 'Not configured'}`
+    );
     console.log(`📋 ESLint: ${report.summary.eslintOptimized ? 'Optimized' : 'Not optimized'}`);
-    console.log(`💄 Prettier: ${report.summary.prettierConfigured ? 'Configured' : 'Not configured'}`);
+    console.log(
+      `💄 Prettier: ${report.summary.prettierConfigured ? 'Configured' : 'Not configured'}`
+    );
     console.log(`🔄 Workflows: ${report.summary.workflowsSetup ? 'Setup' : 'Not setup'}`);
 
     console.log('\n📄 Configuration files created:');
@@ -770,7 +774,7 @@ esbuild: {
 
 ## 🔧 Applied Optimizations
 
-${report.optimizations.map(opt => `- ${opt}`).join('\n')}
+${report.optimizations.map((opt) => `- ${opt}`).join('\n')}
 
 ## 📁 Configuration Files Created
 
@@ -860,7 +864,7 @@ async function main() {
       const optimizer = new DevEnvironmentOptimizer();
       await optimizer.optimize();
       break;
-      
+
     case 'check':
       console.log('🔍 Checking development environment...');
       try {
@@ -870,7 +874,7 @@ async function main() {
         process.exit(1);
       }
       break;
-      
+
     case 'help':
       console.log(`
 ⚙️ Development Environment Optimizer
@@ -887,7 +891,7 @@ Examples:
   npm run dev:check        # Environment validation
       `);
       break;
-      
+
     default:
       console.log(`Unknown command: ${command}`);
       console.log('Run with "help" for usage information');

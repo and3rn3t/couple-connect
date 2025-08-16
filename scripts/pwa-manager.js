@@ -2,7 +2,7 @@
 
 /**
  * 📱 PWA & Service Worker Manager
- * 
+ *
  * Features:
  * - Generate optimized service worker
  * - Manage caching strategies
@@ -31,7 +31,7 @@ class PWAManager {
     await this.optimizeCaching();
     await this.generateOfflinePages();
     await this.testPWACapabilities();
-    
+
     this.generateReport();
   }
 
@@ -47,10 +47,10 @@ class PWAManager {
     try {
       const manifest = JSON.parse(readFileSync(this.manifestPath, 'utf8'));
       const issues = this.checkManifestIssues(manifest);
-      
+
       if (issues.length > 0) {
         console.log('🔧 Found manifest issues:');
-        issues.forEach(issue => console.log(`   - ${issue}`));
+        issues.forEach((issue) => console.log(`   - ${issue}`));
         this.fixManifestIssues(manifest, issues);
       } else {
         console.log('✅ Manifest is valid');
@@ -64,7 +64,7 @@ class PWAManager {
 
   checkManifestIssues(manifest) {
     const issues = [];
-    
+
     // Required fields
     if (!manifest.name) issues.push('Missing "name" field');
     if (!manifest.short_name) issues.push('Missing "short_name" field');
@@ -72,26 +72,26 @@ class PWAManager {
     if (!manifest.display) issues.push('Missing "display" field');
     if (!manifest.theme_color) issues.push('Missing "theme_color" field');
     if (!manifest.background_color) issues.push('Missing "background_color" field');
-    
+
     // Icons validation
     if (!manifest.icons || manifest.icons.length === 0) {
       issues.push('Missing icons array');
     } else {
       const requiredSizes = ['192x192', '512x512'];
-      const availableSizes = manifest.icons.map(icon => icon.sizes);
-      
-      requiredSizes.forEach(size => {
+      const availableSizes = manifest.icons.map((icon) => icon.sizes);
+
+      requiredSizes.forEach((size) => {
         if (!availableSizes.includes(size)) {
           issues.push(`Missing ${size} icon`);
         }
       });
     }
-    
+
     // Performance optimizations
     if (manifest.display !== 'standalone' && manifest.display !== 'minimal-ui') {
       issues.push('Consider using "standalone" or "minimal-ui" display mode');
     }
-    
+
     return issues;
   }
 
@@ -117,18 +117,23 @@ class PWAManager {
     }
 
     // Add missing icons if needed
-    if (issues.some(issue => issue.includes('icon'))) {
+    if (issues.some((issue) => issue.includes('icon'))) {
       manifest.icons = manifest.icons || [];
-      
+
       // Add standard PWA icons
       const standardIcons = [
         { src: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
         { src: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
-        { src: '/icons/icon-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+        {
+          src: '/icons/icon-maskable.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'maskable',
+        },
       ];
 
-      standardIcons.forEach(icon => {
-        if (!manifest.icons.find(existing => existing.sizes === icon.sizes)) {
+      standardIcons.forEach((icon) => {
+        if (!manifest.icons.find((existing) => existing.sizes === icon.sizes)) {
           manifest.icons.push(icon);
         }
       });
@@ -155,49 +160,49 @@ class PWAManager {
         {
           src: '/icons/icon-72x72.png',
           sizes: '72x72',
-          type: 'image/png'
+          type: 'image/png',
         },
         {
           src: '/icons/icon-96x96.png',
           sizes: '96x96',
-          type: 'image/png'
+          type: 'image/png',
         },
         {
           src: '/icons/icon-128x128.png',
           sizes: '128x128',
-          type: 'image/png'
+          type: 'image/png',
         },
         {
           src: '/icons/icon-144x144.png',
           sizes: '144x144',
-          type: 'image/png'
+          type: 'image/png',
         },
         {
           src: '/icons/icon-152x152.png',
           sizes: '152x152',
-          type: 'image/png'
+          type: 'image/png',
         },
         {
           src: '/icons/icon-192x192.png',
           sizes: '192x192',
-          type: 'image/png'
+          type: 'image/png',
         },
         {
           src: '/icons/icon-384x384.png',
           sizes: '384x384',
-          type: 'image/png'
+          type: 'image/png',
         },
         {
           src: '/icons/icon-512x512.png',
           sizes: '512x512',
-          type: 'image/png'
+          type: 'image/png',
         },
         {
           src: '/icons/icon-maskable.png',
           sizes: '512x512',
           type: 'image/png',
-          purpose: 'maskable'
-        }
+          purpose: 'maskable',
+        },
       ],
       shortcuts: [
         {
@@ -205,15 +210,15 @@ class PWAManager {
           short_name: 'Check-in',
           description: 'Quick relationship check-in',
           url: '/checkin',
-          icons: [{ src: '/icons/shortcut-checkin.png', sizes: '96x96' }]
+          icons: [{ src: '/icons/shortcut-checkin.png', sizes: '96x96' }],
         },
         {
           name: 'Progress View',
           short_name: 'Progress',
           description: 'View relationship progress',
           url: '/progress',
-          icons: [{ src: '/icons/shortcut-progress.png', sizes: '96x96' }]
-        }
+          icons: [{ src: '/icons/shortcut-progress.png', sizes: '96x96' }],
+        },
       ],
       categories: ['lifestyle', 'social', 'productivity'],
       screenshots: [
@@ -221,15 +226,15 @@ class PWAManager {
           src: '/screenshots/desktop-screenshot.png',
           sizes: '1280x720',
           type: 'image/png',
-          form_factor: 'wide'
+          form_factor: 'wide',
         },
         {
           src: '/screenshots/mobile-screenshot.png',
           sizes: '375x812',
           type: 'image/png',
-          form_factor: 'narrow'
-        }
-      ]
+          form_factor: 'narrow',
+        },
+      ],
     };
 
     writeFileSync(this.manifestPath, JSON.stringify(optimizedManifest, null, 2));
@@ -270,7 +275,7 @@ const STATIC_CACHE_PATTERNS = [
 // Install event - cache essential resources
 self.addEventListener('install', event => {
   console.log('[SW] Installing service worker');
-  
+
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -287,7 +292,7 @@ self.addEventListener('install', event => {
 // Activate event - clean up old caches
 self.addEventListener('activate', event => {
   console.log('[SW] Activating service worker');
-  
+
   event.waitUntil(
     caches.keys()
       .then(cacheNames => {
@@ -339,21 +344,21 @@ self.addEventListener('fetch', event => {
 async function networkFirstStrategy(request) {
   try {
     const networkResponse = await fetch(request);
-    
+
     if (networkResponse.ok) {
       const cache = await caches.open(CACHE_NAME);
       cache.put(request, networkResponse.clone());
     }
-    
+
     return networkResponse;
   } catch (error) {
     console.log('[SW] Network failed, trying cache:', request.url);
     const cachedResponse = await caches.match(request);
-    
+
     if (cachedResponse) {
       return cachedResponse;
     }
-    
+
     // Return offline response for API calls
     return new Response(
       JSON.stringify({ error: 'Offline', message: 'Network unavailable' }),
@@ -368,7 +373,7 @@ async function networkFirstStrategy(request) {
 // Cache-first strategy for static assets
 async function cacheFirstStrategy(request) {
   const cachedResponse = await caches.match(request);
-  
+
   if (cachedResponse) {
     // Optionally update cache in background
     fetch(request).then(response => {
@@ -377,18 +382,18 @@ async function cacheFirstStrategy(request) {
         cache.then(c => c.put(request, response));
       }
     });
-    
+
     return cachedResponse;
   }
-  
+
   try {
     const networkResponse = await fetch(request);
-    
+
     if (networkResponse.ok) {
       const cache = await caches.open(CACHE_NAME);
       cache.put(request, networkResponse.clone());
     }
-    
+
     return networkResponse;
   } catch (error) {
     console.log('[SW] Failed to fetch:', request.url);
@@ -405,7 +410,7 @@ async function navigationStrategy(request) {
     console.log('[SW] Navigation failed, serving offline page');
     const cache = await caches.open(CACHE_NAME);
     const offlineResponse = await cache.match(OFFLINE_URL);
-    
+
     return offlineResponse || new Response(
       '<h1>Offline</h1><p>You are currently offline. Please check your connection.</p>',
       {
@@ -489,26 +494,26 @@ console.log('[SW] Service worker loaded successfully');`;
         pages: 'network-first',
         apis: 'network-first',
         assets: 'cache-first',
-        images: 'cache-first'
+        images: 'cache-first',
       },
       expiration: {
         pages: '1 day',
         apis: '1 hour',
         assets: '1 week',
-        images: '1 month'
+        images: '1 month',
       },
       maxEntries: {
         pages: 50,
         apis: 100,
         assets: 200,
-        images: 60
-      }
+        images: 60,
+      },
     };
 
     // Save cache configuration
     const configPath = resolve(this.publicDir, 'cache-config.json');
     writeFileSync(configPath, JSON.stringify(cacheConfig, null, 2));
-    
+
     console.log('✅ Cache configuration optimized');
     console.log();
   }
@@ -580,7 +585,7 @@ console.log('[SW] Service worker loaded successfully');`;
             Try Again
         </button>
     </div>
-    
+
     <script>
         // Auto-retry when online
         window.addEventListener('online', () => {
@@ -592,7 +597,7 @@ console.log('[SW] Service worker loaded successfully');`;
 
     const offlinePath = resolve(this.publicDir, 'offline.html');
     writeFileSync(offlinePath, offlineHTML);
-    
+
     console.log('✅ Offline page created');
     console.log();
   }
@@ -629,11 +634,15 @@ console.log('[SW] Service worker loaded successfully');`;
     if (existsSync(iconsDir)) {
       tests.push({ name: 'Icons directory exists', status: 'pass' });
     } else {
-      tests.push({ name: 'Icons directory exists', status: 'warn', fix: 'Create icons directory and add PWA icons' });
+      tests.push({
+        name: 'Icons directory exists',
+        status: 'warn',
+        fix: 'Create icons directory and add PWA icons',
+      });
     }
 
     console.log('📊 PWA Test Results:');
-    tests.forEach(test => {
+    tests.forEach((test) => {
       const icon = test.status === 'pass' ? '✅' : test.status === 'fail' ? '❌' : '⚠️';
       console.log(`   ${icon} ${test.name}`);
       if (test.fix) {
@@ -653,15 +662,15 @@ console.log('[SW] Service worker loaded successfully');`;
         serviceWorkerGenerated: existsSync(this.swPath),
         offlinePageCreated: existsSync(resolve(this.publicDir, 'offline.html')),
         testsRun: this.testResults?.length || 0,
-        testsPassed: this.testResults?.filter(t => t.status === 'pass').length || 0
+        testsPassed: this.testResults?.filter((t) => t.status === 'pass').length || 0,
       },
       recommendations: [
         'Add PWA icons in multiple sizes (72x72 to 512x512)',
         'Test offline functionality in development',
         'Consider implementing background sync for data',
         'Add push notification support if needed',
-        'Test installation prompt on mobile devices'
-      ]
+        'Test installation prompt on mobile devices',
+      ],
     };
 
     // Save report
@@ -670,10 +679,12 @@ console.log('[SW] Service worker loaded successfully');`;
     console.log('📄 PWA Optimization Report Generated');
     console.log('=====================================');
     console.log(`✅ Manifest: ${report.summary.manifestValid ? 'Valid' : 'Missing'}`);
-    console.log(`🔧 Service Worker: ${report.summary.serviceWorkerGenerated ? 'Generated' : 'Missing'}`);
+    console.log(
+      `🔧 Service Worker: ${report.summary.serviceWorkerGenerated ? 'Generated' : 'Missing'}`
+    );
     console.log(`📴 Offline Page: ${report.summary.offlinePageCreated ? 'Created' : 'Missing'}`);
     console.log(`🧪 Tests: ${report.summary.testsPassed}/${report.summary.testsRun} passed`);
-    
+
     console.log('\n💡 Next Steps:');
     report.recommendations.forEach((rec, i) => {
       console.log(`${i + 1}. ${rec}`);
@@ -693,12 +704,12 @@ async function main() {
       const manager = new PWAManager();
       await manager.optimize();
       break;
-      
+
     case 'test':
       const testManager = new PWAManager();
       await testManager.testPWACapabilities();
       break;
-      
+
     case 'help':
       console.log(`
 📱 PWA Manager
@@ -715,7 +726,7 @@ Examples:
   npm run pwa:test         # Test current PWA setup
       `);
       break;
-      
+
     default:
       console.log(`Unknown command: ${command}`);
       console.log('Run with "help" for usage information');

@@ -2,7 +2,7 @@
 
 /**
  * 📦 Dependency Manager - Comprehensive dependency analysis and management
- * 
+ *
  * Features:
  * - Analyze dependency usage patterns
  * - Identify unused dependencies
@@ -23,7 +23,7 @@ class DependencyManager {
       outdated: [],
       security: [],
       bundleImpact: {},
-      recommendations: []
+      recommendations: [],
     };
   }
 
@@ -41,20 +41,17 @@ class DependencyManager {
 
   async checkUnusedDependencies() {
     console.log('📦 Checking for unused dependencies...');
-    
+
     try {
       // Use depcheck to find unused dependencies
       const result = execSync('npx depcheck --json', { encoding: 'utf8' });
       const depcheck = JSON.parse(result);
-      
-      this.results.unused = [
-        ...depcheck.dependencies,
-        ...depcheck.devDependencies
-      ];
+
+      this.results.unused = [...depcheck.dependencies, ...depcheck.devDependencies];
 
       if (this.results.unused.length > 0) {
         console.log(`⚠️  Found ${this.results.unused.length} potentially unused dependencies`);
-        this.results.unused.forEach(dep => console.log(`   - ${dep}`));
+        this.results.unused.forEach((dep) => console.log(`   - ${dep}`));
       } else {
         console.log('✅ No unused dependencies found');
       }
@@ -68,14 +65,17 @@ class DependencyManager {
 
   async fallbackUnusedCheck() {
     console.log('🔍 Running fallback unused dependency check...');
-    
+
     const dependencies = Object.keys(this.packageJson.dependencies || {});
     const devDependencies = Object.keys(this.packageJson.devDependencies || {});
-    
+
     // Basic grep-based check for imports
     for (const dep of dependencies) {
       try {
-        execSync(`grep -r "from ['\"]\${dep}" src/ --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx"`, { stdio: 'pipe' });
+        execSync(
+          `grep -r "from ['\"]\${dep}" src/ --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx"`,
+          { stdio: 'pipe' }
+        );
       } catch {
         // No imports found - potentially unused
         this.results.unused.push(dep);
@@ -85,22 +85,22 @@ class DependencyManager {
 
   async checkOutdatedPackages() {
     console.log('📅 Checking for outdated packages...');
-    
+
     try {
       const result = execSync('npm outdated --json', { encoding: 'utf8' });
       const outdated = JSON.parse(result);
-      
+
       this.results.outdated = Object.entries(outdated).map(([name, info]) => ({
         name,
         current: info.current,
         wanted: info.wanted,
         latest: info.latest,
-        type: info.type
+        type: info.type,
       }));
 
       if (this.results.outdated.length > 0) {
         console.log(`📈 Found ${this.results.outdated.length} outdated packages`);
-        this.results.outdated.slice(0, 5).forEach(pkg => {
+        this.results.outdated.slice(0, 5).forEach((pkg) => {
           console.log(`   - ${pkg.name}: ${pkg.current} → ${pkg.latest}`);
         });
         if (this.results.outdated.length > 5) {
@@ -118,17 +118,17 @@ class DependencyManager {
 
   async checkSecurityVulnerabilities() {
     console.log('🔒 Checking for security vulnerabilities...');
-    
+
     try {
       const result = execSync('npm audit --json', { encoding: 'utf8' });
       const audit = JSON.parse(result);
-      
+
       if (audit.vulnerabilities) {
         this.results.security = Object.entries(audit.vulnerabilities).map(([name, vuln]) => ({
           name,
           severity: vuln.severity,
           title: vuln.title,
-          url: vuln.url
+          url: vuln.url,
         }));
 
         const severityCounts = this.results.security.reduce((acc, vuln) => {
@@ -151,13 +151,14 @@ class DependencyManager {
 
   async analyzeBundleImpact() {
     console.log('📊 Analyzing bundle impact of dependencies...');
-    
+
     try {
       // Use bundle-phobia API to get package sizes
       const deps = Object.keys(this.packageJson.dependencies || {});
       const largestDeps = [];
 
-      for (const dep of deps.slice(0, 10)) { // Limit to top 10 for performance
+      for (const dep of deps.slice(0, 10)) {
+        // Limit to top 10 for performance
         try {
           const response = await fetch(`https://bundlephobia.com/api/size?package=${dep}`);
           if (response.ok) {
@@ -165,7 +166,7 @@ class DependencyManager {
             largestDeps.push({
               name: dep,
               size: data.size,
-              gzip: data.gzip
+              gzip: data.gzip,
             });
           }
         } catch {
@@ -174,10 +175,10 @@ class DependencyManager {
       }
 
       largestDeps.sort((a, b) => b.size - a.size);
-      
+
       if (largestDeps.length > 0) {
         console.log('📦 Largest dependencies by bundle size:');
-        largestDeps.slice(0, 5).forEach(dep => {
+        largestDeps.slice(0, 5).forEach((dep) => {
           const sizeMB = (dep.size / 1024 / 1024).toFixed(2);
           const gzipKB = (dep.gzip / 1024).toFixed(1);
           console.log(`   - ${dep.name}: ${sizeMB}MB (${gzipKB}KB gzipped)`);
@@ -201,20 +202,22 @@ class DependencyManager {
         priority: 'high',
         title: 'Remove unused dependencies',
         description: `Remove ${this.results.unused.length} unused dependencies to reduce bundle size`,
-        action: `npm uninstall ${this.results.unused.join(' ')}`
+        action: `npm uninstall ${this.results.unused.join(' ')}`,
       });
     }
 
     // Security vulnerabilities recommendation
     if (this.results.security.length > 0) {
-      const highSeverity = this.results.security.filter(v => v.severity === 'high' || v.severity === 'critical');
+      const highSeverity = this.results.security.filter(
+        (v) => v.severity === 'high' || v.severity === 'critical'
+      );
       if (highSeverity.length > 0) {
         this.results.recommendations.push({
           type: 'security',
           priority: 'critical',
           title: 'Fix critical security vulnerabilities',
           description: `${highSeverity.length} high/critical security issues found`,
-          action: 'npm audit fix'
+          action: 'npm audit fix',
         });
       }
     }
@@ -226,19 +229,19 @@ class DependencyManager {
         priority: 'medium',
         title: 'Update outdated packages',
         description: `${this.results.outdated.length} packages can be updated`,
-        action: 'npm update'
+        action: 'npm update',
       });
     }
 
     // Large bundle dependencies recommendation
-    const largeDeps = this.results.bundleImpact.filter(dep => dep.size > 500000); // >500KB
+    const largeDeps = this.results.bundleImpact.filter((dep) => dep.size > 500000); // >500KB
     if (largeDeps.length > 0) {
       this.results.recommendations.push({
         type: 'performance',
         priority: 'medium',
         title: 'Consider alternatives for large dependencies',
         description: `${largeDeps.length} dependencies are >500KB each`,
-        action: 'Review and consider lighter alternatives or lazy loading'
+        action: 'Review and consider lighter alternatives or lazy loading',
       });
     }
 
@@ -255,9 +258,9 @@ class DependencyManager {
         unusedCount: this.results.unused.length,
         outdatedCount: this.results.outdated.length,
         securityIssues: this.results.security.length,
-        recommendationsCount: this.results.recommendations.length
+        recommendationsCount: this.results.recommendations.length,
       },
-      details: this.results
+      details: this.results,
     };
 
     // Save JSON report
@@ -292,33 +295,44 @@ class DependencyManager {
 
 ## 🎯 Recommendations
 
-${report.details.recommendations.map(rec => `
+${report.details.recommendations
+  .map(
+    (rec) => `
 ### ${rec.title} (${rec.priority.toUpperCase()})
 
 ${rec.description}
 
 **Action**: \`${rec.action}\`
-`).join('')}
+`
+  )
+  .join('')}
 
 ## 📦 Unused Dependencies
 
-${report.details.unused.length > 0 ? report.details.unused.map(dep => `- ${dep}`).join('\n') : 'None found'}
+${report.details.unused.length > 0 ? report.details.unused.map((dep) => `- ${dep}`).join('\n') : 'None found'}
 
 ## 📈 Outdated Packages
 
-${report.details.outdated.length > 0 ? report.details.outdated.map(pkg => `- ${pkg.name}: ${pkg.current} → ${pkg.latest}`).join('\n') : 'All packages up to date'}
+${report.details.outdated.length > 0 ? report.details.outdated.map((pkg) => `- ${pkg.name}: ${pkg.current} → ${pkg.latest}`).join('\n') : 'All packages up to date'}
 
 ## 🔒 Security Vulnerabilities
 
-${report.details.security.length > 0 ? report.details.security.map(vuln => `- **${vuln.name}**: ${vuln.severity} - ${vuln.title}`).join('\n') : 'No vulnerabilities found'}
+${report.details.security.length > 0 ? report.details.security.map((vuln) => `- **${vuln.name}**: ${vuln.severity} - ${vuln.title}`).join('\n') : 'No vulnerabilities found'}
 
 ## 📊 Bundle Impact Analysis
 
-${report.details.bundleImpact.length > 0 ? report.details.bundleImpact.slice(0, 10).map(dep => {
-  const sizeMB = (dep.size / 1024 / 1024).toFixed(2);
-  const gzipKB = (dep.gzip / 1024).toFixed(1);
-  return `- **${dep.name}**: ${sizeMB}MB (${gzipKB}KB gzipped)`;
-}).join('\n') : 'Analysis not available'}
+${
+  report.details.bundleImpact.length > 0
+    ? report.details.bundleImpact
+        .slice(0, 10)
+        .map((dep) => {
+          const sizeMB = (dep.size / 1024 / 1024).toFixed(2);
+          const gzipKB = (dep.gzip / 1024).toFixed(1);
+          return `- **${dep.name}**: ${sizeMB}MB (${gzipKB}KB gzipped)`;
+        })
+        .join('\n')
+    : 'Analysis not available'
+}
 
 ---
 
@@ -335,7 +349,7 @@ ${report.details.bundleImpact.length > 0 ? report.details.bundleImpact.slice(0, 
     console.log(`📅 Outdated: ${report.summary.outdatedCount}`);
     console.log(`🔒 Security Issues: ${report.summary.securityIssues}`);
     console.log(`💡 Recommendations: ${report.summary.recommendationsCount}`);
-    
+
     if (report.details.recommendations.length > 0) {
       console.log('\n🎯 TOP RECOMMENDATIONS:');
       report.details.recommendations.slice(0, 3).forEach((rec, i) => {
@@ -358,7 +372,7 @@ async function main() {
       const manager = new DependencyManager();
       await manager.analyze();
       break;
-      
+
     case 'clean':
       console.log('🧹 Cleaning up old analysis files...');
       if (existsSync('dependency-analysis.json')) {
@@ -369,7 +383,7 @@ async function main() {
       }
       console.log('✅ Cleanup complete');
       break;
-      
+
     case 'help':
       console.log(`
 📦 Dependency Manager
@@ -386,7 +400,7 @@ Examples:
   npm run deps:clean       # Clean old reports
       `);
       break;
-      
+
     default:
       console.log(`Unknown command: ${command}`);
       console.log('Run with "help" for usage information');
