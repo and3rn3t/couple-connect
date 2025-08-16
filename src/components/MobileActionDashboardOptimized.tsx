@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle, Clock, Plus, Target } from '@phosphor-icons/react';
+import { CheckCircle, Clock, Plus, Target } from '@/components/ui/InlineIcons';
 import { Issue, Action } from '@/App';
 import { Partner } from '@/components/PartnerSetup';
 import { toast } from 'sonner';

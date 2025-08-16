@@ -76,42 +76,54 @@ export default defineConfig(() => {
         output: {
           // Mobile-optimized chunk splitting
           manualChunks: (id) => {
-            // Core React - always needed
-            if (id.includes('react') && !id.includes('react-router')) {
-              return 'react';
+            // Debug: Log what's being chunked
+            if (process.env.VITE_BUILD_ANALYZE) {
+              console.log('🔍 Chunking:', id);
             }
 
-            // Router - loaded early
-            if (id.includes('react-router-dom')) {
-              return 'router';
+            // Log uncaught large files that go to main chunk
+            if (id.includes('node_modules') && process.env.VITE_BUILD_ANALYZE) {
+              const chunks = id.split('/');
+              const packageName = chunks.find((chunk) => chunk.includes('@') || chunk.length > 3);
+              console.log('📦 Package:', packageName, '- Size estimate: checking...');
             }
 
-            // Mobile-specific components - lazy loaded
-            if (
-              id.includes('mobile-card') ||
-              id.includes('mobile-navigation') ||
-              id.includes('mobile-forms') ||
-              id.includes('mobile-layout') ||
-              id.includes('touch-feedback') ||
-              id.includes('use-mobile') ||
-              id.includes('useMobilePerformance') ||
-              id.includes('useHapticFeedback')
-            ) {
-              return 'mobile';
+            // Core React libraries - loaded early
+            if (id.includes('react') && !id.includes('react-router') && !id.includes('react-dom')) {
+              if (process.env.VITE_BUILD_ANALYZE) console.log('  → react-vendor');
+              return 'react-vendor';
             }
 
-            // UI library chunks - smaller chunks
-            if (id.includes('@radix-ui/react-dialog')) {
-              return 'ui-dialog';
+            if (id.includes('react-dom')) {
+              if (process.env.VITE_BUILD_ANALYZE) console.log('  → react-dom');
+              return 'react-dom';
             }
-            if (id.includes('@radix-ui/react-dropdown')) {
-              return 'ui-dropdown';
-            }
-            if (id.includes('@radix-ui/react-select')) {
-              return 'ui-select';
-            }
+
+            // Large UI libraries - separate chunks
             if (id.includes('@radix-ui')) {
-              return 'ui-base';
+              return 'ui-radix';
+            }
+
+            if (id.includes('@tanstack/react-query')) {
+              return 'react-query';
+            }
+
+            // Icon libraries - separate chunks for lazy loading
+            if (id.includes('@phosphor-icons/react')) {
+              return 'icons-phosphor';
+            }
+
+            if (id.includes('lucide-react')) {
+              return 'icons-lucide';
+            }
+
+            // Chart libraries - definitely lazy loaded
+            if (id.includes('recharts')) {
+              return 'charts-recharts';
+            }
+
+            if (id.includes('d3')) {
+              return 'charts-d3';
             }
 
             // Animation libraries - lazy loaded
@@ -119,30 +131,117 @@ export default defineConfig(() => {
               return 'animations';
             }
 
-            // Icons - can be lazy loaded
-            if (id.includes('@phosphor-icons')) {
-              return 'icons';
+            // Database and data libraries
+            if (id.includes('dexie') || id.includes('idb')) {
+              return 'database';
             }
 
-            // Charts - definitely lazy loaded
-            if (id.includes('recharts') || id.includes('d3')) {
-              return 'charts';
+            // Service worker and PWA libraries
+            if (id.includes('workbox') || id.includes('sw-')) {
+              return 'pwa';
             }
 
-            // Utilities - small and commonly used
+            // Testing and development libraries (should not be in production)
+            if (
+              id.includes('@testing-library') ||
+              id.includes('vitest') ||
+              id.includes('playwright')
+            ) {
+              return 'testing';
+            }
+
+            // Utilities and date libraries
             if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
               return 'utils';
             }
 
-            // Testing dashboard - lazy loaded
-            if (id.includes('MobileTestingDashboard') || id.includes('PerformanceDashboard')) {
-              return 'testing';
+            // CSS and styling libraries
+            if (
+              id.includes('tailwindcss') ||
+              id.includes('@tailwindcss') ||
+              id.includes('postcss')
+            ) {
+              return 'css-tools';
             }
 
-            // Large vendor libraries
+            // Generic large node_modules - catch remaining vendor code
+            if (id.includes('node_modules')) {
+              // Split large libraries into separate chunks
+              if (id.includes('lodash') || id.includes('moment') || id.includes('axios')) {
+                return 'vendor-large';
+              }
+
+              // Generic vendor chunk for smaller libraries
+              return 'vendor';
+            }
+
+            // App components that can be chunked separately
+            if (id.includes('/src/components/') && !id.includes('node_modules')) {
+              // Partner and relationship components
+              if (id.includes('Partner') || id.includes('Relationship')) {
+                return 'app-partner';
+              }
+
+              // Gamification and rewards
+              if (
+                id.includes('Gamification') ||
+                id.includes('Reward') ||
+                id.includes('Challenge')
+              ) {
+                return 'app-gamification';
+              }
+
+              // Notification system
+              if (id.includes('Notification')) {
+                return 'app-notifications';
+              }
+
+              // Charts and progress components
+              if (id.includes('Chart') || id.includes('Progress') || id.includes('Mindmap')) {
+                return 'app-charts';
+              }
+
+              // Mobile-specific components
+              if (id.includes('Mobile') || id.includes('mobile')) {
+                return 'app-mobile';
+              }
+
+              // Testing and development components
+              if (id.includes('Test') || id.includes('Performance') || id.includes('Dashboard')) {
+                return 'app-dev';
+              }
+
+              // Action and dialog components
+              if (id.includes('Action') || id.includes('Dialog')) {
+                return 'app-actions';
+              }
+
+              // UI components (shared)
+              if (id.includes('/ui/')) {
+                return 'app-ui';
+              }
+
+              // Default app components
+              return 'app-components';
+            }
+
+            // Services and hooks
+            if (id.includes('/src/services/') || id.includes('/src/hooks/')) {
+              return 'app-core';
+            }
+
+            // Utilities
+            if (id.includes('/src/utils/')) {
+              return 'app-utils';
+            }
+
+            // All other vendor libraries
             if (id.includes('node_modules')) {
               return 'vendor';
             }
+
+            // Main app entry and remaining files
+            return 'main';
           },
           // Optimize chunk naming
           chunkFileNames: (chunkInfo) => {
@@ -184,7 +283,6 @@ export default defineConfig(() => {
       include: [
         'react',
         'react-dom',
-        'react-router-dom',
         'framer-motion',
         '@tanstack/react-query',
         // Pre-bundle commonly used mobile utilities

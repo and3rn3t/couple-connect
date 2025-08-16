@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MagicWand, ArrowRight } from '@phosphor-icons/react';
+import { MagicWand, ArrowRight } from '@/components/ui/InlineIcons';
 import { ActionTemplate, getTemplatesByCategory } from '@/data/actionTemplates';
 import { Issue } from '@/App';
 

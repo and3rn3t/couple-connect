@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Heart, Target, ChartBar, User, Gear } from '@phosphor-icons/react';
+import { Heart, Target, ChartBar, User, Gear } from '@/components/ui/InlineIcons';
 import { useMobileDetection } from '@/hooks/use-mobile';
 import { HAPTIC_DURATIONS } from '@/constants/mobile';
 

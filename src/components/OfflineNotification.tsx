@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { WifiSlash, CloudArrowUp, CheckCircle, X } from '@phosphor-icons/react';
+import { WifiSlash, CloudArrowUp, CheckCircle, X } from '@/components/ui/InlineIcons';
 import { useServiceWorker } from '@/hooks/useServiceWorker';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';

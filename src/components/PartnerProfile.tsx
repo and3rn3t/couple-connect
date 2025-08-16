@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { User, SignOut, Gear } from '@phosphor-icons/react';
+import { User, SignOut, Gear } from '@/components/ui/InlineIcons';
 import { Partner } from './PartnerSetup';
 
 interface PartnerProfileProps {

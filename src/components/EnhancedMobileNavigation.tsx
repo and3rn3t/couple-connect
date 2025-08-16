@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Target, ChartBar, User, Gear, X } from '@phosphor-icons/react';
+import { Heart, Target, ChartBar, User, Gear, X } from '@/components/ui/InlineIcons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useSwipeGesture } from '@/hooks/useGestures';

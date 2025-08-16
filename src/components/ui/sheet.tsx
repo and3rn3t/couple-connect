@@ -1,7 +1,7 @@
 import { ComponentProps } from 'react';
 import * as SheetPrimitive from '@radix-ui/react-dialog';
 
-import { X } from 'lucide-react';
+import { X } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 
 function Sheet({ ...props }: ComponentProps<typeof SheetPrimitive.Root>) {
