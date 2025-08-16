@@ -2,7 +2,16 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Heart, Users, Clock, TrendUp } from '@/components/ui/InlineIcons';
+import {
+  Plus,
+  Heart,
+  Users,
+  Clock,
+  TrendUp,
+  CurrencyDollar,
+  House,
+  DotsThreeVertical,
+} from '@/components/ui/InlineIcons';
 import { Issue, Action } from '@/App';
 import { Partner } from '@/components/PartnerSetup';
 import IssueDialog from '@/components/IssueDialog';

@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useKV } from '../hooks/useKV';
-import { Bell, X, Clock, Warning, CheckCircle, Gear } from '@/components/ui/InlineIcons';
+import {
+  Bell,
+  X,
+  Clock,
+  Warning,
+  CheckCircle,
+  Gear,
+  SettingsIcon,
+} from '@/components/ui/InlineIcons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

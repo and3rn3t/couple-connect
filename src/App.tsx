@@ -26,7 +26,6 @@ const LazyMobileActionDashboard = lazy(() => import('@/components/MobileActionDa
 const LazyOfflineNotification = lazy(() =>
   import('@/components/OfflineNotification').then((m) => ({ default: m.OfflineNotification }))
 );
-const LazyPartnerSetup = lazy(() => import('@/components/PartnerSetup'));
 const LazyPartnerProfile = lazy(() => import('@/components/PartnerProfile'));
 const LazyNotificationCenter = lazy(() => import('@/components/NotificationCenter'));
 const LazyNotificationSummary = lazy(() => import('@/components/NotificationSummary'));
@@ -313,19 +312,80 @@ function App() {
   const [activeTab, setActiveTab] = useState('mindmap');
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
 
-  // If no partners are set up, show setup screen
-  if (!currentPartner || !otherPartner) {
+  // Add a loading state for partner setup
+  const [partnersInitialized, setPartnersInitialized] = useState(false);
+
+  console.warn('🏁 App function running, partners:', {
+    currentPartner: currentPartner?.name,
+    otherPartner: otherPartner?.name,
+    partnersInitialized,
+  });
+
+  // Debug logging for partner state
+  useEffect(() => {
+    console.warn('🔍 Partner state changed:', {
+      currentPartner: currentPartner?.name,
+      otherPartner: otherPartner?.name,
+      partnersInitialized,
+    });
+  }, [currentPartner, otherPartner, partnersInitialized]);
+
+  // Initialize default partners if none are set up
+  useEffect(() => {
+    // If partners already exist but we haven't marked as initialized, mark it now
+    if (!partnersInitialized && currentPartner && otherPartner) {
+      console.warn('✅ Partners already exist, marking as initialized');
+      setPartnersInitialized(true);
+    }
+    // Only create default partners if none exist and we haven't tried before
+    else if (!partnersInitialized && (!currentPartner || !otherPartner)) {
+      console.warn('🚀 Initializing default partners...');
+
+      const defaultCurrentPartner: Partner = {
+        id: 'partner-1',
+        name: 'You',
+        email: 'you@example.com',
+        isCurrentUser: true,
+      };
+      const defaultOtherPartner: Partner = {
+        id: 'partner-2',
+        name: 'Your Partner',
+        email: 'partner@example.com',
+        isCurrentUser: false,
+      };
+
+      // Set partners and mark as initialized
+      setCurrentPartner(defaultCurrentPartner);
+      setOtherPartner(defaultOtherPartner);
+      setPartnersInitialized(true);
+      console.warn('✅ Default partners created successfully');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [partnersInitialized, currentPartner, otherPartner]);
+
+  // Show loading screen while partners are being initialized or don't exist
+  if (!partnersInitialized || !currentPartner || !otherPartner) {
+    console.warn('🔄 Showing loading screen');
     return (
-      <Suspense fallback={<ComponentLoader message="Loading setup..." />}>
-        <LazyPartnerSetup
-          onComplete={(current: Partner, other: Partner) => {
-            setCurrentPartner(current);
-            setOtherPartner(other);
-          }}
-        />
-      </Suspense>
+      <div className="p-8 bg-gray-100 min-h-screen">
+        <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-bold mb-4">🚀 Setting up your account...</h2>
+          <p className="text-gray-600">
+            Creating default partners for demo. This will only take a moment.
+          </p>
+          <div className="mt-4">
+            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          </div>
+          <div className="mt-4 text-xs text-gray-500">
+            Debug: partnersInitialized={partnersInitialized.toString()}, currentPartner=
+            {currentPartner?.name || 'null'}, otherPartner={otherPartner?.name || 'null'}
+          </div>
+        </div>
+      </div>
     );
   }
+
+  console.warn('✅ Partners initialized, rendering main app...');
 
   // Determine which partner's perspective we're viewing
   const activePartner = viewingAsPartner
@@ -412,10 +472,7 @@ function App() {
   };
 
   return (
-    <div
-      id="spark-app"
-      className={`min-h-screen bg-bg dark-theme ${isMobile ? 'pb-safe-area-bottom' : ''}`}
-    >
+    <div id="spark-app" className={`min-h-screen ${isMobile ? 'pb-safe-area-bottom' : ''}`}>
       {/* Offline notification */}
       <Suspense fallback={<ComponentLoader message="Loading notification..." />}>
         <LazyOfflineNotification />

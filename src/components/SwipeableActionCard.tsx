@@ -3,7 +3,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, Clock, ArrowRight, Calendar, User } from '@/components/ui/InlineIcons';
+import {
+  CheckCircle,
+  Clock,
+  ArrowRight,
+  Calendar,
+  User,
+  TrashSimple,
+  DotsThreeVertical,
+} from '@/components/ui/InlineIcons';
 import { cn } from '@/lib/utils';
 import { useGestures } from '@/hooks/useGestures';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';

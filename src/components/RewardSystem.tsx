@@ -10,7 +10,18 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Gift, Heart, Coffee, MagicWand, Calendar, Camera, MusicNote, GameController, Star } from '@/components/ui/InlineIcons';
+import {
+  Gift,
+  Heart,
+  Coffee,
+  MagicWand,
+  Calendar,
+  Camera,
+  MusicNote,
+  GameController,
+  Star,
+  ShoppingBag,
+} from '@/components/ui/InlineIcons';
 import { Partner } from '@/components/PartnerSetup';
 import { GamificationState } from './GamificationCenter';
 import { toast } from 'sonner';

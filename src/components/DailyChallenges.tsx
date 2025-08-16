@@ -3,7 +3,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, Lightning, Heart, Target, Clock, Gift } from '@/components/ui/InlineIcons';
+import {
+  CheckCircle,
+  Lightning,
+  Heart,
+  Target,
+  Clock,
+  Gift,
+  ChatCircle,
+  Circle,
+} from '@/components/ui/InlineIcons';
 import { Action, Issue } from '@/App';
 import { Partner } from './PartnerSetup';
 import { GamificationState } from './GamificationCenter';

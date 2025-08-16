@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle, Warning, ChartBar } from '@/components/ui/InlineIcons';
+import {
+  CheckCircle,
+  Warning,
+  ChartBar,
+  XCircle,
+  DeviceMobile,
+  Speedometer,
+} from '@/components/ui/InlineIcons';
 import { useMobileDetection, useIOSDetection } from '@/hooks/use-mobile';
 import { useMobilePerformance } from '@/hooks/useMobilePerformance';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';

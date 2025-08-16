@@ -99,11 +99,6 @@ export default defineConfig(() => {
               return 'react-dom';
             }
 
-            if (id.includes('react-router-dom')) {
-              if (process.env.VITE_BUILD_ANALYZE) console.log('  → router');
-              return 'router';
-            }
-
             // Large UI libraries - separate chunks
             if (id.includes('@radix-ui')) {
               return 'ui-radix';
@@ -288,7 +283,6 @@ export default defineConfig(() => {
       include: [
         'react',
         'react-dom',
-        'react-router-dom',
         'framer-motion',
         '@tanstack/react-query',
         // Pre-bundle commonly used mobile utilities
