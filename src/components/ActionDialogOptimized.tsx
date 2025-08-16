@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MagicWand, PencilSimple } from '@phosphor-icons/react';
+import { MagicWand, PencilSimple } from '@/components/ui/InlineIcons';
 import { Issue, Action } from '@/App';
 import { Partner } from '@/components/PartnerSetup';
 import { toast } from 'sonner';

@@ -19,9 +19,9 @@ import {
   Camera,
   MusicNote,
   GameController,
-  ShoppingBag,
   Star,
-} from '@phosphor-icons/react';
+  ShoppingBag,
+} from '@/components/ui/InlineIcons';
 import { Partner } from '@/components/PartnerSetup';
 import { GamificationState } from './GamificationCenter';
 import { toast } from 'sonner';

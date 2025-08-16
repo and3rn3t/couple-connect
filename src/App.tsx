@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import './App.css';
 import { useKV } from './hooks/useKV';
 import {
@@ -13,16 +13,47 @@ import { updateDatabaseConfig } from './services/databaseConfig';
 import { performanceMonitor } from './utils/performanceMonitor';
 import './utils/performanceDemo'; // Initialize performance utilities
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Heart, Target, ChartBar } from '@phosphor-icons/react';
+import { EssentialIcons } from '@/components/LazyIcons';
+import { LazyProgressView, LazyActionDashboard } from '@/components/LazyRoutes';
 import { Toaster } from '@/components/ui/sonner';
-import MindmapView from '@/components/MindmapView';
-import ActionDashboard from '@/components/ActionDashboard';
-import MobileActionDashboard from '@/components/MobileActionDashboardOptimized';
-import ProgressView from '@/components/ProgressView';
 import { MobileTabBar, MobileNavBar } from '@/components/ui/mobile-navigation';
 import { useMobileDetection } from '@/hooks/use-mobile';
-import { OfflineNotification } from '@/components/OfflineNotification';
 import { useServiceWorker, useResourceCaching } from '@/hooks/useServiceWorker';
+
+// Lazy load heavy components to reduce initial bundle size
+const LazyMindmapView = lazy(() => import('@/components/MindmapView'));
+const LazyMobileActionDashboard = lazy(() => import('@/components/MobileActionDashboardOptimized'));
+const LazyOfflineNotification = lazy(() =>
+  import('@/components/OfflineNotification').then((m) => ({ default: m.OfflineNotification }))
+);
+const LazyPartnerProfile = lazy(() => import('@/components/PartnerProfile'));
+const LazyNotificationCenter = lazy(() => import('@/components/NotificationCenter'));
+const LazyNotificationSummary = lazy(() => import('@/components/NotificationSummary'));
+const LazyGamificationCenter = lazy(() => import('@/components/GamificationCenter'));
+const LazyRewardSystem = lazy(() => import('@/components/RewardSystem'));
+const LazyDailyChallenges = lazy(() => import('@/components/DailyChallenges'));
+const LazyPerformanceDashboard = lazy(() =>
+  import('@/components/PerformanceDashboard').then((m) => ({ default: m.PerformanceDashboard }))
+);
+
+// Component loading fallbacks
+const ComponentSkeleton = () => (
+  <div className="space-y-4 p-4">
+    <div className="h-8 bg-muted animate-pulse rounded" />
+    <div className="h-32 bg-muted animate-pulse rounded" />
+    <div className="h-16 bg-muted animate-pulse rounded" />
+  </div>
+);
+
+// Optimized loading component for lazy components
+const ComponentLoader = ({ message = 'Loading...' }: { message?: string }) => (
+  <div className="flex items-center justify-center p-8">
+    <div className="space-y-4 text-center">
+      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+      <p className="text-sm text-muted-foreground">{message}</p>
+    </div>
+  </div>
+);
 
 // App configuration constants
 const APP_CONFIG = {
@@ -44,14 +75,10 @@ const ICON_SIZES = {
   SMALL: 16,
   LARGE: 32,
 } as const;
-import PartnerSetup, { Partner } from '@/components/PartnerSetup';
-import PartnerProfile from '@/components/PartnerProfile';
-import NotificationCenter from '@/components/NotificationCenter';
-import NotificationSummary from '@/components/NotificationSummary';
-import GamificationCenter, { GamificationState } from '@/components/GamificationCenter';
-import RewardSystem from '@/components/RewardSystem';
-import DailyChallenges from '@/components/DailyChallenges';
-import { PerformanceDashboard } from '@/components/PerformanceDashboard';
+
+// Types imported separately to avoid bundling heavy components
+import type { Partner } from '@/components/PartnerSetup';
+import type { GamificationState } from '@/components/GamificationCenter';
 
 export interface Issue {
   id: string;
@@ -285,17 +312,80 @@ function App() {
   const [activeTab, setActiveTab] = useState('mindmap');
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
 
-  // If no partners are set up, show setup screen
-  if (!currentPartner || !otherPartner) {
+  // Add a loading state for partner setup
+  const [partnersInitialized, setPartnersInitialized] = useState(false);
+
+  console.warn('🏁 App function running, partners:', {
+    currentPartner: currentPartner?.name,
+    otherPartner: otherPartner?.name,
+    partnersInitialized,
+  });
+
+  // Debug logging for partner state
+  useEffect(() => {
+    console.warn('🔍 Partner state changed:', {
+      currentPartner: currentPartner?.name,
+      otherPartner: otherPartner?.name,
+      partnersInitialized,
+    });
+  }, [currentPartner, otherPartner, partnersInitialized]);
+
+  // Initialize default partners if none are set up
+  useEffect(() => {
+    // If partners already exist but we haven't marked as initialized, mark it now
+    if (!partnersInitialized && currentPartner && otherPartner) {
+      console.warn('✅ Partners already exist, marking as initialized');
+      setPartnersInitialized(true);
+    }
+    // Only create default partners if none exist and we haven't tried before
+    else if (!partnersInitialized && (!currentPartner || !otherPartner)) {
+      console.warn('🚀 Initializing default partners...');
+
+      const defaultCurrentPartner: Partner = {
+        id: 'partner-1',
+        name: 'You',
+        email: 'you@example.com',
+        isCurrentUser: true,
+      };
+      const defaultOtherPartner: Partner = {
+        id: 'partner-2',
+        name: 'Your Partner',
+        email: 'partner@example.com',
+        isCurrentUser: false,
+      };
+
+      // Set partners and mark as initialized
+      setCurrentPartner(defaultCurrentPartner);
+      setOtherPartner(defaultOtherPartner);
+      setPartnersInitialized(true);
+      console.warn('✅ Default partners created successfully');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [partnersInitialized, currentPartner, otherPartner]);
+
+  // Show loading screen while partners are being initialized or don't exist
+  if (!partnersInitialized || !currentPartner || !otherPartner) {
+    console.warn('🔄 Showing loading screen');
     return (
-      <PartnerSetup
-        onComplete={(current, other) => {
-          setCurrentPartner(current);
-          setOtherPartner(other);
-        }}
-      />
+      <div className="p-8 bg-gray-100 min-h-screen">
+        <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-bold mb-4">🚀 Setting up your account...</h2>
+          <p className="text-gray-600">
+            Creating default partners for demo. This will only take a moment.
+          </p>
+          <div className="mt-4">
+            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          </div>
+          <div className="mt-4 text-xs text-gray-500">
+            Debug: partnersInitialized={partnersInitialized.toString()}, currentPartner=
+            {currentPartner?.name || 'null'}, otherPartner={otherPartner?.name || 'null'}
+          </div>
+        </div>
+      </div>
     );
   }
+
+  console.warn('✅ Partners initialized, rendering main app...');
 
   // Determine which partner's perspective we're viewing
   const activePartner = viewingAsPartner
@@ -382,24 +472,25 @@ function App() {
   };
 
   return (
-    <div
-      id="spark-app"
-      className={`min-h-screen bg-bg dark-theme ${isMobile ? 'pb-safe-area-bottom' : ''}`}
-    >
+    <div id="spark-app" className={`min-h-screen ${isMobile ? 'pb-safe-area-bottom' : ''}`}>
       {/* Offline notification */}
-      <OfflineNotification />
+      <Suspense fallback={<ComponentLoader message="Loading notification..." />}>
+        <LazyOfflineNotification />
+      </Suspense>
 
       {/* Mobile Navigation */}
       {isMobile && (
         <MobileNavBar
           title="Together"
           rightAction={
-            <PartnerProfile
-              currentPartner={currentPartner}
-              otherPartner={otherPartner}
-              onSwitchView={handleSwitchView}
-              onSignOut={handleSignOut}
-            />
+            <Suspense fallback={<ComponentLoader message="Loading profile..." />}>
+              <LazyPartnerProfile
+                currentPartner={currentPartner}
+                otherPartner={otherPartner}
+                onSwitchView={handleSwitchView}
+                onSignOut={handleSignOut}
+              />
+            </Suspense>
           }
         />
       )}
@@ -410,53 +501,59 @@ function App() {
           {/* Mobile Tab Content */}
           {activeTab === 'mindmap' && (
             <div className="px-0">
-              <MindmapView
+              <Suspense fallback={<ComponentLoader message="Loading mindmap..." />}>
+                <LazyMindmapView
+                  issues={issues || []}
+                  setIssues={setIssuesWrapper}
+                  actions={actions || []}
+                  setActions={setActionsWrapper}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  viewingAsPartner={activePartner}
+                />
+              </Suspense>
+            </div>
+          )}
+
+          {activeTab === 'actions' && (
+            <Suspense fallback={<ComponentLoader message="Loading dashboard..." />}>
+              <LazyMobileActionDashboard
                 issues={issues || []}
-                setIssues={setIssuesWrapper}
-                actions={actions || []}
+                actions={getPersonalizedActions()}
                 setActions={setActionsWrapper}
                 currentPartner={currentPartner}
                 otherPartner={otherPartner}
                 viewingAsPartner={activePartner}
               />
-            </div>
-          )}
-
-          {activeTab === 'actions' && (
-            <MobileActionDashboard
-              issues={issues || []}
-              actions={getPersonalizedActions()}
-              setActions={setActionsWrapper}
-              currentPartner={currentPartner}
-              otherPartner={otherPartner}
-              viewingAsPartner={activePartner}
-            />
+            </Suspense>
           )}
 
           {activeTab === 'progress' && (
             <div className="px-4">
-              <ProgressView
-                issues={issues || []}
-                actions={actions || []}
-                healthScore={
-                  healthScore || {
-                    overallScore: 0,
-                    categories: {
-                      communication: 0,
-                      intimacy: 0,
-                      finance: 0,
-                      time: 0,
-                      family: 0,
-                      personalGrowth: 0,
-                    },
-                    lastUpdated: new Date().toISOString(),
+              <Suspense fallback={<ComponentSkeleton />}>
+                <LazyProgressView
+                  issues={issues || []}
+                  actions={actions || []}
+                  healthScore={
+                    healthScore || {
+                      overallScore: 0,
+                      categories: {
+                        communication: 0,
+                        intimacy: 0,
+                        finance: 0,
+                        time: 0,
+                        family: 0,
+                        personalGrowth: 0,
+                      },
+                      lastUpdated: new Date().toISOString(),
+                    }
                   }
-                }
-                setHealthScore={setHealthScoreWrapper}
-                currentPartner={currentPartner}
-                otherPartner={otherPartner}
-                viewingAsPartner={activePartner}
-              />
+                  setHealthScore={setHealthScoreWrapper}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  viewingAsPartner={activePartner}
+                />
+              </Suspense>
             </div>
           )}
 
@@ -469,7 +566,11 @@ function App() {
           <header className="mb-8">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <Heart className="text-accent" size={ICON_SIZES.LARGE} weight="fill" />
+                <EssentialIcons.Heart
+                  className="text-accent"
+                  size={ICON_SIZES.LARGE}
+                  weight="fill"
+                />
                 <div>
                   <h1 className="text-3xl font-medium text-fg">Together</h1>
                   <p className="text-fg-secondary">
@@ -480,55 +581,63 @@ function App() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <GamificationCenter
-                  actions={actions || []}
-                  issues={issues || []}
-                  currentPartner={currentPartner}
-                  otherPartner={otherPartner}
-                  gamificationState={
-                    gamificationState || {
-                      totalPoints: 0,
-                      currentStreak: 0,
-                      longestStreak: 0,
-                      achievements: [],
-                      weeklyGoal: 50,
-                      weeklyProgress: 0,
-                      partnerStats: {},
+                <Suspense fallback={<ComponentLoader message="Loading gamification..." />}>
+                  <LazyGamificationCenter
+                    actions={actions || []}
+                    issues={issues || []}
+                    currentPartner={currentPartner}
+                    otherPartner={otherPartner}
+                    gamificationState={
+                      gamificationState || {
+                        totalPoints: 0,
+                        currentStreak: 0,
+                        longestStreak: 0,
+                        achievements: [],
+                        weeklyGoal: 50,
+                        weeklyProgress: 0,
+                        partnerStats: {},
+                      }
                     }
-                  }
-                  onUpdateGamification={setGamificationState}
-                />
-                <RewardSystem
-                  currentPartner={currentPartner}
-                  _otherPartner={otherPartner}
-                  gamificationState={
-                    gamificationState || {
-                      totalPoints: 0,
-                      currentStreak: 0,
-                      longestStreak: 0,
-                      achievements: [],
-                      weeklyGoal: 50,
-                      weeklyProgress: 0,
-                      partnerStats: {},
+                    onUpdateGamification={setGamificationState}
+                  />
+                </Suspense>
+                <Suspense fallback={<ComponentLoader message="Loading rewards..." />}>
+                  <LazyRewardSystem
+                    currentPartner={currentPartner}
+                    _otherPartner={otherPartner}
+                    gamificationState={
+                      gamificationState || {
+                        totalPoints: 0,
+                        currentStreak: 0,
+                        longestStreak: 0,
+                        achievements: [],
+                        weeklyGoal: 50,
+                        weeklyProgress: 0,
+                        partnerStats: {},
+                      }
                     }
-                  }
-                  onUpdateGamification={setGamificationState}
-                />
-                <NotificationCenter
-                  actions={actions || []}
-                  issues={issues || []}
-                  currentPartner={currentPartner}
-                  otherPartner={otherPartner}
-                  onActionUpdate={handleActionUpdate}
-                  isOpen={notificationCenterOpen}
-                  onOpenChange={setNotificationCenterOpen}
-                />
-                <PartnerProfile
-                  currentPartner={currentPartner}
-                  otherPartner={otherPartner}
-                  onSwitchView={handleSwitchView}
-                  onSignOut={handleSignOut}
-                />
+                    onUpdateGamification={setGamificationState}
+                  />
+                </Suspense>
+                <Suspense fallback={<ComponentLoader message="Loading notifications..." />}>
+                  <LazyNotificationCenter
+                    actions={actions || []}
+                    issues={issues || []}
+                    currentPartner={currentPartner}
+                    otherPartner={otherPartner}
+                    onActionUpdate={handleActionUpdate}
+                    isOpen={notificationCenterOpen}
+                    onOpenChange={setNotificationCenterOpen}
+                  />
+                </Suspense>
+                <Suspense fallback={<ComponentLoader message="Loading profile..." />}>
+                  <LazyPartnerProfile
+                    currentPartner={currentPartner}
+                    otherPartner={otherPartner}
+                    onSwitchView={handleSwitchView}
+                    onSignOut={handleSignOut}
+                  />
+                </Suspense>
               </div>
             </div>
 
@@ -539,98 +648,113 @@ function App() {
             </div>
           </header>
 
-          <PerformanceDashboard />
+          <Suspense fallback={<ComponentLoader message="Loading dashboard..." />}>
+            <LazyPerformanceDashboard />
+          </Suspense>
 
-          <NotificationSummary
-            actions={actions || []}
-            issues={issues || []}
-            currentPartner={currentPartner}
-            otherPartner={otherPartner}
-            onViewAll={() => setNotificationCenterOpen(true)}
-          />
-
-          <DailyChallenges
-            actions={actions || []}
-            issues={issues || []}
-            currentPartner={currentPartner}
-            otherPartner={otherPartner}
-            gamificationState={
-              gamificationState || {
-                totalPoints: 0,
-                currentStreak: 0,
-                longestStreak: 0,
-                achievements: [],
-                weeklyGoal: APP_CONFIG.DEFAULT_WEEKLY_GOAL,
-                weeklyProgress: 0,
-                partnerStats: {},
+          <Suspense fallback={<ComponentLoader message="Loading notifications..." />}>
+            <LazyNotificationSummary
+              actions={actions || []}
+              issues={issues || []}
+              currentPartner={currentPartner}
+              otherPartner={otherPartner}
+              onViewAll={() => setNotificationCenterOpen(true)}
+            />
+          </Suspense>
+          <Suspense fallback={<ComponentLoader message="Loading challenges..." />}>
+            <LazyDailyChallenges
+              actions={actions || []}
+              issues={issues || []}
+              currentPartner={currentPartner}
+              otherPartner={otherPartner}
+              gamificationState={
+                gamificationState || {
+                  totalPoints: 0,
+                  currentStreak: 0,
+                  longestStreak: 0,
+                  achievements: [],
+                  weeklyGoal: APP_CONFIG.DEFAULT_WEEKLY_GOAL,
+                  weeklyProgress: 0,
+                  partnerStats: {},
+                }
               }
-            }
-            onUpdateGamification={setGamificationState}
-            onCreateAction={handleCreateAction}
-          />
+              onUpdateGamification={setGamificationState}
+              onCreateAction={handleCreateAction}
+            />
+          </Suspense>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-3 mb-8">
               <TabsTrigger value="mindmap" className="flex items-center gap-2">
-                <Heart size={ICON_SIZES.SMALL} />
+                <EssentialIcons.Heart size={ICON_SIZES.SMALL} />
                 Issues Map
               </TabsTrigger>
               <TabsTrigger value="actions" className="flex items-center gap-2">
-                <Target size={ICON_SIZES.SMALL} />
+                <EssentialIcons.Target size={ICON_SIZES.SMALL} />
                 Action Plans
               </TabsTrigger>
               <TabsTrigger value="progress" className="flex items-center gap-2">
-                <ChartBar size={ICON_SIZES.SMALL} />
+                <EssentialIcons.ChartBar size={ICON_SIZES.SMALL} />
                 Progress
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="mindmap" className="space-y-6">
-              <MindmapView
-                issues={issues || []}
-                setIssues={setIssuesWrapper}
-                actions={actions || []}
-                setActions={setActionsWrapper}
-                currentPartner={currentPartner}
-                otherPartner={otherPartner}
-                viewingAsPartner={activePartner}
-              />
+              <Suspense fallback={<ComponentLoader message="Loading mindmap..." />}>
+                <LazyMindmapView
+                  issues={issues || []}
+                  setIssues={setIssuesWrapper}
+                  actions={actions || []}
+                  setActions={setActionsWrapper}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  viewingAsPartner={activePartner}
+                />
+              </Suspense>
             </TabsContent>
 
             <TabsContent value="actions" className="space-y-6">
-              <ActionDashboard
-                issues={issues || []}
-                actions={getPersonalizedActions()}
-                setActions={setActionsWrapper}
-                currentPartner={currentPartner}
-                otherPartner={otherPartner}
-                viewingAsPartner={activePartner}
-              />
+              <Suspense
+                fallback={<div className="h-64 animate-pulse bg-surface-light rounded-lg" />}
+              >
+                <LazyActionDashboard
+                  issues={issues || []}
+                  actions={getPersonalizedActions()}
+                  setActions={setActionsWrapper}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  viewingAsPartner={activePartner}
+                />
+              </Suspense>
             </TabsContent>
 
             <TabsContent value="progress" className="space-y-6">
-              <ProgressView
-                issues={issues || []}
-                actions={actions || []}
-                healthScore={
-                  healthScore || {
-                    overallScore: 0,
-                    categories: {
-                      communication: 0,
-                      intimacy: 0,
-                      finance: 0,
-                      time: 0,
-                      family: 0,
-                      personalGrowth: 0,
-                    },
-                    lastUpdated: new Date().toISOString(),
+              <Suspense
+                fallback={<div className="h-64 animate-pulse bg-surface-light rounded-lg" />}
+              >
+                <LazyProgressView
+                  issues={issues || []}
+                  actions={actions || []}
+                  healthScore={
+                    healthScore || {
+                      overallScore: 0,
+                      categories: {
+                        communication: 0,
+                        intimacy: 0,
+                        finance: 0,
+                        time: 0,
+                        family: 0,
+                        personalGrowth: 0,
+                      },
+                      lastUpdated: new Date().toISOString(),
+                    }
                   }
-                }
-                setHealthScore={setHealthScoreWrapper}
-                currentPartner={currentPartner}
-                otherPartner={otherPartner}
-                viewingAsPartner={activePartner}
-              />
+                  setHealthScore={setHealthScoreWrapper}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  viewingAsPartner={activePartner}
+                />
+              </Suspense>
             </TabsContent>
           </Tabs>
         </div>

@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { Heart, UserPlus, Users } from '@phosphor-icons/react';
+import { Heart, UserPlus, Users } from '@/components/ui/InlineIcons';
 import { toast } from 'sonner';
 
 export interface Partner {

@@ -6,12 +6,12 @@ import { Progress } from '@/components/ui/progress';
 import {
   CheckCircle,
   Clock,
-  TrashSimple,
-  DotsThreeVertical,
   ArrowRight,
   Calendar,
   User,
-} from '@phosphor-icons/react';
+  TrashSimple,
+  DotsThreeVertical,
+} from '@/components/ui/InlineIcons';
 import { cn } from '@/lib/utils';
 import { useGestures } from '@/hooks/useGestures';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';

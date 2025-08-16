@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useMobileDetection, useIOSDetection } from '@/hooks/use-mobile';
 import { MobileNavBar } from './mobile-navigation';
-import { X } from '@phosphor-icons/react';
+import { X } from '@/components/ui/InlineIcons';
 
 interface MobileLayoutProps {
   children: React.ReactNode;

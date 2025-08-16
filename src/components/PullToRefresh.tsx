@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowClockwise, CheckCircle } from '@phosphor-icons/react';
+import { ArrowClockwise, CheckCircle } from '@/components/ui/InlineIcons';
 import { cn } from '@/lib/utils';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 

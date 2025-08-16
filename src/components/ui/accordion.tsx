@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/components/ui/icons';
 
 import { cn } from '@/lib/utils';
 

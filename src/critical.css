@@ -1,0 +1,47 @@
+/* Critical CSS - Above the fold mobile styles */
+/* Inline this in index.html for fastest mobile loading */
+
+:root {
+  --color-primary: #a45eff;
+  --color-secondary: #453345;
+  --color-accent: #ff6c98;
+  --color-background: #0f0a0f;
+  --color-foreground: #f8f0f8;
+  --color-muted: #2f212f;
+  --color-border: #453345;
+  --color-ring: #a45eff;
+  --color-destructive: #ff4757;
+  --color-card: #1a111a;
+}
+
+/* Essential mobile layout */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+.min-h-screen { min-height: 100vh; }
+.p-4 { padding: 1rem; }
+.text-center { text-align: center; }
+.bg-background { background-color: var(--color-background); }
+.text-foreground { color: var(--color-foreground); }
+
+/* Mobile touch targets */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* iOS tap effects */
+.ios-tap {
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.1s ease-out;
+}
+.ios-tap:active {
+  transform: scale(0.97);
+}
+
+/* Safe areas */
+.safe-top { padding-top: env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }

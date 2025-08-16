@@ -6,12 +6,12 @@ import {
   Plus,
   Heart,
   Users,
-  CurrencyDollar,
   Clock,
-  House,
   TrendUp,
+  CurrencyDollar,
+  House,
   DotsThreeVertical,
-} from '@phosphor-icons/react';
+} from '@/components/ui/InlineIcons';
 import { Issue, Action } from '@/App';
 import { Partner } from '@/components/PartnerSetup';
 import IssueDialog from '@/components/IssueDialog';
