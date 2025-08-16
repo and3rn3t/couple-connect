@@ -259,7 +259,11 @@ export class CloudflareAnalyticsService {
     let sessionId = sessionStorage.getItem(sessionKey);
 
     if (!sessionId) {
-      sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      // Use cryptographically secure random values for session ID
+      const randomArray = new Uint32Array(2);
+      window.crypto.getRandomValues(randomArray);
+      const randomStr = Array.from(randomArray).map(n => n.toString(36)).join('');
+      sessionId = `session_${Date.now()}_${randomStr}`;
       sessionStorage.setItem(sessionKey, sessionId);
     }
 
