@@ -1,0 +1,60 @@
+# 💕 Cloudflare Pages configuration for Couple Connect
+name = "couple-connect"
+compatibility_date = "2024-08-14"
+
+# Pages build configuration
+pages_build_output_dir = "dist"
+CLOUDFLARE_ANALYTICS_TOKEN = "YOUR_PREVIEW_ANALYTICS_TOKEN_HERE"
+CLOUDFLARE_IMAGES_ACCOUNT_HASH = "plxxk0i1H1TUBzR_HC65xQ"
+ENABLE_REAL_TIME_SYNC = "false"
+ENABLE_ADVANCED_ANALYTICS = "true"
+ENABLE_IMAGE_OPTIMIZATION = "true"
+
+# D1 Database configuration for preview
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "couple-connect-db-preview"
+database_id = "your-preview-database-id-here"  # Replace with actual preview database ID
+
+# KV namespaces for preview
+[[env.preview.kv_namespaces]]
+binding = "COUPLE_CACHE"
+id = "your-preview-kv-namespace-id-here"
+preview_id = "your-preview-kv-preview-id-here"
+
+# Analytics Engine for preview
+[[env.preview.analytics_engine_datasets]]
+binding = "LOVE_METRICS"
+dataset = "couple_connect_analytics_preview"
+
+# 🚀 Custom domains (configure when ready)
+# [[env.production.routes]]
+# pattern = "couple-connect.com"
+# zone_name = "couple-connect.com"
+
+# [[env.production.routes]]
+# pattern = "www.couple-connect.com"
+# zone_name = "couple-connect.com"
+
+# 🛡️ Security and performance headers (handled by _headers file)
+# Additional Cloudflare-specific optimizations can be configured here
+
+# 📱 Mobile-first optimizations
+[build.caching]
+include = ["dist/**/*"]
+exclude = ["dist/**/*.map"]
+
+# 🔄 Scheduled events for relationship insights
+# Uncomment when ready to implement background workers
+# [[triggers]]
+# cron = "0 9 * * *"  # Daily at 9 AM
+# handler = "scheduled"
+
+# 💾 Durable Objects for real-time couple sync (advanced feature)
+# [[migrations]]
+# tag = "v1"
+# new_classes = ["CoupleSync"]
+
+# 🌐 Custom error pages
+# [env.production]
+# compatibility_flags = ["streams_enable_constructors"]

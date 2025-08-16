@@ -54,6 +54,7 @@ Welcome to the comprehensive documentation for Couple Connect! This index provid
 - **[Cloudflare Optimization Features](./development/CLOUDFLARE_OPTIMIZATION_FEATURES.md)** - 🎯 Complete guide to all available Cloudflare features for performance
 - **[Cloudflare Implementation Guide](./development/CLOUDFLARE_IMPLEMENTATION_GUIDE.md)** - 🚀 Step-by-step implementation instructions
 - **[Cloudflare Setup](./development/CLOUDFLARE_SETUP.md)** - D1 database and basic Cloudflare configuration
+- **[Cloudflare Pages Configuration](./development/CLOUDFLARE_PAGES_CONFIG.md)** - 🚀 Pages vs Workers config differences and deployment fixes
 
 ### Mobile Development
 

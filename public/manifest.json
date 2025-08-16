@@ -1,0 +1,30 @@
+{
+  "name": "Couple Connect - Together",
+  "short_name": "Together",
+  "description": "Building stronger relationships through accountability and growth",
+  "start_url": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "theme_color": "#a45eff",
+  "background_color": "#0f0a0f",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["lifestyle", "productivity", "social"],
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

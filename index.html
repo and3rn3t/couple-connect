@@ -8,12 +8,18 @@
 
     <!-- Primary Meta Tags -->
     <title>Couple Connect - Building Stronger Relationships Together</title>
-    <!-- Cloudflare Analytics - Track love metrics! 💕📊 -->
-    <script
-      defer
-      src="https://static.cloudflareinsights.com/beacon.min.js"
-      data-cf-beacon='{"token": "REPLACE_WITH_YOUR_TOKEN"}'
-    ></script>
+
+    <!-- React 19 Scheduler Fix - Must be loaded early -->
+    <script>
+      // Fix for React 19 scheduler issue with Vite in production
+      if (typeof globalThis.scheduler === 'undefined') {
+        globalThis.scheduler = {
+          unstable_now: function () {
+            return performance.now();
+          },
+        };
+      }
+    </script>
 
     <meta name="title" content="Couple Connect" />
     <meta

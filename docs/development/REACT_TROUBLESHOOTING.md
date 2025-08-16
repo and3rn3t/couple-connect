@@ -240,6 +240,20 @@ if (typeof globalThis.scheduler === 'undefined') {
 }
 ```
 
+**For production builds**, also add to `index.html` before any React scripts:
+
+```html
+<!-- React 19 Scheduler Fix - Must be loaded early -->
+<script>
+  // Fix for React 19 scheduler issue with Vite in production
+  if (typeof globalThis.scheduler === 'undefined') {
+    globalThis.scheduler = {
+      unstable_now: function() { return performance.now(); }
+    };
+  }
+</script>
+```
+
 ### 🛡️ Prevention Strategies
 
 1. **Always test with React 19** - Ensure compatibility with latest React version
@@ -275,6 +289,49 @@ Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' h
 1. **Test CSP thoroughly** - Verify all external resources are whitelisted
 2. **Use specific domains** - Don't use wildcard (*) unless necessary
 3. **Monitor browser console** - CSP violations show up clearly in console
+
+## 💥 Critical Bug #4: Cloudflare Pages Deployment Config Error (August 16, 2025)
+
+### 🐛 Problem Description
+
+**Symptoms**: Cloudflare Pages build failing with wrangler.toml configuration errors
+
+**Root Cause**: Using Workers configuration format for Pages deployment
+
+### 🔍 The Bug in Detail
+
+```
+✘ [ERROR] Running configuration file validation for Pages:
+    - Configuration file for Pages projects does not support "build"
+    - Unexpected fields found in build field: "environment","caching"
+```
+
+**Why this happens:**
+
+1. Cloudflare Pages uses a much simpler configuration model than Workers
+2. Most configuration is done through the dashboard, not wrangler.toml
+3. Complex Workers configurations are incompatible with Pages
+
+### ✅ The Solution
+
+Simplify wrangler.toml to minimal Pages configuration:
+
+```toml
+# 💕 Cloudflare Pages configuration for Couple Connect
+name = "couple-connect"
+compatibility_date = "2024-08-14"
+
+# Pages build configuration
+pages_build_output_dir = "dist"
+```
+
+Remove all `[build]`, `[env.*]`, database bindings, and KV configurations - these are configured in the dashboard for Pages.
+
+### 🛡️ Prevention Strategies
+
+1. **Use separate configs** - Keep different wrangler.toml files for Workers vs Pages
+2. **Check Cloudflare docs** - Pages and Workers have different configuration requirements
+3. **Test deployment early** - Validate configuration changes with actual deployments
 
 ## 🎯 General Debugging Strategies
 
