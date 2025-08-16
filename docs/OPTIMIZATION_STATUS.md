@@ -49,7 +49,7 @@
 
 ## Remaining Large Dependencies to Address
 
-1. **@radix-ui/***: Multiple UI components (~1-2MB total)
+1. **@radix-ui/\***: Multiple UI components (~1-2MB total)
 2. **framer-motion**: Animation library (~800KB-1MB)
 3. **three**: 3D library (~500KB)
 4. **d3**: Data visualization (~500KB-1MB)

@@ -70,7 +70,7 @@ export function CloudflareImagesDemo() {
         {/* Code Example */}
         <div className="mt-12 bg-gray-900 rounded-lg p-6 text-green-400 font-mono text-sm overflow-x-auto">
           <div className="text-gray-400 mb-2">
-            // Using optimized couple images is this easy! 💕
+            {/* Using optimized couple images is this easy! 💕 */}
           </div>
           <div>
             <span className="text-blue-400">import</span> {`{ useCoupleImage }`}{' '}
@@ -94,7 +94,7 @@ export function CloudflareImagesDemo() {
           </div>
           <div>{`}`}</div>
           <br />
-          <div className="text-gray-400">// That's it! Automatic optimization! ⚡✨</div>
+          <div className="text-gray-400">{/* That's it! Automatic optimization! ⚡✨ */}</div>
         </div>
       </div>
     </div>

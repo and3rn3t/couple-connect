@@ -1,6 +1,6 @@
 # 🚀 Cloudflare Optimization Features for Couple Connect
 
-*Making your love app faster than Cupid's arrow!* 💘⚡
+_Making your love app faster than Cupid's arrow!_ 💘⚡
 
 ## 🌟 Already Implemented (You're doing GREAT!)
 
@@ -97,7 +97,7 @@ export default {
       // Send encouraging notification
       await sendLoveNote(couple, insights);
     }
-  }
+  },
 };
 ```
 
@@ -109,8 +109,11 @@ Get detailed insights about how couples use your app!
 
 ```html
 <!-- Add to index.html -->
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js'
-        data-cf-beacon='{"token": "your-token"}'></script>
+<script
+  defer
+  src="https://static.cloudflareinsights.com/beacon.min.js"
+  data-cf-beacon='{"token": "your-token"}'
+></script>
 ```
 
 **Custom Events Tracking:**
@@ -127,7 +130,7 @@ function trackRelationshipEvent(event: string, data: any) {
 trackRelationshipEvent('action_completed', {
   action_type: action.type,
   difficulty: action.difficulty,
-  couple_level: couple.level
+  couple_level: couple.level,
 });
 ```
 
@@ -155,8 +158,8 @@ export class CoupleMemoryStorage {
       body: file,
       headers: {
         'X-Custom-Key': key,
-        'Content-Type': file.type
-      }
+        'Content-Type': file.type,
+      },
     });
 
     return await response.text(); // Returns public URL
@@ -182,7 +185,7 @@ export class RelationshipCache {
   private static CACHE_KEYS = {
     COUPLE_PROFILE: (id: string) => `couple:${id}:profile`,
     DAILY_ACTIONS: (id: string) => `couple:${id}:actions:${new Date().toDateString()}`,
-    ACHIEVEMENTS: (id: string) => `couple:${id}:achievements`
+    ACHIEVEMENTS: (id: string) => `couple:${id}:achievements`,
   };
 
   async getCachedCoupleData(coupleId: string): Promise<Couple | null> {
@@ -204,8 +207,8 @@ export class RelationshipCache {
     const response = new Response(JSON.stringify(data), {
       headers: {
         'Cache-Control': `max-age=${ttl}`,
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
 
     await cache.put(request, response);
@@ -222,17 +225,17 @@ Enhanced security for your relationship data!
 ```yaml
 # waf-rules.yaml
 rules:
-  - name: "Rate Limit Love Actions"
+  - name: 'Rate Limit Love Actions'
     expression: '(http.request.uri.path contains "/api/actions" and rate_limit(10, 60))'
-    action: "challenge"
+    action: 'challenge'
 
-  - name: "Protect Admin Routes"
+  - name: 'Protect Admin Routes'
     expression: '(http.request.uri.path contains "/admin")'
-    action: "js_challenge"
+    action: 'js_challenge'
 
-  - name: "Block Suspicious Login Attempts"
+  - name: 'Block Suspicious Login Attempts'
     expression: '(http.request.uri.path eq "/login" and cf.threat_score > 30)'
-    action: "block"
+    action: 'block'
 ```
 
 ### 7. 🌐 Cloudflare Stream (Love Videos!)
@@ -250,7 +253,7 @@ export class LoveVideoService {
 
     const response = await fetch('/api/stream/upload', {
       method: 'POST',
-      body: formData
+      body: formData,
     });
 
     const { videoId } = await response.json();
@@ -288,7 +291,7 @@ export class CoupleSync {
       type: 'ACTION_COMPLETED',
       action,
       timestamp: Date.now(),
-      celebrationMessage: getRandomCelebration()
+      celebrationMessage: getRandomCelebration(),
     });
   }
 
@@ -304,7 +307,7 @@ function useLivePartnerUpdates(coupleId: string) {
   useEffect(() => {
     const sync = new CoupleSync();
     sync.subscribeToPartnerUpdates(coupleId, (update) => {
-      setUpdates(prev => [update, ...prev]);
+      setUpdates((prev) => [update, ...prev]);
       // Show celebration animation!
       showPartnerCelebration(update.celebrationMessage);
     });

@@ -10,7 +10,19 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Trophy, Star, Flame, Gift, TrendUp, Heart, Target, ChartBar, Users, Calendar, Lightning } from '@/components/ui/InlineIcons';
+import {
+  Trophy,
+  Star,
+  Flame,
+  Gift,
+  TrendUp,
+  Heart,
+  Target,
+  ChartBar,
+  Users,
+  Calendar,
+  Lightning,
+} from '@/components/ui/InlineIcons';
 import { Action, Issue } from '@/App';
 import { Partner } from './PartnerSetup';
 import { toast } from 'sonner';

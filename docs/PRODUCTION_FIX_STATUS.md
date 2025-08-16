@@ -151,5 +151,6 @@ location / {
 The blank screen issue should be resolved once a fresh deployment is made with the current working build. All build processes are now functioning correctly.
 
 ---
+
 **Last Updated**: 2025-08-15
 **Next Action**: Deploy fresh build to production

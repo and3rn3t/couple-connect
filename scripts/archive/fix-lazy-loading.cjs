@@ -7,17 +7,47 @@ let content = fs.readFileSync(appFilePath, 'utf8');
 // Component mapping from old names to lazy versions
 const componentReplacements = [
   // Basic component replacements
-  ['<OfflineNotification />', '<Suspense fallback={<ComponentLoader message="Loading notification..." />}><LazyOfflineNotification /></Suspense>'],
-  ['<PartnerProfile', '<Suspense fallback={<ComponentLoader message="Loading profile..." />}><LazyPartnerProfile'],
-  ['<MindmapView', '<Suspense fallback={<ComponentLoader message="Loading mindmap..." />}><LazyMindmapView'],
-  ['<MobileActionDashboard', '<Suspense fallback={<ComponentLoader message="Loading dashboard..." />}><LazyMobileActionDashboard'],
-  ['<GamificationCenter', '<Suspense fallback={<ComponentLoader message="Loading gamification..." />}><LazyGamificationCenter'],
-  ['<RewardSystem', '<Suspense fallback={<ComponentLoader message="Loading rewards..." />}><LazyRewardSystem'],
-  ['<NotificationCenter', '<Suspense fallback={<ComponentLoader message="Loading notifications..." />}><LazyNotificationCenter'],
-  ['<NotificationSummary', '<Suspense fallback={<ComponentLoader message="Loading summary..." />}><LazyNotificationSummary'],
-  ['<PerformanceDashboard />', '<Suspense fallback={<ComponentLoader message="Loading dashboard..." />}><LazyPerformanceDashboard /></Suspense>'],
-  ['<DailyChallenges', '<Suspense fallback={<ComponentLoader message="Loading challenges..." />}><LazyDailyChallenges'],
-  
+  [
+    '<OfflineNotification />',
+    '<Suspense fallback={<ComponentLoader message="Loading notification..." />}><LazyOfflineNotification /></Suspense>',
+  ],
+  [
+    '<PartnerProfile',
+    '<Suspense fallback={<ComponentLoader message="Loading profile..." />}><LazyPartnerProfile',
+  ],
+  [
+    '<MindmapView',
+    '<Suspense fallback={<ComponentLoader message="Loading mindmap..." />}><LazyMindmapView',
+  ],
+  [
+    '<MobileActionDashboard',
+    '<Suspense fallback={<ComponentLoader message="Loading dashboard..." />}><LazyMobileActionDashboard',
+  ],
+  [
+    '<GamificationCenter',
+    '<Suspense fallback={<ComponentLoader message="Loading gamification..." />}><LazyGamificationCenter',
+  ],
+  [
+    '<RewardSystem',
+    '<Suspense fallback={<ComponentLoader message="Loading rewards..." />}><LazyRewardSystem',
+  ],
+  [
+    '<NotificationCenter',
+    '<Suspense fallback={<ComponentLoader message="Loading notifications..." />}><LazyNotificationCenter',
+  ],
+  [
+    '<NotificationSummary',
+    '<Suspense fallback={<ComponentLoader message="Loading summary..." />}><LazyNotificationSummary',
+  ],
+  [
+    '<PerformanceDashboard />',
+    '<Suspense fallback={<ComponentLoader message="Loading dashboard..." />}><LazyPerformanceDashboard /></Suspense>',
+  ],
+  [
+    '<DailyChallenges',
+    '<Suspense fallback={<ComponentLoader message="Loading challenges..." />}><LazyDailyChallenges',
+  ],
+
   // Closing tag replacements - need to be done after opening tags
   ['</PartnerProfile>', '</LazyPartnerProfile></Suspense>'],
   ['</MindmapView>', '</LazyMindmapView></Suspense>'],

@@ -12,7 +12,14 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Heart, TrendUp, CheckCircle, Target, Calendar, ChartBar } from '@/components/ui/InlineIcons';
+import {
+  Heart,
+  TrendUp,
+  CheckCircle,
+  Target,
+  Calendar,
+  ChartBar,
+} from '@/components/ui/InlineIcons';
 import { Issue, Action, RelationshipHealth } from '@/App';
 import { Partner } from '@/components/PartnerSetup';
 import { toast } from 'sonner';
