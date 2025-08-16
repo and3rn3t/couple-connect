@@ -7,22 +7,23 @@ This file provides specific guidance for GitHub Copilot to assist with the Coupl
 **Project**: Couple Connect - A React-based relationship management application
 **Tech Stack**: React 19, TypeScript, Vite, Tailwind CSS, Radix UI
 **Focus**: Mobile-first design with performance optimization
-**Current Priority**: Bundle size reduction and lazy loading implementation
+**Current Priority**: Bundle optimization and mobile component coverage
 
-## 📱 Mobile Optimization Priority
+## 📱 Current Performance Status (Updated: Aug 16, 2025)
 
-### Current Status
+### Performance Metrics
 
-- **Bundle Size**: 6.43 MB (Target: 1.5 MB) - ❌ CRITICAL ISSUE
-- **JavaScript**: 6.02 MB (Target: 800 KB) - ❌ Major chunk issue
-- **CSS**: 414 KB (Target: 250 KB) - ❌ Close to target
-- **Mobile Components**: 22% (Target: 80%) - ❌ Needs improvement
+- **Bundle Size**: 1.6 MB (Target: 1.5 MB) - ❌ 107% of target
+- **JavaScript**: 1.18 MB (Target: 800 KB) - ❌ 148% of target
+- **CSS**: 415 KB (Target: 250 KB) - ❌ 166% of target
+- **Mobile Components**: 23% (Target: 80%) - ❌ Major improvement needed
 
-### Key Issues to Address
+### Critical Issues to Address
 
-1. **Large JavaScript chunk (5.62 MB)** - investigate bundling configuration
-2. **Lazy loading not working effectively** - debug dynamic imports
-3. **Limited mobile component coverage** - convert more components
+1. **Large JavaScript chunk (606 KB)** - chunk-zxUleISs.js needs investigation
+2. **CSS bundle size (415 KB)** - implement aggressive purging and critical CSS
+3. **Mobile component coverage (23%)** - convert existing components to mobile-optimized versions
+4. **Bundle configuration** - improve vendor library chunking
 
 ## 🔧 Development Guidelines
 
@@ -31,7 +32,7 @@ This file provides specific guidance for GitHub Copilot to assist with the Coupl
 - **TypeScript**: Strict mode enabled, avoid `any` types
 - **React**: Functional components with hooks, React 19 patterns
 - **CSS**: Tailwind CSS with mobile-first approach
-- **Performance**: Lazy loading for heavy dependencies
+- **Performance**: Lazy loading for heavy dependencies, code splitting optimization
 
 ### File Naming Conventions
 
@@ -72,6 +73,61 @@ export const LazyRoutes = {
   Component: lazy(() => import('./Component'))
 };
 ```
+
+### Mobile Component Pattern
+
+```typescript
+// Mobile-optimized component structure
+interface MobileComponentProps {
+  // Touch-friendly props
+  onTouchStart?: () => void;
+  // Mobile-specific sizing
+  size?: 'mobile' | 'tablet' | 'desktop';
+}
+
+export const MobileComponent = ({ size = 'mobile', ...props }: MobileComponentProps) => {
+  const { isMobile } = useMobileDetection();
+
+  return (
+    <div className={cn(
+      // Base styles
+      "touch-manipulation",
+      // Mobile-first responsive
+      "p-4 md:p-6",
+      // Touch targets
+      "min-h-[44px]" // 44px minimum touch target
+    )}>
+      {/* Mobile-optimized content */}
+    </div>
+  );
+};
+```
+
+import { EssentialIcons } from '@/components/LazyIcons';
+
+// Mobile-specific imports
+import { useMobileDetection } from '@/hooks/use-mobile';
+
+````
+
+## 🧩 Component Architecture
+
+### Lazy Loading Pattern
+
+```typescript
+// 1. Create lazy component
+export const LazyComponent = lazy(() => import('./HeavyComponent'));
+
+// 2. Wrap with Suspense and fallback
+<Suspense fallback={<ComponentSkeleton />}>
+  <LazyComponent {...props} />
+</Suspense>
+
+// 3. Add to lazy routes if needed
+export const LazyRoutes = {
+  Component: lazy(() => import('./Component'))
+};
+````
 
 ### Mobile Component Pattern
 
@@ -176,21 +232,31 @@ describe('Mobile Component', () => {
 
 ### 1. Bundle Investigation (Priority: P0)
 
-- **Problem**: 5.62 MB JavaScript chunk
-- **Focus**: Vite configuration, manual chunks
+- **Problem**: 606 KB JavaScript chunk (chunk-zxUleISs.js)
+- **Focus**: Vite configuration, manual chunks, vendor library separation
 - **Files**: `vite.config.ts`, bundle analyzer output
+- **Action**: Investigate what's included in the large chunk and split appropriately
 
-### 2. Lazy Loading Debug (Priority: P0)
+### 2. Mobile Component Conversion (Priority: P1)
 
-- **Problem**: Dynamic imports not working effectively
-- **Focus**: Suspense boundaries, import statements
-- **Files**: `LazyRoutes.tsx`, `LazyCharts.tsx`, `App.tsx`
-
-### 3. Mobile Component Conversion (Priority: P1)
-
-- **Problem**: Only 22% mobile component coverage
+- **Problem**: Only 23% mobile component coverage
 - **Focus**: Convert existing components to mobile-optimized versions
 - **Target**: 80% mobile component coverage
+- **Strategy**: Prioritize high-usage components first
+
+### 3. CSS Bundle Optimization (Priority: P1)
+
+- **Problem**: 415 KB CSS bundle exceeds 250 KB target
+- **Focus**: Tailwind CSS purging, critical CSS extraction
+- **Files**: `tailwind.config.js`, PostCSS configurations
+- **Action**: Implement aggressive utility removal and critical CSS loading
+
+### 4. Performance Monitoring (Priority: P2)
+
+- **Problem**: Need continuous performance tracking
+- **Focus**: Automated bundle size monitoring in CI/CD
+- **Files**: GitHub Actions workflows, performance scripts
+- **Action**: Set up bundle size regression detection
 
 ## 💡 Copilot Suggestions
 
@@ -223,21 +289,117 @@ describe('Mobile Component', () => {
 - `src/components/LazyIcons.tsx` - Icon lazy loading implementation
 - `src/components/LazyRoutes.tsx` - Component lazy loading setup
 - `scripts/mobile-performance.js` - Performance monitoring
+- `scripts/analyze-bundle.js` - Bundle analysis tools
 
 ### Mobile Optimization
 
 - `src/hooks/use-mobile.ts` - Mobile detection logic
 - `src/components/ui/mobile-*` - Mobile-specific UI components
 - `tailwind.config.js` - Mobile-first CSS configuration
+- `tailwind.mobile-optimized.config.js` - Mobile-specific Tailwind config
 
-### Monitoring & Scripts
+### Project Organization
 
-- `scripts/optimize-css-aggressive.js` - CSS bundle optimization
-- `scripts/implement-lazy-loading.js` - Lazy loading setup
-- `scripts/analyze-bundle.js` - Bundle analysis tools
+- `PROJECT_STATUS.md` - Current project status and metrics
+- `README.md` - Project overview and setup instructions
+- `scripts/project-cleanup-comprehensive.js` - Project maintenance
+- `docs/` - Comprehensive project documentation
+
+## 🛠️ Essential Commands
+
+### Development & Testing
+
+```bash
+npm run dev                 # Start development server
+npm run build              # Production build
+npm run test               # Run all tests
+npm run test:mobile        # Mobile-specific tests
+npm run type-check         # TypeScript validation
+```
+
+### Performance Analysis
+
+```bash
+npm run perf:mobile        # Mobile performance metrics
+npm run build:analyze      # Bundle composition analysis
+npm run lighthouse:mobile  # Lighthouse mobile audit
+```
+
+### Project Maintenance
+
+```bash
+node scripts/project-cleanup-comprehensive.js  # Project cleanup
+npm run docs:check         # Documentation validation
+npm run lint:fix           # Fix linting issues
+```
+
+## 🎯 Current Development Focus
+
+### Immediate Goals (Next Sprint)
+
+1. **Bundle Optimization**
+   - Investigate and split the 606 KB JavaScript chunk
+   - Implement vendor library separation
+   - Add build-time bundle monitoring
+
+2. **Mobile Component Coverage**
+   - Convert high-priority components to mobile-optimized versions
+   - Target: Increase from 23% to 50% coverage
+   - Focus on ActionDashboard, ProgressView, and navigation components
+
+3. **CSS Optimization**
+   - Implement aggressive Tailwind purging
+   - Extract critical CSS for above-the-fold content
+   - Reduce CSS bundle from 415 KB to under 300 KB
+
+### Medium-term Goals (Next Month)
+
+1. **Performance Automation**
+   - Set up continuous bundle size monitoring
+   - Implement performance regression detection
+   - Add automated Lighthouse CI
+
+2. **Mobile-First Completion**
+   - Reach 80% mobile component coverage
+   - Implement progressive enhancement patterns
+   - Optimize touch interactions
+
+3. **Production Readiness**
+   - Achieve all performance targets (<1.5 MB total bundle)
+   - Complete PWA implementation
+   - Finalize deployment automation
+
+## 📋 Code Review Checklist
+
+When reviewing code changes, ensure:
+
+- [ ] Bundle size impact assessed (run `npm run perf:mobile`)
+- [ ] Mobile responsiveness tested on actual devices
+- [ ] TypeScript strict mode compliance
+- [ ] Lazy loading implemented for heavy dependencies
+- [ ] CSS utilities optimized (no unused classes)
+- [ ] Touch-friendly interaction design (44px+ targets)
+- [ ] Performance monitoring updated if needed
+
+## 🚀 Deployment & CI/CD
+
+### Build Process
+
+1. TypeScript compilation and type checking
+2. ESLint validation with max 50 warnings
+3. Bundle size analysis and optimization
+4. Mobile performance testing
+5. Lighthouse audit for performance metrics
+
+### Performance Thresholds
+
+- Total bundle size: <1.5 MB (currently 1.6 MB)
+- JavaScript bundle: <800 KB (currently 1.18 MB)
+- CSS bundle: <250 KB (currently 415 KB)
+- Mobile component coverage: >80% (currently 23%)
 
 ---
 
-**Last Updated**: 2025-08-15
-**Priority**: Bundle size reduction and mobile optimization
-**Next Steps**: Debug large JavaScript chunk, improve lazy loading effectiveness
+**Last Updated**: August 16, 2025
+**Next Review**: Focus on bundle optimization and mobile component conversion
+**Critical Path**: Investigate chunk-zxUleISs.js (606 KB) for immediate optimization wins

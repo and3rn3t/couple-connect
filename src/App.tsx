@@ -14,7 +14,10 @@ import { performanceMonitor } from './utils/performanceMonitor';
 import './utils/performanceDemo'; // Initialize performance utilities
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EssentialIcons } from '@/components/LazyIcons';
-import { LazyProgressView, LazyActionDashboard } from '@/components/LazyRoutes';
+import { LazyProgressView } from '@/components/LazyRoutes';
+import { ResponsivePartnerProfile } from '@/components/ResponsivePartnerProfile';
+import { ResponsiveActionDashboard } from '@/components/ResponsiveActionDashboard';
+import { ResponsiveProgressView } from '@/components/ResponsiveProgressView';
 import { Toaster } from '@/components/ui/sonner';
 import { MobileTabBar, MobileNavBar } from '@/components/ui/mobile-navigation';
 import { useMobileDetection } from '@/hooks/use-mobile';
@@ -26,7 +29,7 @@ const LazyMobileActionDashboard = lazy(() => import('@/components/MobileActionDa
 const LazyOfflineNotification = lazy(() =>
   import('@/components/OfflineNotification').then((m) => ({ default: m.OfflineNotification }))
 );
-const LazyPartnerProfile = lazy(() => import('@/components/PartnerProfile'));
+const LazyPartnerProfile = ResponsivePartnerProfile; // Use responsive component
 const LazyNotificationCenter = lazy(() => import('@/components/NotificationCenter'));
 const LazyNotificationSummary = lazy(() => import('@/components/NotificationSummary'));
 const LazyGamificationCenter = lazy(() => import('@/components/GamificationCenter'));
@@ -714,47 +717,39 @@ function App() {
             </TabsContent>
 
             <TabsContent value="actions" className="space-y-6">
-              <Suspense
-                fallback={<div className="h-64 animate-pulse bg-surface-light rounded-lg" />}
-              >
-                <LazyActionDashboard
-                  issues={issues || []}
-                  actions={getPersonalizedActions()}
-                  setActions={setActionsWrapper}
-                  currentPartner={currentPartner}
-                  otherPartner={otherPartner}
-                  viewingAsPartner={activePartner}
-                />
-              </Suspense>
+              <ResponsiveActionDashboard
+                issues={issues || []}
+                actions={getPersonalizedActions()}
+                setActions={setActionsWrapper}
+                currentPartner={currentPartner}
+                otherPartner={otherPartner}
+                viewingAsPartner={activePartner}
+              />
             </TabsContent>
 
             <TabsContent value="progress" className="space-y-6">
-              <Suspense
-                fallback={<div className="h-64 animate-pulse bg-surface-light rounded-lg" />}
-              >
-                <LazyProgressView
-                  issues={issues || []}
-                  actions={actions || []}
-                  healthScore={
-                    healthScore || {
-                      overallScore: 0,
-                      categories: {
-                        communication: 0,
-                        intimacy: 0,
-                        finance: 0,
-                        time: 0,
-                        family: 0,
-                        personalGrowth: 0,
-                      },
-                      lastUpdated: new Date().toISOString(),
-                    }
+              <ResponsiveProgressView
+                issues={issues || []}
+                actions={actions || []}
+                healthScore={
+                  healthScore || {
+                    overallScore: 0,
+                    categories: {
+                      communication: 0,
+                      intimacy: 0,
+                      finance: 0,
+                      time: 0,
+                      family: 0,
+                      personalGrowth: 0,
+                    },
+                    lastUpdated: new Date().toISOString(),
                   }
-                  setHealthScore={setHealthScoreWrapper}
-                  currentPartner={currentPartner}
-                  otherPartner={otherPartner}
-                  viewingAsPartner={activePartner}
-                />
-              </Suspense>
+                }
+                setHealthScore={setHealthScoreWrapper}
+                currentPartner={currentPartner}
+                otherPartner={otherPartner}
+                viewingAsPartner={activePartner}
+              />
             </TabsContent>
           </Tabs>
         </div>
