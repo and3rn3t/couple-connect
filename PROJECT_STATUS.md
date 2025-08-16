@@ -6,13 +6,13 @@
 
 ## 🎯 Current Performance Metrics
 
-| Metric | Current | Target | Status |
-|--------|---------|--------|---------|
-| Bundle Size | 1.65 MB | 1.5 MB | ❌ 110% of target |
-| JavaScript | 1.24 MB | 800 KB | ❌ 155% of target |
-| CSS | 414.28 KB | 250 KB | 🔧 166% of target → 24KB optimized |
-| Mobile Components | 35% → 60%+ | 80% | 🎯 Major progress! |
-| Framer Motion | 606.65 KB | Lazy loaded | ✅ Converted to lazy loading |
+| Metric            | Current    | Target      | Status                             |
+| ----------------- | ---------- | ----------- | ---------------------------------- |
+| Bundle Size       | 1.65 MB    | 1.5 MB      | ❌ 110% of target                  |
+| JavaScript        | 1.24 MB    | 800 KB      | ❌ 155% of target                  |
+| CSS               | 414.28 KB  | 250 KB      | 🔧 166% of target → 24KB optimized |
+| Mobile Components | 35% → 60%+ | 80%         | 🎯 Major progress!                 |
+| Framer Motion     | 606.65 KB  | Lazy loaded | ✅ Converted to lazy loading       |
 
 ## 🛠️ Tech Stack
 
@@ -167,5 +167,5 @@ couple-connect/
 
 ---
 
-*Last cleanup: August 16, 2025*
-*Run `npm run perf:mobile` for updated metrics*
+_Last cleanup: August 16, 2025_
+_Run `npm run perf:mobile` for updated metrics_

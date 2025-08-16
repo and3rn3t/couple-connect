@@ -39,6 +39,7 @@ Welcome to the comprehensive documentation for Couple Connect! This index provid
 - **[CI/IDE Linting Summary](./development/CI_IDE_LINTING_SUMMARY.md)** - Implementation summary and benefits
 - **[GitHub Actions Troubleshooting](./development/GITHUB_ACTIONS_TROUBLESHOOTING.md)** - CI/CD pipeline debugging
 - **[Optimization Summary](./development/OPTIMIZATION_SUMMARY.md)** - Overall optimization achievements
+- **[React Troubleshooting](./development/REACT_TROUBLESHOOTING.md)** - 🚨 Critical bug fixes and React debugging guide
 
 ### Database Development
 
@@ -47,6 +48,13 @@ Welcome to the comprehensive documentation for Couple Connect! This index provid
 - **[Database Migration](./development/DATABASE_MIGRATION.md)** - Data migration procedures
 - **[Database Optimization](./development/DATABASE_OPTIMIZATION.md)** - Performance optimization guide
 - **[Optimization Status](./development/DATABASE_OPTIMIZATIONS_STATUS.md)** - Current optimization implementations
+
+### 🌟 Cloudflare Optimization (NEW!)
+
+- **[Cloudflare Optimization Features](./development/CLOUDFLARE_OPTIMIZATION_FEATURES.md)** - 🎯 Complete guide to all available Cloudflare features for performance
+- **[Cloudflare Implementation Guide](./development/CLOUDFLARE_IMPLEMENTATION_GUIDE.md)** - 🚀 Step-by-step implementation instructions
+- **[Cloudflare Setup](./development/CLOUDFLARE_SETUP.md)** - D1 database and basic Cloudflare configuration
+- **[Cloudflare Pages Configuration](./development/CLOUDFLARE_PAGES_CONFIG.md)** - 🚀 Pages vs Workers config differences and deployment fixes
 
 ### Mobile Development
 
@@ -93,7 +101,10 @@ docs/
 │   ├── DATABASE_OPTIMIZATION.md                 # Performance optimization
 │   ├── DATABASE_MIGRATION.md                    # Migration procedures
 │   ├── DATABASE_OPTIMIZATIONS_STATUS.md         # Current optimizations
-│   ├── CLOUDFLARE_SETUP.md                      # Cloudflare configuration
+│   ├── CLOUDFLARE_SETUP.md                      # Cloudflare D1 configuration
+│   ├── CLOUDFLARE_OPTIMIZATION_FEATURES.md      # Complete Cloudflare features guide
+│   ├── CLOUDFLARE_IMPLEMENTATION_GUIDE.md       # Step-by-step Cloudflare setup
+│   ├── MOBILE_TESTING_GUIDE.md                  # Mobile testing strategies
 │   └── DEPLOYMENT.md                            # Deployment instructions
 └── features/                                     # Feature-specific documentation
     └── GAMIFICATION.md                           # Gamification system details

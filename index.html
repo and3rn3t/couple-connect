@@ -7,7 +7,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
     <!-- Primary Meta Tags -->
-    <title>Couple Connect</title>
+    <title>Couple Connect - Building Stronger Relationships Together</title>
+
+    <!-- React 19 Scheduler Fix - Must be loaded early -->
+    <script>
+      // Comprehensive fix for React 19 scheduler issue with Vite in production
+      (function () {
+        // Ensure globalThis exists
+        if (typeof globalThis === 'undefined') {
+          var globalThis = (function () {
+            if (typeof window !== 'undefined') return window;
+            if (typeof global !== 'undefined') return global;
+            if (typeof self !== 'undefined') return self;
+            throw new Error('Unable to locate global object');
+          })();
+        }
+
+        // Fix scheduler issue
+        if (typeof globalThis.scheduler === 'undefined' || !globalThis.scheduler) {
+          globalThis.scheduler = {
+            unstable_now: function () {
+              return performance.now();
+            },
+            unstable_scheduleCallback: function (priority, callback) {
+              return setTimeout(callback, 0);
+            },
+            unstable_cancelCallback: function (id) {
+              clearTimeout(id);
+            },
+            unstable_shouldYield: function () {
+              return false;
+            },
+            unstable_requestPaint: function () {
+              // No-op
+            },
+          };
+        }
+
+        // Also set on window for compatibility
+        if (typeof window !== 'undefined' && !window.scheduler) {
+          window.scheduler = globalThis.scheduler;
+        }
+      })();
+    </script>
+
     <meta name="title" content="Couple Connect" />
     <meta
       name="description"
@@ -15,6 +58,7 @@
     />
 
     <!-- iOS-specific meta tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Together" />

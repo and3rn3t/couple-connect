@@ -9,7 +9,81 @@ This file provides specific guidance for GitHub Copilot to assist with the Coupl
 **Focus**: Mobile-first design with performance optimization
 **Current Priority**: Bundle optimization and mobile component coverage
 
-## 📱 Current Performance Status (Updated: Aug 16, 2025)
+## � Critical Bug Fixes & Lessons Learned
+
+### 💥 Infinite Re-render Loop Fix (August 16, 2025)
+
+**⚠️ NEVER FORGET THIS LESSON!** We had a critical infinite re-render loop that caused blank screens:
+
+#### 🐛 The Problem
+
+```typescript
+// ❌ THIS CAUSES INFINITE LOOPS - DO NOT DO THIS!
+useEffect(() => {
+  if (!partnersInitialized && currentPartner && otherPartner) {
+    setPartnersInitialized(true); // ← This triggers the effect again!
+  }
+  if (!partnersInitialized && (!currentPartner || !otherPartner)) {
+    setCurrentPartner(defaultPartner); // ← This triggers the effect again!
+    setOtherPartner(defaultPartner); // ← This triggers the effect again!
+    setPartnersInitialized(true); // ← This triggers the effect again!
+  }
+}, [partnersInitialized, currentPartner, otherPartner]); // ← Circular dependency!
+```
+
+#### ✅ The Solution
+
+```typescript
+// ✅ CORRECT - Empty dependency array for one-time initialization
+useEffect(() => {
+  // Only run this effect once
+  if (partnersInitialized) return;
+
+  // Handle initialization logic...
+  setCurrentPartner(defaultPartner);
+  setOtherPartner(defaultPartner);
+  setPartnersInitialized(true);
+}, []); // ← Empty array = runs only once on mount
+```
+
+#### 🔍 How to Spot This Bug
+
+- **Symptoms**: Blank screen, app never loads, infinite console logs
+- **Cause**: useEffect dependencies include state that the effect modifies
+- **Detection**: Look for useEffect that sets state included in its dependency array
+
+#### 🛡️ Prevention Rules
+
+1. **Initialization effects should usually have empty dependency arrays** `[]`
+2. **Never include state in dependencies that the effect modifies** (unless you want infinite loops!)
+3. **Use separate effects** for initialization vs. reactive updates
+4. **Add early returns** to prevent unnecessary state updates
+5. **Test thoroughly** after any useEffect dependency changes
+
+#### 🎯 When to Use Different Dependency Patterns
+
+```typescript
+// ✅ One-time initialization
+useEffect(() => {
+  initializeApp();
+}, []); // Empty array
+
+// ✅ Reactive to external changes only
+useEffect(() => {
+  updateUI();
+}, [externalProp]); // Only external dependencies
+
+// ✅ Derived state updates
+useEffect(() => {
+  if (user && !userProfile) {
+    fetchUserProfile(user.id);
+  }
+}, [user, userProfile]); // OK if we're not setting user or userProfile in this effect
+```
+
+**This bug cost us debugging time and could have been prevented with proper useEffect patterns! 🚨💔**
+
+## �📱 Current Performance Status (Updated: Aug 16, 2025)
 
 ### Performance Metrics
 
@@ -31,6 +105,9 @@ This file provides specific guidance for GitHub Copilot to assist with the Coupl
 
 - **TypeScript**: Strict mode enabled, avoid `any` types
 - **React**: Functional components with hooks, React 19 patterns
+  - ⚠️ **CRITICAL**: Always check useEffect dependencies for circular loops! See infinite re-render fix above.
+  - Use empty dependency arrays `[]` for one-time initialization effects
+  - Never include state in dependencies that the effect modifies
 - **CSS**: Tailwind CSS with mobile-first approach
 - **Performance**: Lazy loading for heavy dependencies, code splitting optimization
 

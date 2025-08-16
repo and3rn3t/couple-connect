@@ -18,7 +18,7 @@ concurrency:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: couple-connect
+  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/couple-connect
 
 jobs:
   # 🐳 Build and test Docker image

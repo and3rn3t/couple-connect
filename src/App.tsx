@@ -22,6 +22,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { MobileTabBar, MobileNavBar } from '@/components/ui/mobile-navigation';
 import { useMobileDetection } from '@/hooks/use-mobile';
 import { useServiceWorker, useResourceCaching } from '@/hooks/useServiceWorker';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // Lazy load heavy components to reduce initial bundle size
 const LazyMindmapView = lazy(() => import('@/components/MindmapView'));
@@ -276,21 +277,21 @@ function App() {
 
   // Wrapper functions for components that still expect setters (temporary until components are updated)
   const setIssuesWrapper = async (update: (current: Issue[]) => Issue[]) => {
-    // For now, components can still use this pattern, but we should migrate them to use database hooks directly
     console.warn(
       'setIssuesWrapper called - components should be updated to use database hooks directly'
     );
-    const _updatedIssues = update(issues);
-    // Here you would implement the actual database updates based on the diff
+    const updatedIssues = update(issues);
+    // For now, just log the changes - components should be updated to use database hooks directly
+    console.log('Issues would be updated to:', updatedIssues);
   };
 
   const setActionsWrapper = async (update: (current: Action[]) => Action[]) => {
-    // For now, components can still use this pattern, but we should migrate them to use database hooks directly
     console.warn(
       'setActionsWrapper called - components should be updated to use database hooks directly'
     );
-    const _updatedActions = update(actions);
-    // Here you would implement the actual database updates based on the diff
+    const updatedActions = update(actions);
+    // For now, just log the changes - components should be updated to use database hooks directly
+    console.log('Actions would be updated to:', updatedActions);
   };
 
   const setHealthScoreWrapper = (update: (current: RelationshipHealth) => RelationshipHealth) => {
@@ -335,15 +336,48 @@ function App() {
 
   // Initialize default partners if none are set up
   useEffect(() => {
-    // If partners already exist but we haven't marked as initialized, mark it now
-    if (!partnersInitialized && currentPartner && otherPartner) {
+    // Only run this effect once
+    if (partnersInitialized) return;
+
+    console.warn('🚀 Initializing partners...', {
+      currentPartner: currentPartner?.name,
+      otherPartner: otherPartner?.name,
+    });
+
+    // Set a timeout to ensure this doesn't hang indefinitely
+    const initTimeout = setTimeout(() => {
+      console.warn('⚠️ Partner initialization timeout, forcing initialization');
+      if (!partnersInitialized) {
+        const defaultCurrentPartner: Partner = {
+          id: 'partner-1',
+          name: 'You',
+          email: 'you@example.com',
+          isCurrentUser: true,
+        };
+        const defaultOtherPartner: Partner = {
+          id: 'partner-2',
+          name: 'Your Partner',
+          email: 'partner@example.com',
+          isCurrentUser: false,
+        };
+
+        setCurrentPartner(defaultCurrentPartner);
+        setOtherPartner(defaultOtherPartner);
+        setPartnersInitialized(true);
+        console.warn('✅ Forced partner initialization complete');
+      }
+    }, 2000); // Force initialization after 2 seconds max
+
+    // If partners already exist, just mark as initialized
+    if (currentPartner && otherPartner) {
       console.warn('✅ Partners already exist, marking as initialized');
       setPartnersInitialized(true);
+      clearTimeout(initTimeout);
+      return;
     }
-    // Only create default partners if none exist and we haven't tried before
-    else if (!partnersInitialized && (!currentPartner || !otherPartner)) {
-      console.warn('🚀 Initializing default partners...');
 
+    // Create default partners if none exist
+    try {
       const defaultCurrentPartner: Partner = {
         id: 'partner-1',
         name: 'You',
@@ -362,33 +396,98 @@ function App() {
       setOtherPartner(defaultOtherPartner);
       setPartnersInitialized(true);
       console.warn('✅ Default partners created successfully');
+      clearTimeout(initTimeout);
+    } catch (error) {
+      console.error('❌ Error creating default partners:', error);
+      // Force initialization anyway to prevent infinite loading
+      setPartnersInitialized(true);
+      clearTimeout(initTimeout);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [partnersInitialized, currentPartner, otherPartner]);
+
+    return () => clearTimeout(initTimeout);
+  }, []); // Empty dependency array - only run once on mount
 
   // Show loading screen while partners are being initialized or don't exist
   if (!partnersInitialized || !currentPartner || !otherPartner) {
-    console.warn('🔄 Showing loading screen');
+    console.warn('🔄 Showing loading screen', {
+      partnersInitialized,
+      currentPartner: currentPartner?.name,
+      otherPartner: otherPartner?.name,
+    });
     return (
-      <div className="p-8 bg-gray-100 min-h-screen">
-        <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold mb-4">🚀 Setting up your account...</h2>
-          <p className="text-gray-600">
-            Creating default partners for demo. This will only take a moment.
+      <div
+        style={{
+          padding: '32px',
+          backgroundColor: '#f0f0f0',
+          minHeight: '100vh',
+          fontFamily: 'Arial, sans-serif',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '500px',
+            margin: '0 auto',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+            padding: '24px',
+          }}
+        >
+          <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px', color: '#333' }}>
+            🚀 Couple Connect Loading...
+          </h2>
+          <p style={{ color: '#666', marginBottom: '16px' }}>
+            Setting up your relationship dashboard. This should only take a moment.
           </p>
-          <div className="mt-4">
-            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div style={{ marginTop: '16px', textAlign: 'center' }}>
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                border: '3px solid #e3e3e3',
+                borderTop: '3px solid #3498db',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto',
+              }}
+            />
           </div>
-          <div className="mt-4 text-xs text-gray-500">
-            Debug: partnersInitialized={partnersInitialized.toString()}, currentPartner=
-            {currentPartner?.name || 'null'}, otherPartner={otherPartner?.name || 'null'}
+          <div
+            style={{
+              marginTop: '16px',
+              fontSize: '12px',
+              color: '#999',
+              backgroundColor: '#f8f8f8',
+              padding: '8px',
+              borderRadius: '4px',
+            }}
+          >
+            Debug Info:
+            <br />• partnersInitialized: {partnersInitialized.toString()}
+            <br />• currentPartner: {currentPartner?.name || 'null'}
+            <br />• otherPartner: {otherPartner?.name || 'null'}
           </div>
         </div>
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `,
+          }}
+        />
       </div>
     );
   }
 
-  console.warn('✅ Partners initialized, rendering main app...');
+  console.warn('✅ Partners initialized, rendering main app...', {
+    currentPartner: currentPartner?.name,
+    otherPartner: otherPartner?.name,
+    activeTab,
+    isMobile,
+  });
 
   // Determine which partner's perspective we're viewing
   const activePartner = viewingAsPartner
@@ -504,31 +603,47 @@ function App() {
           {/* Mobile Tab Content */}
           {activeTab === 'mindmap' && (
             <div className="px-0">
-              <Suspense fallback={<ComponentLoader message="Loading mindmap..." />}>
-                <LazyMindmapView
+              <ErrorBoundary
+                fallback={
+                  <div className="p-4 text-center text-red-600">
+                    Failed to load mindmap. Please try refreshing.
+                  </div>
+                }
+              >
+                <Suspense fallback={<ComponentLoader message="Loading mindmap..." />}>
+                  <LazyMindmapView
+                    issues={issues || []}
+                    setIssues={setIssuesWrapper}
+                    actions={actions || []}
+                    setActions={setActionsWrapper}
+                    currentPartner={currentPartner}
+                    otherPartner={otherPartner}
+                    viewingAsPartner={activePartner}
+                  />
+                </Suspense>
+              </ErrorBoundary>
+            </div>
+          )}
+
+          {activeTab === 'actions' && (
+            <ErrorBoundary
+              fallback={
+                <div className="p-4 text-center text-red-600">
+                  Failed to load actions. Please try refreshing.
+                </div>
+              }
+            >
+              <Suspense fallback={<ComponentLoader message="Loading dashboard..." />}>
+                <LazyMobileActionDashboard
                   issues={issues || []}
-                  setIssues={setIssuesWrapper}
-                  actions={actions || []}
+                  actions={getPersonalizedActions()}
                   setActions={setActionsWrapper}
                   currentPartner={currentPartner}
                   otherPartner={otherPartner}
                   viewingAsPartner={activePartner}
                 />
               </Suspense>
-            </div>
-          )}
-
-          {activeTab === 'actions' && (
-            <Suspense fallback={<ComponentLoader message="Loading dashboard..." />}>
-              <LazyMobileActionDashboard
-                issues={issues || []}
-                actions={getPersonalizedActions()}
-                setActions={setActionsWrapper}
-                currentPartner={currentPartner}
-                otherPartner={otherPartner}
-                viewingAsPartner={activePartner}
-              />
-            </Suspense>
+            </ErrorBoundary>
           )}
 
           {activeTab === 'progress' && (
