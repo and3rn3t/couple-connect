@@ -1,43 +1,43 @@
 module.exports = {
   plugins: {
     tailwindcss: {
-      config: process.env.TAILWIND_CONFIG || './tailwind.config.js'
+      config: process.env.TAILWIND_CONFIG || './tailwind.config.js',
     },
     autoprefixer: {},
     // CSS optimization for production
     ...(process.env.NODE_ENV === 'production' && {
       cssnano: {
-        preset: ['advanced', {
-          // Aggressive optimization for mobile
-          reduceIdents: true,
-          mergeIdents: true,
-          discardComments: { removeAll: true },
-          discardDuplicates: true,
-          discardEmpty: true,
-          minifyFontValues: true,
-          minifyParams: true,
-          minifySelectors: true,
-          normalizeCharset: true,
-          normalizeDisplayValues: true,
-          normalizePositions: true,
-          normalizeRepeatStyle: true,
-          normalizeString: true,
-          normalizeTimingFunctions: true,
-          normalizeUnicode: true,
-          normalizeUrl: true,
-          normalizeWhitespace: true,
-          orderedValues: true,
-          reduceTransforms: true,
-          svgo: true,
-          uniqueSelectors: true,
-        }],
+        preset: [
+          'advanced',
+          {
+            // Aggressive optimization for mobile
+            reduceIdents: true,
+            mergeIdents: true,
+            discardComments: { removeAll: true },
+            discardDuplicates: true,
+            discardEmpty: true,
+            minifyFontValues: true,
+            minifyParams: true,
+            minifySelectors: true,
+            normalizeCharset: true,
+            normalizeDisplayValues: true,
+            normalizePositions: true,
+            normalizeRepeatStyle: true,
+            normalizeString: true,
+            normalizeTimingFunctions: true,
+            normalizeUnicode: true,
+            normalizeUrl: true,
+            normalizeWhitespace: true,
+            orderedValues: true,
+            reduceTransforms: true,
+            svgo: true,
+            uniqueSelectors: true,
+          },
+        ],
       },
       '@fullhuman/postcss-purgecss': {
-        content: [
-          './dist/**/*.html',
-          './dist/**/*.js',
-        ],
-        defaultExtractor: content => content.match(/[\w-/:]+(?<!:)/g) || [],
+        content: ['./dist/**/*.html', './dist/**/*.js'],
+        defaultExtractor: (content) => content.match(/[\w-/:]+(?<!:)/g) || [],
         safelist: {
           standard: [
             // Keep essential utility classes

@@ -137,12 +137,12 @@ npm run ci:status
 
 ## Performance Metrics
 
-| Metric | Before | After | Improvement |
-|--------|---------|--------|-------------|
-| Pipeline Time | 15-20 min | 6-9 min | **60% faster** |
-| Workflow Files | 8 files | 4 files | **50% fewer** |
-| Lines of Code | 1000+ | ~300 | **70% reduction** |
-| Maintenance | Complex | Simple | **Much easier** |
+| Metric         | Before    | After   | Improvement       |
+| -------------- | --------- | ------- | ----------------- |
+| Pipeline Time  | 15-20 min | 6-9 min | **60% faster**    |
+| Workflow Files | 8 files   | 4 files | **50% fewer**     |
+| Lines of Code  | 1000+     | ~300    | **70% reduction** |
+| Maintenance    | Complex   | Simple  | **Much easier**   |
 
 ## Rollback Plan
 

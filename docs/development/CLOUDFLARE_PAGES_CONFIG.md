@@ -15,6 +15,7 @@ Cloudflare Pages build was failing with wrangler.toml configuration errors:
 Cloudflare Pages has a much simpler configuration model than Cloudflare Workers. The wrangler.toml for Pages should be minimal:
 
 ### Before (Workers config - too complex)
+
 ```toml
 [build]
 command = "npm run build"
@@ -27,6 +28,7 @@ NODE_ENV = "production"
 ```
 
 ### After (Pages config - simplified)
+
 ```toml
 # 💕 Cloudflare Pages configuration for Couple Connect
 name = "couple-connect"
@@ -40,20 +42,22 @@ pages_build_output_dir = "dist"
 
 ### Cloudflare Workers vs Pages Configuration
 
-| Feature | Workers | Pages |
-|---------|---------|-------|
-| Build command | wrangler.toml | Dashboard only |
+| Feature               | Workers       | Pages          |
+| --------------------- | ------------- | -------------- |
+| Build command         | wrangler.toml | Dashboard only |
 | Environment variables | wrangler.toml | Dashboard only |
-| D1 Database binding | wrangler.toml | Dashboard only |
-| KV Storage binding | wrangler.toml | Dashboard only |
-| Custom domains | wrangler.toml | Dashboard only |
+| D1 Database binding   | wrangler.toml | Dashboard only |
+| KV Storage binding    | wrangler.toml | Dashboard only |
+| Custom domains        | wrangler.toml | Dashboard only |
 
 ### What Pages DOES Support in wrangler.toml
+
 - `name` - Project name
 - `compatibility_date` - Cloudflare compatibility date
 - `pages_build_output_dir` - Build output directory
 
 ### What Pages does NOT Support in wrangler.toml
+
 - `[build]` section
 - `[env.*]` sections
 - Database bindings

@@ -40,13 +40,17 @@ async function setupDatabase() {
     // 3. Execute schema
     console.log('🏗️ Creating database schema...');
     const schemaPath = path.join(process.cwd(), 'database', 'schema.sql');
-    execFileSync('wrangler', ['d1', 'execute', DATABASE_NAME, `--file=${schemaPath}`], { stdio: 'inherit' });
+    execFileSync('wrangler', ['d1', 'execute', DATABASE_NAME, `--file=${schemaPath}`], {
+      stdio: 'inherit',
+    });
     console.log('✅ Schema created\n');
 
     // 4. Execute seed data
     console.log('🌱 Inserting seed data...');
     const seedPath = path.join(process.cwd(), 'database', 'seed.sql');
-    execFileSync('wrangler', ['d1', 'execute', DATABASE_NAME, `--file=${seedPath}`], { stdio: 'inherit' });
+    execFileSync('wrangler', ['d1', 'execute', DATABASE_NAME, `--file=${seedPath}`], {
+      stdio: 'inherit',
+    });
     console.log('✅ Seed data inserted\n');
 
     console.log('🎉 Database setup complete!');

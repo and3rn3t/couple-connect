@@ -23,9 +23,9 @@ useEffect(() => {
   }
   // Only create default partners if none exist and we haven't tried before
   else if (!partnersInitialized && (!currentPartner || !otherPartner)) {
-    setCurrentPartner(defaultCurrentPartner);  // ← Triggers effect again!
-    setOtherPartner(defaultOtherPartner);      // ← Triggers effect again!
-    setPartnersInitialized(true);             // ← Triggers effect again!
+    setCurrentPartner(defaultCurrentPartner); // ← Triggers effect again!
+    setOtherPartner(defaultOtherPartner); // ← Triggers effect again!
+    setPartnersInitialized(true); // ← Triggers effect again!
   }
 }, [partnersInitialized, currentPartner, otherPartner]); // ← THE PROBLEM!
 ```
@@ -140,7 +140,7 @@ useEffect(() => {
   console.warn('🔍 Effect running with:', {
     partnersInitialized,
     currentPartner: currentPartner?.name,
-    otherPartner: otherPartner?.name
+    otherPartner: otherPartner?.name,
   });
 
   // Your effect logic here...
@@ -183,7 +183,7 @@ useEffect(() => {
 ```typescript
 // ✅ Use functional updates to avoid dependencies
 const handleUpdate = useCallback(() => {
-  setCount(prev => prev + 1); // No need to depend on 'count'
+  setCount((prev) => prev + 1); // No need to depend on 'count'
 }, []); // Empty dependencies because we use functional update
 
 useEffect(() => {
@@ -248,7 +248,9 @@ if (typeof globalThis.scheduler === 'undefined') {
   // Fix for React 19 scheduler issue with Vite in production
   if (typeof globalThis.scheduler === 'undefined') {
     globalThis.scheduler = {
-      unstable_now: function() { return performance.now(); }
+      unstable_now: function () {
+        return performance.now();
+      },
     };
   }
 </script>
@@ -287,7 +289,7 @@ Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' h
 ### 🛡️ Prevention Strategies
 
 1. **Test CSP thoroughly** - Verify all external resources are whitelisted
-2. **Use specific domains** - Don't use wildcard (*) unless necessary
+2. **Use specific domains** - Don't use wildcard (\*) unless necessary
 3. **Monitor browser console** - CSP violations show up clearly in console
 
 ## 💥 Critical Bug #4: Cloudflare Pages Deployment Config Error (August 16, 2025)
@@ -345,7 +347,7 @@ useEffect(() => {
     prop2,
     state1,
     state2,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }, [prop1, prop2, state1, state2]);
 ```
