@@ -4,7 +4,7 @@
 
 **Error Message**:
 
-```bash
+````bash
 # 🐳 Docker Hub Authentication Fix
 
 ## 🚨 Problem
@@ -24,7 +24,7 @@ Updated `.github/workflows/docker.yml`:
 env:
   REGISTRY: docker.io
   IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/couple-connect
-```
+````
 
 ### Required Setup
 
@@ -64,7 +64,7 @@ env:
 
 **Next Step**: Configure GitHub repository secrets for Docker Hub authentication
 
-```text
+````text
 
 **Root Cause**: The Docker workflow was trying to push to `docker.io/couple-connect` instead of the proper format `docker.io/USERNAME/couple-connect`.
 
@@ -86,7 +86,7 @@ env:
 env:
   REGISTRY: docker.io
   IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/couple-connect
-```
+````
 
 ### 2. Required GitHub Secrets
 
@@ -138,6 +138,7 @@ https://github.com/and3rn3t/couple-connect/actions
 ```
 
 ### 3. Expected Docker Hub Result
+
 After successful workflow:
 
 - Repository: `https://hub.docker.com/r/[YOUR_USERNAME]/couple-connect`
@@ -209,12 +210,15 @@ docker push [YOUR_USERNAME]/couple-connect:latest
 ## 🔍 Common Issues
 
 ### Issue: "unauthorized: authentication required"
+
 **Solution**: Check GitHub secrets are correctly configured
 
 ### Issue: "repository does not exist"
+
 **Solution**: Create repository on Docker Hub or use GitHub Container Registry
 
 ### Issue: "invalid reference format"
+
 **Solution**: Ensure IMAGE_NAME includes username: `username/repository-name`
 
 ## 📚 Related Documentation
