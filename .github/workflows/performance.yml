@@ -1,0 +1,51 @@
+name: 📈 Performance Monitor (Optional)
+
+on:
+  schedule:
+    - cron: '0 8 * * 1' # Monday 8AM UTC
+  workflow_dispatch:
+  deployment_status:
+
+jobs:
+  lighthouse:
+    name: 🚦 Lighthouse Audit
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success')
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v5
+
+      - name: 🏗️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci --omit=optional
+
+      - name: ⏳ Wait for deployment
+        if: github.event_name == 'deployment_status'
+        run: sleep 60
+
+      - name: 🔍 Check site availability
+        id: check
+        run: |
+          if curl -s --head "https://couple-connect.pages.dev" | head -n 1 | grep -q "200 OK"; then
+            echo "available=true" >> $GITHUB_OUTPUT
+          else
+            echo "available=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🚦 Run Lighthouse audit
+        if: steps.check.outputs.available == 'true'
+        run: |
+          npm install -g @lhci/cli@0.12.x
+          lhci autorun --upload.target=temporary-public-storage --collect.url=https://couple-connect.pages.dev
+        continue-on-error: true
+
+      - name: 📊 Performance summary
+        run: |
+          echo "## 📈 Performance Check Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- Site status: ${{ steps.check.outputs.available == 'true' && '✅ Available' || '❌ Unavailable' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Lighthouse audit: ${{ steps.check.outputs.available == 'true' && 'Completed' || 'Skipped' }}" >> $GITHUB_STEP_SUMMARY

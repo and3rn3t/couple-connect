@@ -1,0 +1,47 @@
+name: 🔒 Security Scan (Weekly)
+
+on:
+  schedule:
+    - cron: '0 3 * * 1' # Monday 3AM UTC
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['package*.json']
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  security:
+    name: 🔒 Security Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v5
+
+      - name: 🏗️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔍 CodeQL Analysis
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+
+      - name: 🔍 Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+      - name: 🔒 npm audit
+        run: npm audit --audit-level=high
+
+      - name: 🔐 Snyk Security Scan
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
