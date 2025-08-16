@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { MotionDiv, MotionP } from '@/components/ui/lazy-motion';
 import { cn } from '@/lib/utils';
 import { useMobileDetection } from '@/hooks/use-mobile';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
@@ -68,14 +68,14 @@ export function MobileInput({
       </div>
 
       {error && (
-        <motion.p
+        <MotionP
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-sm text-destructive flex items-center gap-1"
         >
           <X size={14} />
           {error}
-        </motion.p>
+        </MotionP>
       )}
 
       {helpText && !error && <p className="text-sm text-muted-foreground">{helpText}</p>}
@@ -129,14 +129,14 @@ export function MobileTextarea({
       />
 
       {error && (
-        <motion.p
+        <MotionP
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-sm text-destructive flex items-center gap-1"
         >
           <X size={14} />
           {error}
-        </motion.p>
+        </MotionP>
       )}
 
       {helpText && !error && <p className="text-sm text-muted-foreground">{helpText}</p>}
@@ -188,7 +188,7 @@ export function MobileCheckbox({
       )}
     >
       <div className="relative">
-        <motion.div
+        <MotionDiv
           className={cn(
             'rounded-lg border-2 border-border bg-background',
             'flex items-center justify-center transition-all duration-200',
@@ -198,7 +198,7 @@ export function MobileCheckbox({
           whileTap={{ scale: 0.9 }}
           onClick={handleChange}
         >
-          <motion.div
+          <MotionDiv
             initial={false}
             animate={{
               scale: checked ? 1 : 0,
@@ -215,8 +215,8 @@ export function MobileCheckbox({
               className="text-primary-foreground"
               weight="bold"
             />
-          </motion.div>
-        </motion.div>
+          </MotionDiv>
+        </MotionDiv>
       </div>
 
       <span className="text-base text-foreground select-none flex-1">{label}</span>
@@ -302,14 +302,14 @@ export function MobileSelect({
       </div>
 
       {error && (
-        <motion.p
+        <MotionP
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-sm text-destructive flex items-center gap-1"
         >
           <X size={14} />
           {error}
-        </motion.p>
+        </MotionP>
       )}
     </div>
   );

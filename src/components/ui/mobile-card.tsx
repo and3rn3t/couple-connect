@@ -1,5 +1,6 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { MotionDiv } from '@/components/ui/lazy-motion';
+import type { PanInfo } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useMobileDetection } from '@/hooks/use-mobile';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
@@ -94,11 +95,11 @@ export function MobileCard({
   // Add swipe gestures for mobile
   if (isMobile && (onSwipeLeft || onSwipeRight)) {
     return (
-      <motion.div
+      <MotionDiv
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.1}
-        onDragEnd={(event, info) => {
+        onDragEnd={(event: React.PointerEvent, info: PanInfo) => {
           const threshold = 100;
           if (info.offset.x > threshold && onSwipeRight) {
             triggerSelection();
@@ -111,16 +112,16 @@ export function MobileCard({
         whileTap={pressable ? { scale: 0.98 } : undefined}
       >
         {cardContent}
-      </motion.div>
+      </MotionDiv>
     );
   }
 
   // Add press animation for mobile
   if (isMobile && pressable) {
     return (
-      <motion.div whileTap={{ scale: 0.98 }} transition={{ duration: 0.1 }}>
+      <MotionDiv whileTap={{ scale: 0.98 }} transition={{ duration: 0.1 }}>
         {cardContent}
-      </motion.div>
+      </MotionDiv>
     );
   }
 

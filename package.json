@@ -115,7 +115,7 @@
     "🌟": "echo '🌟 Optimizing for maximum love efficiency! 🌟' && npm run optimize",
     "❤️": "echo '❤️ Checking the pulse of our relationship app! ❤️' && npm run type-check",
     "🎪": "echo '🎪 Love circus preview! Step right up! 🎪' && npm run preview",
-    "build:mobile-optimized": "cross-env TAILWIND_CONFIG=tailwind.mobile-optimized.config.js npm run build",
+    "build:mobile-optimized": "node scripts/optimize-mobile-bundle.js",
     "build:css-optimized": "postcss src/index.css -o dist/assets/main.css --config postcss.config.cjs",
     "analyze:css-size": "du -sh dist/assets/*.css",
     "purge:css": "purgecss --css dist/assets/*.css --content dist/assets/*.js --output dist/assets/",

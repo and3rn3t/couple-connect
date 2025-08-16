@@ -78,7 +78,7 @@ export default {
     '!./src/test/**',
     '!./e2e/**',
   ],
-  
+
   // MOBILE-OPTIMIZED: Disable unused core plugins
   corePlugins: {
     // Disable backdrop filters (heavy CSS)
@@ -91,22 +91,22 @@ export default {
     backdropOpacity: false,
     backdropSaturate: false,
     backdropSepia: false,
-    
+
     // Disable complex layout (rarely used on mobile)
     columns: false,
     breakAfter: false,
     breakBefore: false,
     breakInside: false,
-    
+
     // Disable print-specific utilities
     pageBreakAfter: false,
     pageBreakBefore: false,
     pageBreakInside: false,
-    
+
     // Disable scroll utilities (can use CSS)
     scrollMargin: false,
     scrollPadding: false,
-    
+
     // Keep essential mobile utilities
     display: true,
     flexbox: true,
@@ -132,9 +132,9 @@ export default {
     transform: true,
     transition: true,
   },
-  
+
   theme: { ...defaultTheme, ...theme },
-  
+
   plugins: [
     function ({ addUtilities, addComponents }) {
       // Essential mobile utilities only

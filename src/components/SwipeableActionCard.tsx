@@ -15,7 +15,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useGestures } from '@/hooks/useGestures';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
-import { motion, AnimatePresence } from 'framer-motion';
+import { MotionDiv, LazyAnimatePresence } from '@/components/ui/lazy-motion';
 import { Action } from '@/App';
 import { Partner } from '@/components/PartnerSetup';
 
@@ -147,7 +147,7 @@ export function SwipeableActionCard({
   };
 
   return (
-    <motion.div
+    <MotionDiv
       ref={gestureRef}
       className={cn('relative touch-manipulation', className)}
       initial={{ opacity: 0, y: 20 }}
@@ -163,7 +163,7 @@ export function SwipeableActionCard({
       {/* Swipe Action Backgrounds */}
       <div className="absolute inset-0 flex">
         {/* Right swipe background (complete) */}
-        <motion.div
+        <MotionDiv
           className="flex-1 bg-green-500 rounded-lg flex items-center justify-start pl-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: swipeOffset > 0 ? 1 : 0 }}
@@ -171,10 +171,10 @@ export function SwipeableActionCard({
         >
           <CheckCircle className="h-6 w-6 text-white" />
           <span className="ml-2 text-white font-medium">Complete</span>
-        </motion.div>
+        </MotionDiv>
 
         {/* Left swipe background (delete) */}
-        <motion.div
+        <MotionDiv
           className="flex-1 bg-red-500 rounded-lg flex items-center justify-end pr-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: swipeOffset < 0 ? 1 : 0 }}
@@ -182,7 +182,7 @@ export function SwipeableActionCard({
         >
           <span className="mr-2 text-white font-medium">Delete</span>
           <TrashSimple className="h-6 w-6 text-white" />
-        </motion.div>
+        </MotionDiv>
       </div>
 
       {/* Main Card */}
@@ -272,9 +272,9 @@ export function SwipeableActionCard({
       </Card>
 
       {/* Quick Actions Menu */}
-      <AnimatePresence>
+      <LazyAnimatePresence>
         {showActions && (
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
@@ -342,9 +342,9 @@ export function SwipeableActionCard({
                 </Button>
               </div>
             </Card>
-          </motion.div>
+          </MotionDiv>
         )}
-      </AnimatePresence>
+      </LazyAnimatePresence>
 
       {/* Overlay to close actions menu */}
       {showActions && (
@@ -354,7 +354,7 @@ export function SwipeableActionCard({
           onTouchStart={() => setShowActions(false)}
         />
       )}
-    </motion.div>
+    </MotionDiv>
   );
 }
 
@@ -367,7 +367,7 @@ export function SwipeInstructions({ className }: { className?: string }) {
   if (!showInstructions) return null;
 
   return (
-    <motion.div
+    <MotionDiv
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
@@ -392,6 +392,6 @@ export function SwipeInstructions({ className }: { className?: string }) {
           ×
         </Button>
       </div>
-    </motion.div>
+    </MotionDiv>
   );
 }

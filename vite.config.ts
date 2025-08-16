@@ -28,7 +28,6 @@ export default defineConfig(() => {
     envDir: resolve(__dirname, '.env'),
 
     plugins: [
-      react(),
       tailwindcss(),
       // Bundle analyzer - only in analyze mode
       ...(process.env.VITE_BUILD_ANALYZE
@@ -127,7 +126,8 @@ export default defineConfig(() => {
             }
 
             // Animation libraries - lazy loaded
-            if (id.includes('framer-motion')) {
+            if (id.includes('framer-motion') || id.includes('motion-dom')) {
+              if (process.env.VITE_BUILD_ANALYZE) console.log('  → animations');
               return 'animations';
             }
 

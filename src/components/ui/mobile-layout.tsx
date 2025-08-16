@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { MotionDiv, LazyAnimatePresence } from '@/components/ui/lazy-motion';
 import { cn } from '@/lib/utils';
 import { useMobileDetection, useIOSDetection } from '@/hooks/use-mobile';
 import { MobileNavBar } from './mobile-navigation';
@@ -145,11 +145,11 @@ export function MobileModal({
   }
 
   return (
-    <AnimatePresence>
+    <LazyAnimatePresence>
       {isOpen && (
         <>
           {/* Backdrop */}
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -158,7 +158,7 @@ export function MobileModal({
           />
 
           {/* Modal Sheet */}
-          <motion.div
+          <MotionDiv
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
@@ -194,10 +194,10 @@ export function MobileModal({
 
             {/* Content */}
             <div className="px-6 pb-safe-area-bottom overflow-y-auto flex-1">{children}</div>
-          </motion.div>
+          </MotionDiv>
         </>
       )}
-    </AnimatePresence>
+    </LazyAnimatePresence>
   );
 }
 

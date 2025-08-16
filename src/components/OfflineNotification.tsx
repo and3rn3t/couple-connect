@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { WifiSlash, CloudArrowUp, CheckCircle, X } from '@/components/ui/InlineIcons';
 import { useServiceWorker } from '@/hooks/useServiceWorker';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { MotionDiv, LazyAnimatePresence } from '@/components/ui/lazy-motion';
 import { toast } from 'sonner';
 
 interface OfflineNotificationProps {
@@ -52,10 +52,10 @@ export function OfflineNotification({ className }: OfflineNotificationProps) {
       data-testid="offline-notification"
       className={cn('fixed top-0 left-0 right-0 z-50', className)}
     >
-      <AnimatePresence>
+      <LazyAnimatePresence>
         {/* Offline Banner */}
         {isOffline && (
-          <motion.div
+          <MotionDiv
             initial={{ y: -100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -100, opacity: 0 }}
@@ -91,12 +91,12 @@ export function OfflineNotification({ className }: OfflineNotificationProps) {
                 </Button>
               )}
             </div>
-          </motion.div>
+          </MotionDiv>
         )}
 
         {/* Update Available Banner */}
         {updateAvailable && !isOffline && (
-          <motion.div
+          <MotionDiv
             initial={{ y: -100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -100, opacity: 0 }}
@@ -119,12 +119,12 @@ export function OfflineNotification({ className }: OfflineNotificationProps) {
                 {isApplyingUpdate ? 'Updating...' : 'Update now'}
               </Button>
             </div>
-          </motion.div>
+          </MotionDiv>
         )}
 
         {/* Offline Queue Details */}
         {showQueue && offlineQueue.length > 0 && (
-          <motion.div
+          <MotionDiv
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -172,9 +172,9 @@ export function OfflineNotification({ className }: OfflineNotificationProps) {
                 These changes will sync automatically when you're back online.
               </div>
             </div>
-          </motion.div>
+          </MotionDiv>
         )}
-      </AnimatePresence>
+      </LazyAnimatePresence>
     </div>
   );
 }
@@ -188,7 +188,7 @@ export function OfflineIndicator({ className }: { className?: string }) {
   if (!isOffline) return null;
 
   return (
-    <motion.div
+    <MotionDiv
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 0, opacity: 0 }}
@@ -203,6 +203,6 @@ export function OfflineIndicator({ className }: { className?: string }) {
       {offlineQueue.length > 0 && (
         <Badge className="bg-white/20 text-white text-xs">{offlineQueue.length}</Badge>
       )}
-    </motion.div>
+    </MotionDiv>
   );
 }
