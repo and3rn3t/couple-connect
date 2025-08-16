@@ -196,16 +196,16 @@ The pipeline will now get out of your way and let you focus on building amazing 
 
 ## 🎭 What Changed Summary
 
-| Aspect | Before | After | Improvement |
-|--------|---------|--------|-------------|
-| **Workflow Files** | 8 files | 4 files | 50% reduction |
-| **Total Lines** | ~1000+ lines | ~300 lines | 70% reduction |
-| **Pipeline Time** | 15-20 minutes | 6-9 minutes | 60% faster |
-| **Complexity** | High | Low | Much easier |
-| **Maintainability** | Difficult | Easy | Developer happiness! |
+| Aspect              | Before        | After       | Improvement          |
+| ------------------- | ------------- | ----------- | -------------------- |
+| **Workflow Files**  | 8 files       | 4 files     | 50% reduction        |
+| **Total Lines**     | ~1000+ lines  | ~300 lines  | 70% reduction        |
+| **Pipeline Time**   | 15-20 minutes | 6-9 minutes | 60% faster           |
+| **Complexity**      | High          | Low         | Much easier          |
+| **Maintainability** | Difficult     | Easy        | Developer happiness! |
 
 ---
 
 ## May your builds be fast and your deployments be smooth! 🚀💕
 
-*P.S. - The old workflows are safely backed up in the `backup/` folder, just like relationship photos in a safe place! 📸💝*
+_P.S. - The old workflows are safely backed up in the `backup/` folder, just like relationship photos in a safe place! 📸💝_

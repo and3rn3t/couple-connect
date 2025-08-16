@@ -15,7 +15,7 @@ Successfully cleaned up and reorganized the **Couple Connect** project with upda
 ### ✅ Organized Scripts Directory
 
 - Created `scripts/archive/` for completed optimization scripts
-- Moved 10 legacy scripts to archive (fix-*, implement-*, optimize-css-*)
+- Moved 10 legacy scripts to archive (fix-_, implement-_, optimize-css-\*)
 - Retained 22 essential scripts for ongoing development
 
 ### ✅ Updated Documentation
@@ -46,12 +46,12 @@ Successfully cleaned up and reorganized the **Couple Connect** project with upda
 
 ### Performance Status
 
-| Metric | Current | Target | Progress |
-|--------|---------|--------|----------|
-| Total Bundle | 1.6 MB | 1.5 MB | 🟡 107% |
-| JavaScript | 1.18 MB | 800 KB | 🔴 148% |
-| CSS | 415 KB | 250 KB | 🔴 166% |
-| Mobile Components | 23% | 80% | 🔴 29% |
+| Metric            | Current | Target | Progress |
+| ----------------- | ------- | ------ | -------- |
+| Total Bundle      | 1.6 MB  | 1.5 MB | 🟡 107%  |
+| JavaScript        | 1.18 MB | 800 KB | 🔴 148%  |
+| CSS               | 415 KB  | 250 KB | 🔴 166%  |
+| Mobile Components | 23%     | 80%    | 🔴 29%   |
 
 ### Critical Issues Identified
 

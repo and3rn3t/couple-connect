@@ -54,12 +54,12 @@ npx tsc --noEmit
 
 ## 📊 Test Results Summary
 
-| Test File | Status | Tests Passed |
-|-----------|--------|--------------|
-| OfflineNotification.test.tsx | ✅ Pass | 8/8 |
-| use-mobile.test.ts | ✅ Pass | 10/10 |
-| useKV.test.ts | ✅ Pass | 8/8 |
-| test-utils.tsx | ✅ Pass | All exports working |
+| Test File                    | Status  | Tests Passed        |
+| ---------------------------- | ------- | ------------------- |
+| OfflineNotification.test.tsx | ✅ Pass | 8/8                 |
+| use-mobile.test.ts           | ✅ Pass | 10/10               |
+| useKV.test.ts                | ✅ Pass | 8/8                 |
+| test-utils.tsx               | ✅ Pass | All exports working |
 
 ## 🔧 Working Imports Verified
 

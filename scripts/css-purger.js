@@ -6,7 +6,7 @@ export async function purgeUnusedCSS(cssFilePath, contentPaths) {
   const purgeCSSResult = await new PurgeCSS().purge({
     content: contentPaths,
     css: [cssFilePath],
-    defaultExtractor: content => content.match(/[\w-/:]+(?<!:)/g) || [],
+    defaultExtractor: (content) => content.match(/[\w-/:]+(?<!:)/g) || [],
     safelist: [
       // Keep essential classes
       /^(html|body)/,
@@ -22,6 +22,6 @@ export async function purgeUnusedCSS(cssFilePath, contentPaths) {
       /^(hover:|focus:|active:)/,
     ],
   });
-  
+
   return purgeCSSResult[0].css;
 }
