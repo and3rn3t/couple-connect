@@ -83,6 +83,203 @@ useEffect(() => {
 
 **This bug cost us debugging time and could have been prevented with proper useEffect patterns! 🚨💔**
 
+### 🤖 Automated Infinite Loop Detection System
+
+**We now have automated protection!** After the August 16 incident, we implemented a comprehensive detection system:
+
+#### 🔍 Detection Scripts
+
+```bash
+# Check for infinite loop patterns before deployment
+npm run check:infinite-loops        # Strict mode - blocks deployment
+npm run check:infinite-loops:warn   # Warning mode - continues with awareness
+npm run build:safe                  # Full safety check before building
+npm run deploy:safe                 # Complete safety validation before deployment
+```
+
+#### 🛡️ Automated Protection Features
+
+- **Real-time Detection**: Scans all React files for dangerous patterns
+- **CI/CD Integration**: Prevents bad code from reaching production
+- **Specific Guidance**: Provides exact file locations and fix suggestions
+- **Educational Feedback**: Teaches developers what patterns to avoid
+- **Exit Code Protection**: Blocks deployment when critical issues found
+
+#### 📊 What It Detects
+
+1. **Missing dependency arrays** with state setters
+2. **State setters in dependency arrays** (exact August 16 pattern)
+3. **Circular state dependencies**
+4. **Function dependencies** that might cause re-renders
+5. **useState outside component functions**
+
+#### 🎯 Development Workflow Integration
+
+- **Development builds**: Use warning mode for faster iteration
+- **Production deploys**: Use strict mode for maximum safety
+- **CI/CD pipeline**: Automatically runs on every push/PR
+- **Pre-commit hooks**: Can be added for early detection
+
+**The detection system found 32 critical issues in our codebase that could have caused infinite loops! 🚨**
+
+### 🧠 How to Avoid Infinite Loops When Writing Code
+
+#### 🎯 Mental Model: "What triggers this effect?"
+
+Before writing any `useEffect`, ask yourself:
+
+1. **When should this run?** (Once? On specific changes? Every render?)
+2. **What data does it depend on?** (Props? State? External values?)
+3. **What does it modify?** (State? External systems? Nothing?)
+4. **Could what it modifies trigger it again?** (This is the danger zone!)
+
+#### ✅ Safe Patterns to Use
+
+```typescript
+// ✅ PATTERN 1: One-time initialization
+useEffect(() => {
+  // Setup that should happen once
+  initializeApp();
+  setupEventListeners();
+}, []); // Empty array = once on mount
+
+// ✅ PATTERN 2: Reactive to props/external state only
+useEffect(() => {
+  if (userId) {
+    fetchUserData(userId);
+  }
+}, [userId]); // Only depends on external prop
+
+// ✅ PATTERN 3: Derived state with proper conditions
+useEffect(() => {
+  if (data && !processedData) {
+    setProcessedData(processData(data));
+  }
+}, [data, processedData]); // Safe because we check !processedData
+
+// ✅ PATTERN 4: Cleanup effects
+useEffect(() => {
+  const subscription = subscribeTo(something);
+  return () => subscription.unsubscribe();
+}, [something]); // Cleanup prevents leaks
+```
+
+#### ❌ Dangerous Patterns to Avoid
+
+```typescript
+// ❌ NEVER: State setter in dependencies
+useEffect(() => {
+  if (condition) {
+    setCount(count + 1);
+  }
+}, [count, setCount]); // setCount triggers re-run!
+
+// ❌ NEVER: Modifying state that's in dependencies
+useEffect(() => {
+  if (!initialized) {
+    setInitialized(true);
+  }
+}, [initialized]); // Circular dependency!
+
+// ❌ NEVER: Missing dependencies with state setters
+useEffect(() => {
+  setData(computeData());
+}); // Runs on every render!
+
+// ❌ NEVER: Complex state updates without thinking
+useEffect(() => {
+  setA(valueA);
+  setB(valueB);
+  setC(valueC);
+}, [valueA, valueB, valueC]); // Potential cascade
+```
+
+#### 🧪 Quick Self-Test Questions
+
+Before writing any `useEffect`, ask:
+
+1. **"Am I setting state that's also in my dependency array?"** → ❌ Don't do this
+2. **"Do I want this to run on every render?"** → If no, add `[]` or specific deps
+3. **"Could this effect trigger itself?"** → If yes, redesign it
+4. **"Am I initializing something?"** → Use `[]` dependencies
+5. **"Am I responding to external changes?"** → Only include external deps
+
+#### 🎯 Development Habits to Build
+
+```typescript
+// ✅ HABIT 1: Start with empty dependencies for initialization
+useEffect(() => {
+  // Think: "This should run once"
+  doInitialization();
+}, []); // Start here, add deps only if needed
+
+// ✅ HABIT 2: Use early returns to prevent unnecessary updates
+useEffect(() => {
+  if (alreadyProcessed) return; // Exit early
+
+  // Do the work
+  setProcessed(true);
+}, [dependency]);
+
+// ✅ HABIT 3: Separate concerns into different effects
+useEffect(() => {
+  // Initialization only
+}, []);
+
+useEffect(() => {
+  // Reactive updates only
+}, [externalDep]);
+
+// ✅ HABIT 4: Use useCallback for function dependencies
+const handleUpdate = useCallback(() => {
+  // Update logic
+}, [dependency]);
+
+useEffect(() => {
+  handleUpdate();
+}, [handleUpdate]); // Safe with useCallback
+```
+
+#### 🔄 Refactoring Anti-Patterns
+
+```typescript
+// ❌ BEFORE: Dangerous pattern
+useEffect(() => {
+  if (!data && shouldFetch) {
+    fetchData().then((result) => {
+      setData(result);
+      setShouldFetch(false);
+    });
+  }
+}, [data, shouldFetch]); // Modifies shouldFetch!
+
+// ✅ AFTER: Safe pattern
+useEffect(() => {
+  if (!data && shouldFetch) {
+    fetchData().then((result) => {
+      setData(result);
+      // Don't modify shouldFetch here
+    });
+  }
+}, [shouldFetch]); // Only external trigger
+
+// Separate effect for cleanup
+useEffect(() => {
+  if (data && shouldFetch) {
+    setShouldFetch(false);
+  }
+}, [data, shouldFetch]); // Safe because it doesn't cause fetch
+```
+
+#### 🎓 Learning Resources
+
+- **ESLint Rule**: `react-hooks/exhaustive-deps` helps catch some issues
+- **React DevTools**: Shows effect dependencies and when they fire
+- **Detection Script**: `npm run check:infinite-loops` catches patterns
+- **Mental Model**: Think "what triggers this?" before writing effects
+
+**Remember: The goal is to write effects that are predictable and don't surprise you! 🎯**
+
 ## �📱 Current Performance Status (Updated: Aug 16, 2025)
 
 ### Performance Metrics
@@ -357,8 +554,24 @@ describe('Mobile Component', () => {
 1. **Check bundle analyzer** - Always suggest checking bundle composition
 2. **Mobile testing** - Suggest mobile-specific testing approaches
 3. **Performance metrics** - Include performance impact in debugging steps
+4. **Infinite loop detection** - Run `npm run check:infinite-loops` if experiencing blank screens or re-render issues
+
+### When encountering blank screens or performance issues:
+
+1. **Run infinite loop check first**: `npm run check:infinite-loops`
+2. **Check useEffect patterns**: Look for circular dependencies in state setters
+3. **Verify dependency arrays**: Ensure useEffect deps don't include state being modified
+4. **Use browser dev tools**: Check for infinite console logs or component re-renders
+5. **Test with React DevTools**: Monitor component update cycles and effect firing
 
 ## 📚 Key Files to Understand
+
+### Critical Safety Files
+
+- `scripts/check-infinite-loops.js` - Infinite loop detection system
+- `scripts/check-infinite-loops.ps1` - PowerShell version for cross-platform
+- `docs/development/INFINITE_LOOP_DETECTION.md` - Detection system documentation
+- `docs/INFINITE_LOOP_SCAN_RESULTS.md` - Current scan results and issues
 
 ### Performance Critical
 
@@ -394,6 +607,15 @@ npm run test:mobile        # Mobile-specific tests
 npm run type-check         # TypeScript validation
 ```
 
+### Infinite Loop Detection & Safety
+
+```bash
+npm run check:infinite-loops        # Strict check - blocks on critical issues
+npm run check:infinite-loops:warn   # Warning mode - continues with awareness
+npm run build:safe                  # Full safety check before building
+npm run deploy:safe                 # Complete safety validation before deployment
+```
+
 ### Performance Analysis
 
 ```bash
@@ -414,17 +636,22 @@ npm run lint:fix           # Fix linting issues
 
 ### Immediate Goals (Next Sprint)
 
-1. **Bundle Optimization**
+1. **Infinite Loop Prevention & Fixes**
+   - Address 32 critical infinite loop issues found by detection system
+   - Fix core hooks (useKV, useDatabase) that are causing circular dependencies
+   - Implement proper useEffect patterns throughout codebase
+
+2. **Bundle Optimization**
    - Investigate and split the 606 KB JavaScript chunk
    - Implement vendor library separation
    - Add build-time bundle monitoring
 
-2. **Mobile Component Coverage**
+3. **Mobile Component Coverage**
    - Convert high-priority components to mobile-optimized versions
    - Target: Increase from 23% to 50% coverage
    - Focus on ActionDashboard, ProgressView, and navigation components
 
-3. **CSS Optimization**
+4. **CSS Optimization**
    - Implement aggressive Tailwind purging
    - Extract critical CSS for above-the-fold content
    - Reduce CSS bundle from 415 KB to under 300 KB
@@ -450,6 +677,8 @@ npm run lint:fix           # Fix linting issues
 
 When reviewing code changes, ensure:
 
+- [ ] **Infinite loop check passed** (run `npm run check:infinite-loops`)
+- [ ] **useEffect patterns verified** (no circular dependencies in state setters)
 - [ ] Bundle size impact assessed (run `npm run perf:mobile`)
 - [ ] Mobile responsiveness tested on actual devices
 - [ ] TypeScript strict mode compliance

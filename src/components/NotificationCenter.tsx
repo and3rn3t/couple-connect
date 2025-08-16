@@ -241,7 +241,7 @@ export default function NotificationCenter({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [actions, issues, currentPartner.id, otherPartner.id, settings, notifications]);
+  }, [actions, issues, currentPartner.id, otherPartner.id, settings]); // ✅ FIXED: Removed notifications to prevent infinite loop (Aug 16, 2025)
 
   const unreadCount = (notifications || []).filter(
     (n) => !n.read && n.partnerId === currentPartner.id

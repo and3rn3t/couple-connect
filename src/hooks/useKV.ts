@@ -47,7 +47,8 @@ export function useKV<T>(key: string, defaultValue?: T) {
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, [key, defaultValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]); // ✅ FIXED: Removed defaultValue to prevent infinite loop (Aug 16, 2025)
 
   return [value, setStoredValue] as const;
 }

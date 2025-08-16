@@ -97,7 +97,8 @@ function Carousel({
   useEffect(() => {
     if (!api || !setApi) return;
     setApi(api);
-  }, [api, setApi]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [api]); // ✅ FIXED: Removed setApi to prevent infinite loop (Aug 16, 2025)
 
   useEffect(() => {
     if (!api) return;
