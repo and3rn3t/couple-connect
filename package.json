@@ -187,7 +187,7 @@
     "typescript": "~5.9.2",
     "uuid": "^11.1.0",
     "vaul": "^1.1.2",
-    "vite": "^6.3.5",
+    "vite": "^7.1.2",
     "zod": "^3.25.76"
   },
   "devDependencies": {
