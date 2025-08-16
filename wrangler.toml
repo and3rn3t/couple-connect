@@ -5,19 +5,29 @@ compatibility_date = "2024-08-14"
 # Pages build configuration
 pages_build_output_dir = "dist"
 
-# D1 Database configuration
-[[d1_databases]]
-binding = "DB"
-database_name = "couple-connect-db"
-database_id = "your-database-id-here"  # Replace with actual database ID after creation
+# Build configuration
+[build]
+command = "npm run build"
 
 # Environment variables for production
 [env.production.vars]
 NODE_ENV = "production"
 
+# D1 Database configuration for production
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "couple-connect-db"
+database_id = "your-database-id-here"  # Replace with actual database ID after creation
+
 # Environment variables for preview
 [env.preview.vars]
 NODE_ENV = "development"
+
+# D1 Database configuration for preview
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "couple-connect-db"
+database_id = "your-database-id-here"  # Replace with actual database ID after creation
 
 # Custom domains (uncomment and configure when ready)
 # [[env.production.routes]]
