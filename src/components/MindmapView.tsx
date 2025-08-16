@@ -1,32 +1,41 @@
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Plus, Heart, Users, DollarSign, Clock, House, TrendingUp, Dots } from '@phosphor-icons/react'
-import { Issue, Action } from '@/App'
-import { Partner } from '@/components/PartnerSetup'
-import IssueDialog from '@/components/IssueDialog'
-import ActionDialog from '@/components/ActionDialog'
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Plus,
+  Heart,
+  Users,
+  Clock,
+  TrendUp,
+  CurrencyDollar,
+  House,
+  DotsThreeVertical,
+} from '@/components/ui/InlineIcons';
+import { Issue, Action } from '@/App';
+import { Partner } from '@/components/PartnerSetup';
+import IssueDialog from '@/components/IssueDialog';
+import ActionDialog from '@/components/ActionDialogOptimized';
 
 interface MindmapViewProps {
-  issues: Issue[]
-  setIssues: (update: (current: Issue[]) => Issue[]) => void
-  actions: Action[]
-  setActions: (update: (current: Action[]) => Action[]) => void
-  currentPartner: Partner
-  otherPartner: Partner
-  viewingAsPartner: Partner
+  issues: Issue[];
+  setIssues: (update: (current: Issue[]) => Issue[]) => void;
+  actions: Action[];
+  setActions: (update: (current: Action[]) => Action[]) => void;
+  currentPartner: Partner;
+  otherPartner: Partner;
+  viewingAsPartner: Partner;
 }
 
 const categoryIcons = {
   communication: Heart,
   intimacy: Heart,
-  finance: DollarSign,
+  finance: CurrencyDollar,
   time: Clock,
   family: House,
-  'personal-growth': TrendingUp,
-  other: Dots
-}
+  'personal-growth': TrendUp,
+  other: DotsThreeVertical,
+};
 
 const categoryColors = {
   communication: 'bg-accent/20 text-accent border-accent/30',
@@ -35,47 +44,48 @@ const categoryColors = {
   time: 'bg-muted text-muted-foreground border-border',
   family: 'bg-accent/10 text-accent border-accent/20',
   'personal-growth': 'bg-primary/10 text-primary-foreground border-primary/20',
-  other: 'bg-muted text-muted-foreground border-border'
-}
+  other: 'bg-muted text-muted-foreground border-border',
+};
 
-export default function MindmapView({ 
-  issues, 
-  setIssues, 
-  actions, 
-  setActions, 
-  currentPartner, 
-  otherPartner, 
-  viewingAsPartner 
+export default function MindmapView({
+  issues,
+  setIssues,
+  actions,
+  setActions,
+  currentPartner,
+  otherPartner,
+  viewingAsPartner: _viewingAsPartner,
 }: MindmapViewProps) {
-  const [isIssueDialogOpen, setIsIssueDialogOpen] = useState(false)
-  const [isActionDialogOpen, setIsActionDialogOpen] = useState(false)
-  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null)
-  const [editingIssue, setEditingIssue] = useState<Issue | null>(null)
+  const [isIssueDialogOpen, setIsIssueDialogOpen] = useState(false);
+  const [isActionDialogOpen, setIsActionDialogOpen] = useState(false);
+  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
+  const [editingIssue, setEditingIssue] = useState<Issue | null>(null);
 
   const handleAddIssue = () => {
-    setEditingIssue(null)
-    setIsIssueDialogOpen(true)
-  }
+    setEditingIssue(null);
+    setIsIssueDialogOpen(true);
+  };
 
   const handleEditIssue = (issue: Issue) => {
-    setEditingIssue(issue)
-    setIsIssueDialogOpen(true)
-  }
+    setEditingIssue(issue);
+    setIsIssueDialogOpen(true);
+  };
 
   const handleCreateAction = (issue: Issue) => {
-    setSelectedIssue(issue)
-    setIsActionDialogOpen(true)
-  }
+    setSelectedIssue(issue);
+    setIsActionDialogOpen(true);
+  };
 
   const getIssueActions = (issueId: string) => {
-    return actions.filter(action => action.issueId === issueId)
-  }
+    return actions.filter((action) => action.issueId === issueId);
+  };
 
   const getCategoryLabel = (category: string) => {
-    return category.split('-').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ')
-  }
+    return category
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
 
   return (
     <div className="space-y-6">
@@ -98,7 +108,8 @@ export default function MindmapView({
             <Heart className="mx-auto mb-4 text-muted-foreground" size={48} weight="light" />
             <h3 className="text-lg font-medium mb-2">Start Your Journey</h3>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              Begin by identifying areas in your relationship you'd like to explore and improve together.
+              Begin by identifying areas in your relationship you'd like to explore and improve
+              together.
             </p>
             <Button onClick={handleAddIssue} className="flex items-center gap-2 mx-auto">
               <Plus size={16} />
@@ -109,13 +120,13 @@ export default function MindmapView({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {issues.map((issue) => {
-            const Icon = categoryIcons[issue.category]
-            const issueActions = getIssueActions(issue.id)
-            const completedActions = issueActions.filter(a => a.status === 'completed').length
-            
+            const Icon = categoryIcons[issue.category];
+            const issueActions = getIssueActions(issue.id);
+            const completedActions = issueActions.filter((a) => a.status === 'completed').length;
+
             return (
-              <Card 
-                key={issue.id} 
+              <Card
+                key={issue.id}
                 className={`transition-all hover:shadow-md cursor-pointer ${categoryColors[issue.category]}`}
                 onClick={() => handleEditIssue(issue)}
               >
@@ -127,9 +138,14 @@ export default function MindmapView({
                         {getCategoryLabel(issue.category)}
                       </Badge>
                     </div>
-                    <Badge 
-                      variant={issue.priority === 'high' ? 'destructive' : 
-                              issue.priority === 'medium' ? 'default' : 'secondary'}
+                    <Badge
+                      variant={
+                        issue.priority === 'high'
+                          ? 'destructive'
+                          : issue.priority === 'medium'
+                            ? 'default'
+                            : 'secondary'
+                      }
                       className="text-xs"
                     >
                       {issue.priority}
@@ -137,24 +153,24 @@ export default function MindmapView({
                   </div>
                   <CardTitle className="text-lg">{issue.title}</CardTitle>
                 </CardHeader>
-                
+
                 <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {issue.description}
-                  </p>
-                  
+                  <p className="text-sm text-muted-foreground line-clamp-2">{issue.description}</p>
+
                   <div className="flex items-center justify-between">
                     <div className="text-xs text-muted-foreground">
                       {issueActions.length > 0 && (
-                        <span>{completedActions}/{issueActions.length} actions complete</span>
+                        <span>
+                          {completedActions}/{issueActions.length} actions complete
+                        </span>
                       )}
                     </div>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       variant="ghost"
                       onClick={(e) => {
-                        e.stopPropagation()
-                        handleCreateAction(issue)
+                        e.stopPropagation();
+                        handleCreateAction(issue);
                       }}
                       className="text-xs"
                     >
@@ -166,12 +182,13 @@ export default function MindmapView({
                   {issue.connections.length > 0 && (
                     <div className="text-xs text-muted-foreground">
                       <Users size={12} className="inline mr-1" />
-                      Connected to {issue.connections.length} other issue{issue.connections.length !== 1 ? 's' : ''}
+                      Connected to {issue.connections.length} other issue
+                      {issue.connections.length !== 1 ? 's' : ''}
                     </div>
                   )}
                 </CardContent>
               </Card>
-            )
+            );
           })}
         </div>
       )}
@@ -194,5 +211,5 @@ export default function MindmapView({
         otherPartner={otherPartner}
       />
     </div>
-  )
+  );
 }

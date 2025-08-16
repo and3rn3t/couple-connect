@@ -1,0 +1,78 @@
+# Docker ignore file for Couple Connect
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
+.yarn/
+
+# Build outputs
+dist/
+build/
+coverage/
+build/
+out/
+*.tsbuildinfo
+
+# Development and testing files
+.git/
+.gitignore
+.gitattributes
+README.md
+CHANGELOG.md
+LICENSE
+*.md
+docs/development/
+e2e/
+test-results/
+playwright-report/
+coverage/
+
+# Environment and config files
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated files
+.DS_Store
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Temporary and cache files
+tmp/
+temp/
+.tmp/
+.cache/
+.parcel-cache/
+.performance-history/
+
+# Analysis and report files
+css-analysis.json
+bundle-analysis.json
+build-performance.json
+coverage-report.json
+mobile-lighthouse-report.html
+lighthouse-report*.html
+
+# Cloudflare specific
+.wrangler/
+.dev.vars
+
+# Scripts for development only
+scripts/analyze-*.js
+scripts/optimize-*.js
+scripts/mobile-performance.js
+
+# Testing configuration
+playwright.config.ts
+vitest.config.ts

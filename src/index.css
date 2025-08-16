@@ -1,39 +1,39 @@
 @import 'tailwindcss';
-@import "tw-animate-css";
+@import 'tw-animate-css';
 
 @layer base {
   * {
     @apply border-border;
   }
-  
+
   body {
     font-family: 'Inter', sans-serif;
   }
 }
 
 :root {
-  --background: oklch(0.92 0.02 85);
-  --foreground: oklch(0.25 0.02 180);
+  --background: #0f0a0f;
+  --foreground: #f8f0f8;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.25 0.02 180);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.25 0.02 180);
+  --card: #1a111a;
+  --card-foreground: #f8f0f8;
+  --popover: #251a25;
+  --popover-foreground: #f8f0f8;
 
-  --primary: oklch(0.75 0.08 140);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.78 0.06 290);
-  --secondary-foreground: oklch(0.25 0.02 180);
-  --accent: oklch(0.72 0.12 25);
-  --accent-foreground: oklch(1 0 0);
-  --destructive: oklch(0.65 0.15 15);
-  --destructive-foreground: oklch(1 0 0);
+  --primary: #a45eff;
+  --primary-foreground: #ffffff;
+  --secondary: #453345;
+  --secondary-foreground: #f8f0f8;
+  --accent: #ff6c98;
+  --accent-foreground: #ffffff;
+  --destructive: #ff4757;
+  --destructive-foreground: #ffffff;
 
-  --muted: oklch(0.88 0.02 85);
-  --muted-foreground: oklch(0.45 0.02 180);
-  --border: oklch(0.85 0.02 85);
-  --input: oklch(0.85 0.02 85);
-  --ring: oklch(0.75 0.08 140);
+  --muted: #2f212f;
+  --muted-foreground: #a68fa6;
+  --border: #453345;
+  --input: #3a2a3a;
+  --ring: #a45eff;
 
   --radius: 0.75rem;
 }

@@ -1,0 +1,103 @@
+name: 🔐 Advanced Security Scan
+
+on:
+  schedule:
+    - cron: '0 3 * * 2' # Weekly Tuesday 3AM UTC
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'package*.json'
+      - '.github/workflows/**'
+
+# Grant necessary permissions for security scanning
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  issues: write
+
+jobs:
+  advanced-security:
+    name: 🛡️ Advanced Security Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # Full history for better analysis
+
+      - name: 🏗️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Semgrep Security Scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/secrets
+            p/javascript
+            p/typescript
+            p/react
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+      - name: 🔐 Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: 📊 Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: 🔍 Audit package signatures
+        run: |
+          echo "## 📝 Package Signature Audit" >> $GITHUB_STEP_SUMMARY
+          npm audit signatures --json > signatures.json || true
+          if [ -s signatures.json ]; then
+            echo "Package signature verification completed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: 🚨 Check for hardcoded secrets
+        run: |
+          echo "## 🔐 Secret Detection" >> $GITHUB_STEP_SUMMARY
+          # Check for common secret patterns
+          secret_count=0
+
+          # API keys
+          if grep -r "AKIA[0-9A-Z]{16}" src/ --include="*.js" --include="*.ts" --include="*.jsx" --include="*.tsx" 2>/dev/null; then
+            echo "⚠️ Potential AWS API key found" >> $GITHUB_STEP_SUMMARY
+            secret_count=$((secret_count + 1))
+          fi
+
+          # Tokens
+          if grep -r "[0-9a-f]{40}" src/ --include="*.js" --include="*.ts" --include="*.jsx" --include="*.tsx" 2>/dev/null; then
+            echo "⚠️ Potential API token found" >> $GITHUB_STEP_SUMMARY
+            secret_count=$((secret_count + 1))
+          fi
+
+          if [ $secret_count -eq 0 ]; then
+            echo "✅ No hardcoded secrets detected" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "🚨 $secret_count potential secrets found - please review!" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: 📋 Security Summary
+        run: |
+          echo "## 🛡️ Security Scan Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- Semgrep: Advanced code analysis completed" >> $GITHUB_STEP_SUMMARY
+          echo "- Trivy: Vulnerability scan completed" >> $GITHUB_STEP_SUMMARY
+          echo "- Signatures: Package verification completed" >> $GITHUB_STEP_SUMMARY
+          echo "- Secrets: Pattern detection completed" >> $GITHUB_STEP_SUMMARY

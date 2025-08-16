@@ -1,0 +1,62 @@
+{
+  "folders": [
+    {
+      "name": "💕 Couple Connect",
+      "path": ".",
+    },
+  ],
+  "settings": {
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+    },
+    "files.associations": {
+      "*.css": "tailwindcss",
+      "*.love": "typescript",
+      "*.couple": "json",
+      "*.heart": "css",
+    },
+    "emmet.includeLanguages": {
+      "javascript": "javascriptreact",
+      "typescript": "typescriptreact",
+    },
+    // 🎉 Fun workspace customizations!
+    "workbench.colorTheme": "Default Dark+",
+    "editor.fontLigatures": true,
+    "editor.cursorBlinking": "smooth",
+    "editor.cursorSmoothCaretAnimation": "on",
+    "workbench.startupEditor": "readme",
+    "git.confirmSync": false,
+    "explorer.confirmDelete": false,
+    "workbench.editor.enablePreview": false,
+    // 💝 Love-themed UI colors
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#ff6b9d",
+      "titleBar.activeForeground": "#ffffff",
+      "activityBar.background": "#ffeaa7",
+      "activityBar.foreground": "#2d3436",
+      "statusBar.background": "#fd79a8",
+      "statusBar.foreground": "#ffffff",
+    },
+    "tailwindCSS.includeLanguages": {
+      "typescript": "javascript",
+      "typescriptreact": "javascript",
+    },
+    "editor.quickSuggestions": {
+      "strings": true,
+    },
+  },
+  "extensions": {
+    "recommendations": [
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint",
+      "bradlc.vscode-tailwindcss",
+      "ms-vscode.vscode-typescript-next",
+      "ms-vscode.vscode-json",
+      "GitHub.copilot",
+      "GitHub.copilot-chat",
+    ],
+  },
+}

@@ -1,68 +1,253 @@
-import { useState } from 'react'
-import { useKV } from '@github/spark/hooks'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Heart, Target, BarChart3 } from '@phosphor-icons/react'
-import { Toaster } from '@/components/ui/sonner'
-import MindmapView from '@/components/MindmapView'
-import ActionDashboard from '@/components/ActionDashboard'
-import ProgressView from '@/components/ProgressView'
-import PartnerSetup, { Partner } from '@/components/PartnerSetup'
-import PartnerProfile from '@/components/PartnerProfile'
-import NotificationCenter from '@/components/NotificationCenter'
-import NotificationSummary from '@/components/NotificationSummary'
-import GamificationCenter, { GamificationState } from '@/components/GamificationCenter'
-import RewardSystem from '@/components/RewardSystem'
-import DailyChallenges from '@/components/DailyChallenges'
+import { useState, useEffect, Suspense, lazy } from 'react';
+import './App.css';
+import { useKV } from './hooks/useKV';
+import {
+  useCurrentUser,
+  useCurrentCouple,
+  useIssues,
+  useActions,
+} from './hooks/useDatabaseOptimized';
+import { initializeDatabase } from './services/initializeData';
+import { migrateLocalStorageData, shouldMigrate } from './utils/migrateLocalStorageData';
+import { updateDatabaseConfig } from './services/databaseConfig';
+import { performanceMonitor } from './utils/performanceMonitor';
+import './utils/performanceDemo'; // Initialize performance utilities
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { EssentialIcons } from '@/components/LazyIcons';
+import { LazyProgressView, LazyActionDashboard } from '@/components/LazyRoutes';
+import { Toaster } from '@/components/ui/sonner';
+import { MobileTabBar, MobileNavBar } from '@/components/ui/mobile-navigation';
+import { useMobileDetection } from '@/hooks/use-mobile';
+import { useServiceWorker, useResourceCaching } from '@/hooks/useServiceWorker';
+
+// Lazy load heavy components to reduce initial bundle size
+const LazyMindmapView = lazy(() => import('@/components/MindmapView'));
+const LazyMobileActionDashboard = lazy(() => import('@/components/MobileActionDashboardOptimized'));
+const LazyOfflineNotification = lazy(() =>
+  import('@/components/OfflineNotification').then((m) => ({ default: m.OfflineNotification }))
+);
+const LazyPartnerProfile = lazy(() => import('@/components/PartnerProfile'));
+const LazyNotificationCenter = lazy(() => import('@/components/NotificationCenter'));
+const LazyNotificationSummary = lazy(() => import('@/components/NotificationSummary'));
+const LazyGamificationCenter = lazy(() => import('@/components/GamificationCenter'));
+const LazyRewardSystem = lazy(() => import('@/components/RewardSystem'));
+const LazyDailyChallenges = lazy(() => import('@/components/DailyChallenges'));
+const LazyPerformanceDashboard = lazy(() =>
+  import('@/components/PerformanceDashboard').then((m) => ({ default: m.PerformanceDashboard }))
+);
+
+// Component loading fallbacks
+const ComponentSkeleton = () => (
+  <div className="space-y-4 p-4">
+    <div className="h-8 bg-muted animate-pulse rounded" />
+    <div className="h-32 bg-muted animate-pulse rounded" />
+    <div className="h-16 bg-muted animate-pulse rounded" />
+  </div>
+);
+
+// Optimized loading component for lazy components
+const ComponentLoader = ({ message = 'Loading...' }: { message?: string }) => (
+  <div className="flex items-center justify-center p-8">
+    <div className="space-y-4 text-center">
+      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+      <p className="text-sm text-muted-foreground">{message}</p>
+    </div>
+  </div>
+);
+
+// App configuration constants
+const APP_CONFIG = {
+  // Database configuration
+  DATABASE_CACHE_TIMEOUT: 10 * 60 * 1000, // 10 minutes for relationship data
+  DATABASE_MAX_CACHE_SIZE: 200, // More cache for better performance
+  DATABASE_DEBOUNCE_MS: 300, // Debounce rapid updates
+  DATABASE_RETRY_ATTEMPTS: 3,
+
+  // Performance monitoring
+  PERFORMANCE_REPORT_DELAY: 2000, // Give app time to load
+
+  // Default values
+  DEFAULT_WEEKLY_GOAL: 50,
+} as const;
+
+// Icon sizes for consistent UI
+const ICON_SIZES = {
+  SMALL: 16,
+  LARGE: 32,
+} as const;
+
+// Types imported separately to avoid bundling heavy components
+import type { Partner } from '@/components/PartnerSetup';
+import type { GamificationState } from '@/components/GamificationCenter';
 
 export interface Issue {
-  id: string
-  title: string
-  description: string
-  category: 'communication' | 'intimacy' | 'finance' | 'time' | 'family' | 'personal-growth' | 'other'
-  priority: 'low' | 'medium' | 'high'
-  createdAt: string
-  position: { x: number; y: number }
-  connections: string[]
+  id: string;
+  title: string;
+  description: string;
+  category:
+    | 'communication'
+    | 'intimacy'
+    | 'finance'
+    | 'time'
+    | 'family'
+    | 'personal-growth'
+    | 'other';
+  priority: 'low' | 'medium' | 'high';
+  createdAt: string;
+  position: { x: number; y: number };
+  connections: string[];
 }
 
 export interface Action {
-  id: string
-  issueId: string
-  title: string
-  description: string
-  assignedTo: 'partner1' | 'partner2' | 'both'
-  assignedToId?: string // Partner ID for more specific assignment
-  dueDate: string
-  status: 'pending' | 'in-progress' | 'completed'
-  createdAt: string
-  createdBy: string // Partner ID who created the action
-  completedAt?: string
-  completedBy?: string // Partner ID who completed the action
-  notes: string[]
+  id: string;
+  issueId: string;
+  title: string;
+  description: string;
+  assignedTo: 'partner1' | 'partner2' | 'both';
+  assignedToId?: string; // Partner ID for more specific assignment
+  dueDate: string;
+  status: 'pending' | 'in-progress' | 'completed';
+  createdAt: string;
+  createdBy: string; // Partner ID who created the action
+  completedAt?: string;
+  completedBy?: string; // Partner ID who completed the action
+  notes: string[];
 }
 
 export interface RelationshipHealth {
-  overallScore: number
+  overallScore: number;
   categories: {
-    communication: number
-    intimacy: number
-    finance: number
-    time: number
-    family: number
-    personalGrowth: number
-  }
-  lastUpdated: string
+    communication: number;
+    intimacy: number;
+    finance: number;
+    time: number;
+    family: number;
+    personalGrowth: number;
+  };
+  lastUpdated: string;
 }
 
 function App() {
-  // Partner identification state
-  const [currentPartner, setCurrentPartner] = useKV<Partner | null>("current-partner", null)
-  const [otherPartner, setOtherPartner] = useKV<Partner | null>("other-partner", null)
-  const [viewingAsPartner, setViewingAsPartner] = useState<string | null>(null) // For switching perspectives
-  
-  const [issues, setIssues] = useKV<Issue[]>("relationship-issues", [])
-  const [actions, setActions] = useKV<Action[]>("relationship-actions", [])
-  const [healthScore, setHealthScore] = useKV<RelationshipHealth>("relationship-health", {
+  const { isMobile } = useMobileDetection();
+
+  // Initialize service worker and offline capabilities
+  const { status: swStatus } = useServiceWorker();
+  const { preloadCriticalResources } = useResourceCaching();
+
+  // Initialize database on app start
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        // Configure database for optimal performance
+        updateDatabaseConfig({
+          enableCaching: true,
+          cacheTimeout: APP_CONFIG.DATABASE_CACHE_TIMEOUT,
+          maxCacheSize: APP_CONFIG.DATABASE_MAX_CACHE_SIZE,
+          enableOptimisticUpdates: true, // Instant UI feedback
+          retryAttempts: APP_CONFIG.DATABASE_RETRY_ATTEMPTS,
+          debounceMs: APP_CONFIG.DATABASE_DEBOUNCE_MS,
+        });
+
+        await initializeDatabase();
+
+        // Check if we need to migrate localStorage data
+        if (shouldMigrate()) {
+          console.warn('Migrating existing localStorage data to database...');
+          const result = await migrateLocalStorageData();
+          if (result.success) {
+            console.warn('Migration completed successfully');
+          } else {
+            console.error('Migration failed:', result.message);
+          }
+        }
+
+        // Preload critical resources for offline use
+        if (swStatus.active) {
+          await preloadCriticalResources();
+        }
+
+        // Log initial performance metrics in development
+        if (window.location.hostname === 'localhost') {
+          setTimeout(() => {
+            console.warn('=== Initial Database Performance ===');
+            performanceMonitor.logPerformanceReport();
+          }, APP_CONFIG.PERFORMANCE_REPORT_DELAY);
+        }
+      } catch (error) {
+        console.error('Failed to initialize app:', error);
+      }
+    };
+
+    initializeApp();
+  }, [swStatus.active, preloadCriticalResources]); // Database hooks with enhanced performance
+  const { user: currentUser, error: _userError } = useCurrentUser();
+  const { couple, error: _coupleError } = useCurrentCouple();
+  const {
+    issues: dbIssues,
+    createIssue: _dbCreateIssue,
+    updateIssue: _dbUpdateIssue,
+    deleteIssue: _dbDeleteIssue,
+    loading: _issuesLoading,
+    error: _issuesError,
+  } = useIssues();
+  const {
+    actions: dbActions,
+    createAction: dbCreateAction,
+    updateAction: dbUpdateAction,
+    deleteAction: _dbDeleteAction,
+    loading: _actionsLoading,
+    error: _actionsError,
+  } = useActions();
+
+  // Convert database types to legacy component types
+  const issues: Issue[] = dbIssues.map((issue) => ({
+    id: issue.id,
+    title: issue.title,
+    description: issue.description || '',
+    category: 'other' as Issue['category'], // Default category since DB uses category_id
+    priority: issue.priority === 'urgent' ? 'high' : (issue.priority as Issue['priority']),
+    createdAt: issue.created_at,
+    position: { x: issue.position_x, y: issue.position_y },
+    connections: [], // Default empty connections, would need to fetch from IssueConnection table
+  }));
+
+  const actions: Action[] = dbActions.map((action) => ({
+    id: action.id,
+    issueId: action.issue_id || '',
+    title: action.title,
+    description: action.description || '',
+    assignedTo: mapAssignedTo(action.assigned_to),
+    assignedToId: action.assigned_to,
+    dueDate: action.due_date || '',
+    status: mapActionStatus(action.status),
+    createdAt: action.created_at,
+    createdBy: action.created_by || '',
+    completedAt: action.completed_at || undefined,
+    completedBy: undefined, // Not tracked in new schema
+    notes: action.notes ? [action.notes] : [],
+  }));
+
+  // Helper functions to map between old and new formats
+  function mapAssignedTo(assigned_to: string): 'partner1' | 'partner2' | 'both' {
+    if (assigned_to === 'both') return 'both';
+    if (assigned_to === 'user1') return 'partner1';
+    if (assigned_to === 'user2') return 'partner2';
+    return 'both'; // Default fallback
+  }
+
+  function mapActionStatus(status: string): 'pending' | 'in-progress' | 'completed' {
+    if (status === 'in_progress') return 'in-progress';
+    if (status === 'completed') return 'completed';
+    return 'pending'; // Default fallback
+  }
+
+  // Partner identification state (keeping localStorage for UI state)
+  const [currentPartner, setCurrentPartner] = useKV<Partner | null>('current-partner', null);
+  const [otherPartner, setOtherPartner] = useKV<Partner | null>('other-partner', null);
+  const [viewingAsPartner, setViewingAsPartner] = useState<string | null>(null); // For switching perspectives
+
+  // Legacy state for components that haven't been migrated yet
+  const [healthScore, setHealthScore] = useKV<RelationshipHealth>('relationship-health', {
     overallScore: 7,
     categories: {
       communication: 7,
@@ -70,220 +255,513 @@ function App() {
       finance: 8,
       time: 6,
       family: 7,
-      personalGrowth: 6
+      personalGrowth: 6,
     },
-    lastUpdated: new Date().toISOString()
-  })
+    lastUpdated: new Date().toISOString(),
+  });
 
   // Gamification state
-  const [gamificationState, setGamificationState] = useKV<GamificationState>("gamification-state", {
+  const [gamificationState, setGamificationState] = useKV<GamificationState>('gamification-state', {
     totalPoints: 0,
     currentStreak: 0,
     longestStreak: 0,
     achievements: [],
     weeklyGoal: 7,
     weeklyProgress: 0,
-    partnerStats: {}
-  })
-  
-  const [activeTab, setActiveTab] = useState("mindmap")
-  const [notificationCenterOpen, setNotificationCenterOpen] = useState(false)
+    partnerStats: {},
+  });
 
-  // If no partners are set up, show setup screen
-  if (!currentPartner || !otherPartner) {
+  // Wrapper functions for components that still expect setters (temporary until components are updated)
+  const setIssuesWrapper = async (update: (current: Issue[]) => Issue[]) => {
+    // For now, components can still use this pattern, but we should migrate them to use database hooks directly
+    console.warn(
+      'setIssuesWrapper called - components should be updated to use database hooks directly'
+    );
+    const _updatedIssues = update(issues);
+    // Here you would implement the actual database updates based on the diff
+  };
+
+  const setActionsWrapper = async (update: (current: Action[]) => Action[]) => {
+    // For now, components can still use this pattern, but we should migrate them to use database hooks directly
+    console.warn(
+      'setActionsWrapper called - components should be updated to use database hooks directly'
+    );
+    const _updatedActions = update(actions);
+    // Here you would implement the actual database updates based on the diff
+  };
+
+  const setHealthScoreWrapper = (update: (current: RelationshipHealth) => RelationshipHealth) => {
+    setHealthScore((prev) =>
+      update(
+        prev || {
+          overallScore: 0,
+          categories: {
+            communication: 0,
+            intimacy: 0,
+            finance: 0,
+            time: 0,
+            family: 0,
+            personalGrowth: 0,
+          },
+          lastUpdated: new Date().toISOString(),
+        }
+      )
+    );
+  };
+
+  const [activeTab, setActiveTab] = useState('mindmap');
+  const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
+
+  // Add a loading state for partner setup
+  const [partnersInitialized, setPartnersInitialized] = useState(false);
+
+  console.warn('🏁 App function running, partners:', {
+    currentPartner: currentPartner?.name,
+    otherPartner: otherPartner?.name,
+    partnersInitialized,
+  });
+
+  // Debug logging for partner state
+  useEffect(() => {
+    console.warn('🔍 Partner state changed:', {
+      currentPartner: currentPartner?.name,
+      otherPartner: otherPartner?.name,
+      partnersInitialized,
+    });
+  }, [currentPartner, otherPartner, partnersInitialized]);
+
+  // Initialize default partners if none are set up
+  useEffect(() => {
+    // If partners already exist but we haven't marked as initialized, mark it now
+    if (!partnersInitialized && currentPartner && otherPartner) {
+      console.warn('✅ Partners already exist, marking as initialized');
+      setPartnersInitialized(true);
+    }
+    // Only create default partners if none exist and we haven't tried before
+    else if (!partnersInitialized && (!currentPartner || !otherPartner)) {
+      console.warn('🚀 Initializing default partners...');
+
+      const defaultCurrentPartner: Partner = {
+        id: 'partner-1',
+        name: 'You',
+        email: 'you@example.com',
+        isCurrentUser: true,
+      };
+      const defaultOtherPartner: Partner = {
+        id: 'partner-2',
+        name: 'Your Partner',
+        email: 'partner@example.com',
+        isCurrentUser: false,
+      };
+
+      // Set partners and mark as initialized
+      setCurrentPartner(defaultCurrentPartner);
+      setOtherPartner(defaultOtherPartner);
+      setPartnersInitialized(true);
+      console.warn('✅ Default partners created successfully');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [partnersInitialized, currentPartner, otherPartner]);
+
+  // Show loading screen while partners are being initialized or don't exist
+  if (!partnersInitialized || !currentPartner || !otherPartner) {
+    console.warn('🔄 Showing loading screen');
     return (
-      <PartnerSetup 
-        onComplete={(current, other) => {
-          setCurrentPartner(() => current)
-          setOtherPartner(() => other)
-        }} 
-      />
-    )
+      <div className="p-8 bg-gray-100 min-h-screen">
+        <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-bold mb-4">🚀 Setting up your account...</h2>
+          <p className="text-gray-600">
+            Creating default partners for demo. This will only take a moment.
+          </p>
+          <div className="mt-4">
+            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          </div>
+          <div className="mt-4 text-xs text-gray-500">
+            Debug: partnersInitialized={partnersInitialized.toString()}, currentPartner=
+            {currentPartner?.name || 'null'}, otherPartner={otherPartner?.name || 'null'}
+          </div>
+        </div>
+      </div>
+    );
   }
 
+  console.warn('✅ Partners initialized, rendering main app...');
+
   // Determine which partner's perspective we're viewing
-  const activePartner = viewingAsPartner 
-    ? (viewingAsPartner === currentPartner.id ? currentPartner : otherPartner)
-    : currentPartner
-  
-  const isViewingOwnPerspective = activePartner.id === currentPartner.id
+  const activePartner = viewingAsPartner
+    ? viewingAsPartner === currentPartner.id
+      ? currentPartner
+      : otherPartner
+    : currentPartner;
+
+  const isViewingOwnPerspective = activePartner.id === currentPartner.id;
 
   // Filter actions based on current view
   const getPersonalizedActions = () => {
+    const actionList = actions || [];
     if (isViewingOwnPerspective) {
       // Show actions assigned to current user or both
-      return actions.filter(action => 
-        action.assignedToId === currentPartner.id || 
-        action.assignedTo === 'both' ||
-        action.createdBy === currentPartner.id
-      )
+      return actionList.filter(
+        (action) =>
+          action.assignedToId === currentPartner.id ||
+          action.assignedTo === 'both' ||
+          action.createdBy === currentPartner.id
+      );
     } else {
       // Show actions from partner's perspective
-      return actions.filter(action => 
-        action.assignedToId === otherPartner.id || 
-        action.assignedTo === 'both' ||
-        action.createdBy === otherPartner.id
-      )
+      return actionList.filter(
+        (action) =>
+          action.assignedToId === otherPartner.id ||
+          action.assignedTo === 'both' ||
+          action.createdBy === otherPartner.id
+      );
     }
-  }
+  };
 
   const handleSwitchView = () => {
-    setViewingAsPartner(viewingAsPartner === currentPartner.id ? otherPartner.id : currentPartner.id)
-  }
+    setViewingAsPartner(
+      viewingAsPartner === currentPartner.id ? otherPartner.id : currentPartner.id
+    );
+  };
 
   const handleSignOut = () => {
-    setCurrentPartner(() => null)
-    setOtherPartner(() => null)
-    setViewingAsPartner(null)
-  }
+    setCurrentPartner(null);
+    setOtherPartner(null);
+    setViewingAsPartner(null);
+  };
 
-  const handleActionUpdate = (actionId: string, updates: Partial<Action>) => {
-    setActions(currentActions => 
-      currentActions.map(action => 
-        action.id === actionId ? { ...action, ...updates } : action
-      )
-    )
-  }
-
-  const handleCreateAction = (newAction: Omit<Action, 'id' | 'createdAt'>) => {
-    const action: Action = {
-      ...newAction,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString()
+  const handleActionUpdate = async (actionId: string, updates: Partial<Action>) => {
+    try {
+      await dbUpdateAction(actionId, {
+        title: updates.title,
+        description: updates.description,
+        status: updates.status === 'in-progress' ? 'in_progress' : updates.status,
+        due_date: updates.dueDate,
+        notes: updates.notes?.join('\n'),
+        completed_at: updates.completedAt,
+      });
+    } catch (error) {
+      console.error('Failed to update action:', error);
     }
-    setActions(currentActions => [...currentActions, action])
-  }
+  };
+
+  const handleCreateAction = async (newAction: Omit<Action, 'id' | 'createdAt'>) => {
+    if (!couple) return;
+    try {
+      await dbCreateAction({
+        title: newAction.title,
+        description: newAction.description,
+        assigned_to:
+          newAction.assignedTo === 'partner1'
+            ? 'user1'
+            : newAction.assignedTo === 'partner2'
+              ? 'user2'
+              : 'both',
+        status:
+          newAction.status === 'in-progress'
+            ? 'in_progress'
+            : (newAction.status as 'pending' | 'completed'),
+        priority: 'medium',
+        due_date: newAction.dueDate,
+        notes: newAction.notes.join('\n'),
+        created_by: currentUser?.id,
+      });
+    } catch (error) {
+      console.error('Failed to create action:', error);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-6">
-        <header className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <Heart className="text-accent" size={32} weight="fill" />
-              <div>
-                <h1 className="text-3xl font-medium text-foreground">Together</h1>
-                <p className="text-muted-foreground">
-                  {isViewingOwnPerspective 
-                    ? "Your personal accountability view" 
-                    : `Viewing ${activePartner.name}'s perspective`
-                  }
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <GamificationCenter
-                actions={actions}
-                issues={issues}
-                currentPartner={currentPartner}
-                otherPartner={otherPartner}
-                gamificationState={gamificationState}
-                onUpdateGamification={setGamificationState}
-              />
-              <RewardSystem
-                currentPartner={currentPartner}
-                otherPartner={otherPartner}
-                gamificationState={gamificationState}
-                onUpdateGamification={setGamificationState}
-              />
-              <NotificationCenter
-                actions={actions}
-                issues={issues}
-                currentPartner={currentPartner}
-                otherPartner={otherPartner}
-                onActionUpdate={handleActionUpdate}
-                isOpen={notificationCenterOpen}
-                onOpenChange={setNotificationCenterOpen}
-              />
-              <PartnerProfile 
+    <div id="spark-app" className={`min-h-screen ${isMobile ? 'pb-safe-area-bottom' : ''}`}>
+      {/* Offline notification */}
+      <Suspense fallback={<ComponentLoader message="Loading notification..." />}>
+        <LazyOfflineNotification />
+      </Suspense>
+
+      {/* Mobile Navigation */}
+      {isMobile && (
+        <MobileNavBar
+          title="Together"
+          rightAction={
+            <Suspense fallback={<ComponentLoader message="Loading profile..." />}>
+              <LazyPartnerProfile
                 currentPartner={currentPartner}
                 otherPartner={otherPartner}
                 onSwitchView={handleSwitchView}
                 onSignOut={handleSignOut}
               />
+            </Suspense>
+          }
+        />
+      )}
+
+      {isMobile ? (
+        /* Mobile Layout */
+        <div className="pt-16 pb-20">
+          {/* Mobile Tab Content */}
+          {activeTab === 'mindmap' && (
+            <div className="px-0">
+              <Suspense fallback={<ComponentLoader message="Loading mindmap..." />}>
+                <LazyMindmapView
+                  issues={issues || []}
+                  setIssues={setIssuesWrapper}
+                  actions={actions || []}
+                  setActions={setActionsWrapper}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  viewingAsPartner={activePartner}
+                />
+              </Suspense>
             </div>
-          </div>
-          
-          <div className="text-center">
-            <p className="text-muted-foreground text-lg">
-              Building stronger relationships through accountability and growth
-            </p>
-          </div>
-        </header>
+          )}
 
-        <NotificationSummary
-          actions={actions}
-          issues={issues}
-          currentPartner={currentPartner}
-          otherPartner={otherPartner}
-          onViewAll={() => setNotificationCenterOpen(true)}
-        />
+          {activeTab === 'actions' && (
+            <Suspense fallback={<ComponentLoader message="Loading dashboard..." />}>
+              <LazyMobileActionDashboard
+                issues={issues || []}
+                actions={getPersonalizedActions()}
+                setActions={setActionsWrapper}
+                currentPartner={currentPartner}
+                otherPartner={otherPartner}
+                viewingAsPartner={activePartner}
+              />
+            </Suspense>
+          )}
 
-        <DailyChallenges
-          actions={actions}
-          issues={issues}
-          currentPartner={currentPartner}
-          otherPartner={otherPartner}
-          gamificationState={gamificationState}
-          onUpdateGamification={setGamificationState}
-          onCreateAction={handleCreateAction}
-        />
+          {activeTab === 'progress' && (
+            <div className="px-4">
+              <Suspense fallback={<ComponentSkeleton />}>
+                <LazyProgressView
+                  issues={issues || []}
+                  actions={actions || []}
+                  healthScore={
+                    healthScore || {
+                      overallScore: 0,
+                      categories: {
+                        communication: 0,
+                        intimacy: 0,
+                        finance: 0,
+                        time: 0,
+                        family: 0,
+                        personalGrowth: 0,
+                      },
+                      lastUpdated: new Date().toISOString(),
+                    }
+                  }
+                  setHealthScore={setHealthScoreWrapper}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  viewingAsPartner={activePartner}
+                />
+              </Suspense>
+            </div>
+          )}
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="mindmap" className="flex items-center gap-2">
-              <Heart size={16} />
-              Issues Map
-            </TabsTrigger>
-            <TabsTrigger value="actions" className="flex items-center gap-2">
-              <Target size={16} />
-              Action Plans
-            </TabsTrigger>
-            <TabsTrigger value="progress" className="flex items-center gap-2">
-              <BarChart3 size={16} />
-              Progress
-            </TabsTrigger>
-          </TabsList>
+          {/* Mobile Tab Bar */}
+          <MobileTabBar activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
+      ) : (
+        /* Desktop Layout */
+        <div className="container mx-auto p-6">
+          <header className="mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <EssentialIcons.Heart
+                  className="text-accent"
+                  size={ICON_SIZES.LARGE}
+                  weight="fill"
+                />
+                <div>
+                  <h1 className="text-3xl font-medium text-fg">Together</h1>
+                  <p className="text-fg-secondary">
+                    {isViewingOwnPerspective
+                      ? 'Your personal accountability view'
+                      : `Viewing ${activePartner.name}'s perspective`}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Suspense fallback={<ComponentLoader message="Loading gamification..." />}>
+                  <LazyGamificationCenter
+                    actions={actions || []}
+                    issues={issues || []}
+                    currentPartner={currentPartner}
+                    otherPartner={otherPartner}
+                    gamificationState={
+                      gamificationState || {
+                        totalPoints: 0,
+                        currentStreak: 0,
+                        longestStreak: 0,
+                        achievements: [],
+                        weeklyGoal: 50,
+                        weeklyProgress: 0,
+                        partnerStats: {},
+                      }
+                    }
+                    onUpdateGamification={setGamificationState}
+                  />
+                </Suspense>
+                <Suspense fallback={<ComponentLoader message="Loading rewards..." />}>
+                  <LazyRewardSystem
+                    currentPartner={currentPartner}
+                    _otherPartner={otherPartner}
+                    gamificationState={
+                      gamificationState || {
+                        totalPoints: 0,
+                        currentStreak: 0,
+                        longestStreak: 0,
+                        achievements: [],
+                        weeklyGoal: 50,
+                        weeklyProgress: 0,
+                        partnerStats: {},
+                      }
+                    }
+                    onUpdateGamification={setGamificationState}
+                  />
+                </Suspense>
+                <Suspense fallback={<ComponentLoader message="Loading notifications..." />}>
+                  <LazyNotificationCenter
+                    actions={actions || []}
+                    issues={issues || []}
+                    currentPartner={currentPartner}
+                    otherPartner={otherPartner}
+                    onActionUpdate={handleActionUpdate}
+                    isOpen={notificationCenterOpen}
+                    onOpenChange={setNotificationCenterOpen}
+                  />
+                </Suspense>
+                <Suspense fallback={<ComponentLoader message="Loading profile..." />}>
+                  <LazyPartnerProfile
+                    currentPartner={currentPartner}
+                    otherPartner={otherPartner}
+                    onSwitchView={handleSwitchView}
+                    onSignOut={handleSignOut}
+                  />
+                </Suspense>
+              </div>
+            </div>
 
-          <TabsContent value="mindmap" className="space-y-6">
-            <MindmapView 
-              issues={issues} 
-              setIssues={setIssues}
-              actions={actions}
-              setActions={setActions}
+            <div className="text-center">
+              <p className="text-muted-foreground text-lg">
+                Building stronger relationships through accountability and growth
+              </p>
+            </div>
+          </header>
+
+          <Suspense fallback={<ComponentLoader message="Loading dashboard..." />}>
+            <LazyPerformanceDashboard />
+          </Suspense>
+
+          <Suspense fallback={<ComponentLoader message="Loading notifications..." />}>
+            <LazyNotificationSummary
+              actions={actions || []}
+              issues={issues || []}
               currentPartner={currentPartner}
               otherPartner={otherPartner}
-              viewingAsPartner={activePartner}
+              onViewAll={() => setNotificationCenterOpen(true)}
             />
-          </TabsContent>
-
-          <TabsContent value="actions" className="space-y-6">
-            <ActionDashboard 
-              issues={issues}
-              actions={getPersonalizedActions()}
-              setActions={setActions}
+          </Suspense>
+          <Suspense fallback={<ComponentLoader message="Loading challenges..." />}>
+            <LazyDailyChallenges
+              actions={actions || []}
+              issues={issues || []}
               currentPartner={currentPartner}
               otherPartner={otherPartner}
-              viewingAsPartner={activePartner}
+              gamificationState={
+                gamificationState || {
+                  totalPoints: 0,
+                  currentStreak: 0,
+                  longestStreak: 0,
+                  achievements: [],
+                  weeklyGoal: APP_CONFIG.DEFAULT_WEEKLY_GOAL,
+                  weeklyProgress: 0,
+                  partnerStats: {},
+                }
+              }
+              onUpdateGamification={setGamificationState}
+              onCreateAction={handleCreateAction}
             />
-          </TabsContent>
+          </Suspense>
 
-          <TabsContent value="progress" className="space-y-6">
-            <ProgressView 
-              issues={issues}
-              actions={actions}
-              healthScore={healthScore}
-              setHealthScore={setHealthScore}
-              currentPartner={currentPartner}
-              otherPartner={otherPartner}
-              viewingAsPartner={activePartner}
-            />
-          </TabsContent>
-        </Tabs>
-      </div>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-8">
+              <TabsTrigger value="mindmap" className="flex items-center gap-2">
+                <EssentialIcons.Heart size={ICON_SIZES.SMALL} />
+                Issues Map
+              </TabsTrigger>
+              <TabsTrigger value="actions" className="flex items-center gap-2">
+                <EssentialIcons.Target size={ICON_SIZES.SMALL} />
+                Action Plans
+              </TabsTrigger>
+              <TabsTrigger value="progress" className="flex items-center gap-2">
+                <EssentialIcons.ChartBar size={ICON_SIZES.SMALL} />
+                Progress
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="mindmap" className="space-y-6">
+              <Suspense fallback={<ComponentLoader message="Loading mindmap..." />}>
+                <LazyMindmapView
+                  issues={issues || []}
+                  setIssues={setIssuesWrapper}
+                  actions={actions || []}
+                  setActions={setActionsWrapper}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  viewingAsPartner={activePartner}
+                />
+              </Suspense>
+            </TabsContent>
+
+            <TabsContent value="actions" className="space-y-6">
+              <Suspense
+                fallback={<div className="h-64 animate-pulse bg-surface-light rounded-lg" />}
+              >
+                <LazyActionDashboard
+                  issues={issues || []}
+                  actions={getPersonalizedActions()}
+                  setActions={setActionsWrapper}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  viewingAsPartner={activePartner}
+                />
+              </Suspense>
+            </TabsContent>
+
+            <TabsContent value="progress" className="space-y-6">
+              <Suspense
+                fallback={<div className="h-64 animate-pulse bg-surface-light rounded-lg" />}
+              >
+                <LazyProgressView
+                  issues={issues || []}
+                  actions={actions || []}
+                  healthScore={
+                    healthScore || {
+                      overallScore: 0,
+                      categories: {
+                        communication: 0,
+                        intimacy: 0,
+                        finance: 0,
+                        time: 0,
+                        family: 0,
+                        personalGrowth: 0,
+                      },
+                      lastUpdated: new Date().toISOString(),
+                    }
+                  }
+                  setHealthScore={setHealthScoreWrapper}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  viewingAsPartner={activePartner}
+                />
+              </Suspense>
+            </TabsContent>
+          </Tabs>
+        </div>
+      )}
       <Toaster />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

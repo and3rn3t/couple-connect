@@ -7,27 +7,122 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependency directories
+node_modules/
 node_modules
-dist
-dist-ssr
-*-dist
-*.local
+jspm_packages/
 
-# Editor directories and files
+# Build outputs
+dist/
+dist-ssr/
+*-dist/
+*.local
+build/
+out/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# Environment variables
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.staging.local
+
+# Keep .env folder structure but ignore sensitive files
+.env/.env.local
+.env/.env.*.local
+
+# Allow example and template files
+!.env/.env.example
+!.env/.env.base
+!.env/.env.development
+!.env/.env.production
+!.env/.env.staging
+!.env/.env.test
+!.env/README.md
+
+# Legacy env files (will be removed)
+.env
+.env.*
+!.env.example
+
+# IDE directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
+!.vscode/settings.json
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+.history/
 
-.env
+# OS generated files
+Thumbs.db
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+# Cloudflare
+.wrangler/
+.dev.vars
+
+# Temporary folders
+tmp/
+temp/
+
+# Runtime and cache
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist
+
+# Build outputs
 **/agent-eval-report*
 packages
-.file-manifest
-.devcontainer/
+
+# Testing outputs and reports
+test-results/
+playwright-report/
+coverage/
+*.lcov
+lighthouse-report*.html
+mobile-lighthouse-report.html
+
+# Performance analysis files
+css-analysis.json
+bundle-analysis.json
+build-performance.json
+coverage-report.json
+.performance-history/
+
+# Mobile optimization temporary files
+scripts/temp/
+*.analysis.temp
+mobile-optimization-*.log
+
+# Lighthouse and performance reports
+lighthouse-report*.html
+mobile-lighthouse-report.html
+performance-report*.json
+
+# Lock files (choose one based on your package manager)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
 
 .spark-workbench-id

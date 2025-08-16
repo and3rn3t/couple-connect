@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "eamodio.gitlens",
+    "vscode-icons-team.vscode-icons",
+    "dsznajder.es7-react-js-snippets",
+    "usernamehw.errorlens"
+  ]
+}

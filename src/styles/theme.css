@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @import '@radix-ui/colors/sage-dark.css' layer(base);
 @import '@radix-ui/colors/olive.css' layer(base);
@@ -82,7 +82,7 @@
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
+    border-color: var(--color-neutral-6, #453345);
   }
 }
 
@@ -176,87 +176,89 @@
     --radius-2xl: calc(16px * var(--radius-factor) * var(--size-scale));
     --radius-full: 9999px;
 
-    /* Neutral colors */
-    --color-neutral-1: var(--slate-1);
-    --color-neutral-2: var(--slate-2);
-    --color-neutral-3: var(--slate-3);
-    --color-neutral-4: var(--slate-4);
-    --color-neutral-5: var(--slate-5);
-    --color-neutral-6: var(--slate-6);
-    --color-neutral-7: var(--slate-7);
-    --color-neutral-8: var(--slate-8);
-    --color-neutral-9: var(--slate-9);
-    --color-neutral-10: var(--slate-10);
-    --color-neutral-11: var(--slate-11);
-    --color-neutral-12: var(--slate-12);
-    --color-neutral-a1: var(--slate-a1);
-    --color-neutral-a2: var(--slate-a2);
-    --color-neutral-a3: var(--slate-a3);
-    --color-neutral-a4: var(--slate-a4);
-    --color-neutral-a5: var(--slate-a5);
-    --color-neutral-a6: var(--slate-a6);
-    --color-neutral-a7: var(--slate-a7);
-    --color-neutral-a8: var(--slate-a8);
-    --color-neutral-a9: var(--slate-a9);
-    --color-neutral-a10: var(--slate-a10);
-    --color-neutral-a11: var(--slate-a11);
-    --color-neutral-a12: var(--slate-a12);
-    --color-neutral-contrast: var(--slate-contrast);
+    /* Neutral colors - Gothic Dark Theme */
+    --color-neutral-1: #0f0a0f;
+    --color-neutral-2: #1a111a;
+    --color-neutral-3: #251a25;
+    --color-neutral-4: #2f212f;
+    --color-neutral-5: #3a2a3a;
+    --color-neutral-6: #453345;
+    --color-neutral-7: #523d52;
+    --color-neutral-8: #604760;
+    --color-neutral-9: #705270;
+    --color-neutral-10: #826082;
+    --color-neutral-11: #a68fa6;
+    --color-neutral-12: #d4c4d4;
+    --color-neutral-a1: rgba(15, 10, 15, 0.05);
+    --color-neutral-a2: rgba(26, 17, 26, 0.1);
+    --color-neutral-a3: rgba(37, 26, 37, 0.15);
+    --color-neutral-a4: rgba(47, 33, 47, 0.2);
+    --color-neutral-a5: rgba(58, 42, 58, 0.25);
+    --color-neutral-a6: rgba(69, 51, 69, 0.3);
+    --color-neutral-a7: rgba(82, 61, 82, 0.4);
+    --color-neutral-a8: rgba(96, 71, 96, 0.5);
+    --color-neutral-a9: rgba(112, 82, 112, 0.6);
+    --color-neutral-a10: rgba(130, 96, 130, 0.7);
+    --color-neutral-a11: rgba(166, 143, 166, 0.8);
+    --color-neutral-a12: rgba(212, 196, 212, 0.95);
+    --color-neutral-contrast: #f8f0f8;
 
-    /* Accent colors */
-    --color-accent-1: var(--blue-1);
-    --color-accent-2: var(--blue-2);
-    --color-accent-3: var(--blue-3);
-    --color-accent-4: var(--blue-4);
-    --color-accent-5: var(--blue-5);
-    --color-accent-6: var(--blue-6);
-    --color-accent-7: var(--blue-7);
-    --color-accent-8: var(--blue-8);
-    --color-accent-9: var(--blue-9);
-    --color-accent-10: var(--blue-10);
-    --color-accent-11: var(--blue-11);
-    --color-accent-12: var(--blue-12);
-    --color-accent-contrast: var(--blue-contrast);
+    /* Accent colors - Deep Purple Gothic */
+    --color-accent-1: #1a0b2e;
+    --color-accent-2: #2d1b69;
+    --color-accent-3: #3e2093;
+    --color-accent-4: #4f28a8;
+    --color-accent-5: #6030c4;
+    --color-accent-6: #7139d9;
+    --color-accent-7: #8244e8;
+    --color-accent-8: #9350f3;
+    --color-accent-9: #a45eff;
+    --color-accent-10: #b56fff;
+    --color-accent-11: #c885ff;
+    --color-accent-12: #e0b3ff;
+    --color-accent-contrast: #ffffff;
 
-    /* Secondary accent colors */
-    --color-accent-secondary-1: var(--violet-1);
-    --color-accent-secondary-2: var(--violet-2);
-    --color-accent-secondary-3: var(--violet-3);
-    --color-accent-secondary-4: var(--violet-4);
-    --color-accent-secondary-5: var(--violet-5);
-    --color-accent-secondary-6: var(--violet-6);
-    --color-accent-secondary-7: var(--violet-7);
-    --color-accent-secondary-8: var(--violet-8);
-    --color-accent-secondary-9: var(--violet-9);
-    --color-accent-secondary-10: var(--violet-10);
-    --color-accent-secondary-11: var(--violet-11);
-    --color-accent-secondary-12: var(--violet-12);
-    --color-accent-secondary-contrast: var(--violet-contrast);
+    /* Secondary accent colors - Magenta Gothic */
+    --color-accent-secondary-1: #2e0b1a;
+    --color-accent-secondary-2: #4a1829;
+    --color-accent-secondary-3: #662439;
+    --color-accent-secondary-4: #823048;
+    --color-accent-secondary-5: #9e3c58;
+    --color-accent-secondary-6: #ba4868;
+    --color-accent-secondary-7: #d65478;
+    --color-accent-secondary-8: #f26088;
+    --color-accent-secondary-9: #ff6c98;
+    --color-accent-secondary-10: #ff78a8;
+    --color-accent-secondary-11: #ff94c4;
+    --color-accent-secondary-12: #ffb3d9;
+    --color-accent-secondary-contrast: #ffffff;
 
     /* Foreground colors */
-    --color-fg: var(--color-neutral-12);
-    --color-fg-secondary: var(--color-neutral-a11);
+    --color-fg: #f8f0f8;
+    --color-fg-secondary: rgba(212, 196, 212, 0.8);
 
     /* Background colors */
-    --color-bg: #ffffff;
-    --color-bg-inset: var(--color-neutral-2);
-    --color-bg-overlay: #ffffff;
+    --color-bg: #0f0a0f;
+    --color-bg-inset: #1a111a;
+    --color-bg-overlay: #251a25;
 
     /* Focus ring */
-    --color-focus-ring: var(--color-accent-9);
+    --color-focus-ring: #b56fff;
 
     /* Fonts */
-    --font-sans-serif: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-    --font-monospace: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-      "Liberation Mono", "Courier New", monospace;
+    --font-sans-serif:
+      ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+      'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+    --font-monospace:
+      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+      monospace;
     --font-family: var(--font-sans-serif);
   }
 
   #spark-app.dark-theme {
-    --color-bg: var(--color-neutral-1);
+    --color-bg: #0a050a;
     --color-bg-inset: #000000;
-    --color-bg-overlay: var(--color-neutral-3);
+    --color-bg-overlay: #2f212f;
   }
 }

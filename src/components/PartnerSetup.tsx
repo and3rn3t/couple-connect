@@ -1,92 +1,92 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Heart, UserPlus, Users } from '@phosphor-icons/react'
-import { toast } from 'sonner'
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { Heart, UserPlus, Users } from '@/components/ui/InlineIcons';
+import { toast } from 'sonner';
 
 export interface Partner {
-  id: string
-  name: string
-  email?: string
-  avatar?: string
-  isCurrentUser: boolean
+  id: string;
+  name: string;
+  email?: string;
+  avatar?: string;
+  isCurrentUser: boolean;
 }
 
 interface PartnerSetupProps {
-  onComplete: (currentPartner: Partner, otherPartner: Partner) => void
+  onComplete: (currentPartner: Partner, otherPartner: Partner) => void;
 }
 
 export default function PartnerSetup({ onComplete }: PartnerSetupProps) {
-  const [setupMode, setSetupMode] = useState<'new' | 'join' | null>(null)
-  const [partnerName, setPartnerName] = useState('')
-  const [yourName, setYourName] = useState('')
-  const [partnerCode, setPartnerCode] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [setupMode, setSetupMode] = useState<'new' | 'join' | null>(null);
+  const [partnerName, setPartnerName] = useState('');
+  const [yourName, setYourName] = useState('');
+  const [partnerCode, setPartnerCode] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCreateNew = async () => {
     if (!yourName.trim() || !partnerName.trim()) {
-      toast.error('Please enter both names')
-      return
+      toast.error('Please enter both names');
+      return;
     }
 
-    setIsLoading(true)
-    
+    setIsLoading(true);
+
     // Create unique IDs for partners
-    const currentPartnerId = `partner_${Date.now()}_1`
-    const otherPartnerId = `partner_${Date.now()}_2`
-    
+    const currentPartnerId = `partner_${Date.now()}_1`;
+    const otherPartnerId = `partner_${Date.now()}_2`;
+
     const currentPartner: Partner = {
       id: currentPartnerId,
       name: yourName.trim(),
-      isCurrentUser: true
-    }
-    
+      isCurrentUser: true,
+    };
+
     const otherPartner: Partner = {
       id: otherPartnerId,
       name: partnerName.trim(),
-      isCurrentUser: false
-    }
+      isCurrentUser: false,
+    };
 
     // Generate a simple sharing code for the partner to join
-    const shareCode = Math.random().toString(36).substring(2, 8).toUpperCase()
-    
-    toast.success(`Setup complete! Share code "${shareCode}" with ${partnerName}`)
-    onComplete(currentPartner, otherPartner)
-    setIsLoading(false)
-  }
+    const shareCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+    toast.success(`Setup complete! Share code "${shareCode}" with ${partnerName}`);
+    onComplete(currentPartner, otherPartner);
+    setIsLoading(false);
+  };
 
   const handleJoinExisting = async () => {
     if (!yourName.trim() || !partnerCode.trim()) {
-      toast.error('Please enter your name and the partner code')
-      return
+      toast.error('Please enter your name and the partner code');
+      return;
     }
 
-    setIsLoading(true)
-    
+    setIsLoading(true);
+
     // In a real app, this would validate the code and fetch partner data
     // For now, we'll simulate joining
-    const currentPartnerId = `partner_${Date.now()}_join`
-    const otherPartnerId = `partner_existing`
-    
+    const currentPartnerId = `partner_${Date.now()}_join`;
+    const otherPartnerId = `partner_existing`;
+
     const currentPartner: Partner = {
       id: currentPartnerId,
       name: yourName.trim(),
-      isCurrentUser: true
-    }
-    
+      isCurrentUser: true,
+    };
+
     const otherPartner: Partner = {
       id: otherPartnerId,
       name: 'Your Partner', // In real app, this would come from the code
-      isCurrentUser: false
-    }
+      isCurrentUser: false,
+    };
 
-    toast.success('Successfully joined!')
-    onComplete(currentPartner, otherPartner)
-    setIsLoading(false)
-  }
+    toast.success('Successfully joined!');
+    onComplete(currentPartner, otherPartner);
+    setIsLoading(false);
+  };
 
   if (!setupMode) {
     return (
@@ -97,22 +97,16 @@ export default function PartnerSetup({ onComplete }: PartnerSetupProps) {
               <Heart className="text-accent" size={48} weight="fill" />
             </div>
             <CardTitle className="text-2xl">Welcome to Together</CardTitle>
-            <CardDescription>
-              Start your accountability journey as a couple
-            </CardDescription>
+            <CardDescription>Start your accountability journey as a couple</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button 
-              onClick={() => setSetupMode('new')} 
-              className="w-full"
-              size="lg"
-            >
+            <Button onClick={() => setSetupMode('new')} className="w-full" size="lg">
               <UserPlus className="mr-2" size={20} />
               Set Up New Partnership
             </Button>
-            <Button 
-              onClick={() => setSetupMode('join')} 
-              variant="outline" 
+            <Button
+              onClick={() => setSetupMode('join')}
+              variant="outline"
               className="w-full"
               size="lg"
             >
@@ -122,7 +116,7 @@ export default function PartnerSetup({ onComplete }: PartnerSetupProps) {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -136,10 +130,9 @@ export default function PartnerSetup({ onComplete }: PartnerSetupProps) {
             {setupMode === 'new' ? 'Create Partnership' : 'Join Partnership'}
           </CardTitle>
           <CardDescription>
-            {setupMode === 'new' 
+            {setupMode === 'new'
               ? 'Set up your accountability partnership'
-              : 'Enter the code shared by your partner'
-            }
+              : 'Enter the code shared by your partner'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -164,18 +157,10 @@ export default function PartnerSetup({ onComplete }: PartnerSetupProps) {
                 />
               </div>
               <div className="flex gap-2 pt-4">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setSetupMode(null)}
-                  className="flex-1"
-                >
+                <Button variant="outline" onClick={() => setSetupMode(null)} className="flex-1">
                   Back
                 </Button>
-                <Button 
-                  onClick={handleCreateNew}
-                  disabled={isLoading}
-                  className="flex-1"
-                >
+                <Button onClick={handleCreateNew} disabled={isLoading} className="flex-1">
                   {isLoading ? 'Creating...' : 'Create Partnership'}
                 </Button>
               </div>
@@ -202,18 +187,10 @@ export default function PartnerSetup({ onComplete }: PartnerSetupProps) {
                 />
               </div>
               <div className="flex gap-2 pt-4">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setSetupMode(null)}
-                  className="flex-1"
-                >
+                <Button variant="outline" onClick={() => setSetupMode(null)} className="flex-1">
                   Back
                 </Button>
-                <Button 
-                  onClick={handleJoinExisting}
-                  disabled={isLoading}
-                  className="flex-1"
-                >
+                <Button onClick={handleJoinExisting} disabled={isLoading} className="flex-1">
                   {isLoading ? 'Joining...' : 'Join Partnership'}
                 </Button>
               </div>
@@ -222,5 +199,5 @@ export default function PartnerSetup({ onComplete }: PartnerSetupProps) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
