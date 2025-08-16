@@ -79,3 +79,5 @@ export function PerformanceDashboard() {
     </Card>
   );
 }
+
+export default PerformanceDashboard;

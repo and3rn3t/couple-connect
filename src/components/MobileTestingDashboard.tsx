@@ -318,3 +318,5 @@ export function MobileTestingDashboard() {
     </div>
   );
 }
+
+export default MobileTestingDashboard;

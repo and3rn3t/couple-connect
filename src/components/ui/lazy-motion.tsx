@@ -15,21 +15,23 @@ const LazyAnimatePresence = lazy(() =>
 );
 
 // Props type for motion.div
-type MotionDivProps = ComponentProps<'div'> & {
+type MotionDivProps = Omit<ComponentProps<'div'>, 'onDragStart'> & {
   initial?: any;
   animate?: any;
   exit?: any;
   transition?: any;
   whileHover?: any;
   whileTap?: any;
-  variants?: any;
   layout?: boolean;
   layoutId?: string;
   drag?: boolean | 'x' | 'y';
+  onDragStart?: (event: any, info: any) => void;
+  variants?: any;
   dragConstraints?: any;
   onDragEnd?: any;
   onDrag?: any;
   style?: any;
+  [key: string]: any;
 };
 
 // Fallback component while motion loads
