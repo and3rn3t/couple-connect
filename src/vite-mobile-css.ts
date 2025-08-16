@@ -1,15 +1,11 @@
 import { Plugin } from 'vite';
-import fs from 'fs';
-import path from 'path';
 
 export function mobileCSSOptimization(): Plugin {
   return {
     name: 'mobile-css-optimization',
     generateBundle(options, bundle) {
       // Find CSS files in bundle
-      const cssFiles = Object.keys(bundle).filter(fileName =>
-        fileName.endsWith('.css')
-      );
+      const cssFiles = Object.keys(bundle).filter((fileName) => fileName.endsWith('.css'));
 
       for (const fileName of cssFiles) {
         const file = bundle[fileName];
@@ -34,7 +30,7 @@ export function mobileCSSOptimization(): Plugin {
 
           file.source = css;
 
-          console.log(`📱 Optimized ${fileName}: ${(css.length / 1024).toFixed(1)}KB`);
+          // console.log(`📱 Optimized ${fileName}: ${(css.length / 1024).toFixed(1)}KB`);
         }
       }
     },
