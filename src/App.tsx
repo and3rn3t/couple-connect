@@ -415,20 +415,24 @@ function App() {
       otherPartner: otherPartner?.name,
     });
     return (
-      <div style={{ 
-        padding: '32px', 
-        backgroundColor: '#f0f0f0', 
-        minHeight: '100vh',
-        fontFamily: 'Arial, sans-serif'
-      }}>
-        <div style={{
-          maxWidth: '500px',
-          margin: '0 auto',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-          padding: '24px'
-        }}>
+      <div
+        style={{
+          padding: '32px',
+          backgroundColor: '#f0f0f0',
+          minHeight: '100vh',
+          fontFamily: 'Arial, sans-serif',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '500px',
+            margin: '0 auto',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+            padding: '24px',
+          }}
+        >
           <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px', color: '#333' }}>
             🚀 Couple Connect Loading...
           </h2>
@@ -436,38 +440,44 @@ function App() {
             Setting up your relationship dashboard. This should only take a moment.
           </p>
           <div style={{ marginTop: '16px', textAlign: 'center' }}>
-            <div style={{
-              width: '24px',
-              height: '24px',
-              border: '3px solid #e3e3e3',
-              borderTop: '3px solid #3498db',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite',
-              margin: '0 auto'
-            }} />
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                border: '3px solid #e3e3e3',
+                borderTop: '3px solid #3498db',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto',
+              }}
+            />
           </div>
-          <div style={{ 
-            marginTop: '16px', 
-            fontSize: '12px', 
-            color: '#999',
-            backgroundColor: '#f8f8f8',
-            padding: '8px',
-            borderRadius: '4px'
-          }}>
-            Debug Info:<br/>
-            • partnersInitialized: {partnersInitialized.toString()}<br/>
-            • currentPartner: {currentPartner?.name || 'null'}<br/>
-            • otherPartner: {otherPartner?.name || 'null'}
+          <div
+            style={{
+              marginTop: '16px',
+              fontSize: '12px',
+              color: '#999',
+              backgroundColor: '#f8f8f8',
+              padding: '8px',
+              borderRadius: '4px',
+            }}
+          >
+            Debug Info:
+            <br />• partnersInitialized: {partnersInitialized.toString()}
+            <br />• currentPartner: {currentPartner?.name || 'null'}
+            <br />• otherPartner: {otherPartner?.name || 'null'}
           </div>
         </div>
-        <style dangerouslySetInnerHTML={{
-          __html: `
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
             @keyframes spin {
               0% { transform: rotate(0deg); }
               100% { transform: rotate(360deg); }
             }
-          `
-        }} />
+          `,
+          }}
+        />
       </div>
     );
   }
