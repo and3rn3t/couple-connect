@@ -48,6 +48,16 @@ Welcome to the comprehensive documentation for Couple Connect! This index provid
 - **[Database Optimization](./development/DATABASE_OPTIMIZATION.md)** - Performance optimization guide
 - **[Optimization Status](./development/DATABASE_OPTIMIZATIONS_STATUS.md)** - Current optimization implementations
 
+### Mobile Development
+
+- **[Mobile Implementation Status](./MOBILE_STATUS.md)** - Complete mobile component status and roadmap
+- **[Mobile Testing Guide](./development/MOBILE_TESTING_GUIDE.md)** - Mobile testing strategies and best practices
+
+### Performance & Optimization
+
+- **[Project Status](../PROJECT_STATUS.md)** - Current performance metrics and targets
+- **[Optimization Journey](./OPTIMIZATION_JOURNEY.md)** - Complete project optimization story and lessons learned
+
 ## 🎯 Feature Documentation
 
 ### Core Features

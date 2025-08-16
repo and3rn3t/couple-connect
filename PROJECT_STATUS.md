@@ -8,10 +8,10 @@
 
 | Metric | Current | Target | Status |
 |--------|---------|--------|---------|
-| Bundle Size | 1.6 MB | 1.5 MB | ❌ 107% of target |
-| JavaScript | 1.18 MB | 800 KB | ❌ 148% of target |
-| CSS | 415 KB | 250 KB | ❌ 166% of target |
-| Mobile Components | 23% | 80% | ❌ Needs improvement |
+| Bundle Size | 1.61 MB | 1.5 MB | ❌ 107% of target |
+| JavaScript | 1.2 MB | 800 KB | ❌ 150% of target |
+| CSS | 415.91 KB | 250 KB | ❌ 166% of target |
+| Mobile Components | 27% | 80% | ❌ Needs improvement |
 
 ## 🛠️ Tech Stack
 
@@ -35,7 +35,7 @@
 ### ✅ Completed
 
 - Lazy loading infrastructure for charts and icons
-- Mobile-optimized UI components (23% coverage)
+- Mobile-optimized UI components (27% coverage)
 - Touch-friendly interactions
 - Mobile-first responsive design
 - Service worker and PWA manifest
@@ -43,9 +43,9 @@
 
 ### 🔧 In Progress
 
-- Bundle size optimization (1.6MB → 1.5MB target)
-- CSS optimization (415KB → 250KB target)
-- JavaScript optimization (1.18MB → 800KB target)
+- Bundle size optimization (1.61MB → 1.5MB target)
+- CSS optimization (415.91KB → 250KB target)
+- JavaScript optimization (1.2MB → 800KB target)
 
 ### 🎯 Next Steps
 
