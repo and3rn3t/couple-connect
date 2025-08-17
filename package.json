@@ -27,6 +27,7 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run check:infinite-loops:warn && vite build && node scripts/fix-html.mjs",
+    "build:cloudflare": "node scripts/fix-rollup-quick.cjs && npm run check:infinite-loops:warn && vite build && node scripts/fix-html.mjs",
     "build:only": "vite build",
     "build:safe": "npm run check:infinite-loops && npm run type-check && vite build && node scripts/fix-html.mjs",
     "lint": "eslint . --max-warnings 200",
@@ -76,8 +77,8 @@
     "docker:compose": "docker-compose up",
     "docker:compose:build": "docker-compose up --build",
     "docker:deploy": "node scripts/docker-deploy.js",
-    "deploy": "npm run check:infinite-loops:warn && npm run build && wrangler pages deploy dist",
-    "deploy:preview": "npm run check:infinite-loops:warn && npm run build && wrangler pages deploy dist --env preview",
+    "deploy": "npm run build:cloudflare && wrangler pages deploy dist",
+    "deploy:preview": "npm run build:cloudflare && wrangler pages deploy dist --env preview",
     "deploy:safe": "npm run check:infinite-loops && npm run type-check && npm run lint:ci && npm run build && wrangler pages deploy dist",
     "db:create": "wrangler d1 create couple-connect-db",
     "db:schema": "wrangler d1 execute couple-connect-db --file=database/schema.sql",
