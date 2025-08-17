@@ -23,14 +23,14 @@ The primary challenge was npm's optional dependencies bug ([npm/cli#4828](https:
 
 ### Platform Matrix
 
-| Environment | Platform | Binary Type | Fix Script | Status |
-|-------------|----------|-------------|------------|---------|
-| GitHub Actions | Linux (glibc) | `@rollup/rollup-linux-x64-gnu` | ✅ Integrated | Working |
-| Docker Build | Alpine (musl) | `@rollup/rollup-linux-x64-musl` | ✅ Dockerfile | Working |
-| Cloudflare Pages | Linux (glibc) | `@rollup/rollup-linux-x64-gnu` | ✅ build:cloudflare | Working |
-| Local Windows | Windows | `@rollup/rollup-win32-x64-msvc` | ✅ Scripts | Working |
-| Local macOS | Darwin | `@rollup/rollup-darwin-*` | ✅ Scripts | Working |
-| Local Linux | Linux (glibc) | `@rollup/rollup-linux-x64-gnu` | ✅ Scripts | Working |
+| Environment      | Platform      | Binary Type                     | Fix Script          | Status  |
+| ---------------- | ------------- | ------------------------------- | ------------------- | ------- |
+| GitHub Actions   | Linux (glibc) | `@rollup/rollup-linux-x64-gnu`  | ✅ Integrated       | Working |
+| Docker Build     | Alpine (musl) | `@rollup/rollup-linux-x64-musl` | ✅ Dockerfile       | Working |
+| Cloudflare Pages | Linux (glibc) | `@rollup/rollup-linux-x64-gnu`  | ✅ build:cloudflare | Working |
+| Local Windows    | Windows       | `@rollup/rollup-win32-x64-msvc` | ✅ Scripts          | Working |
+| Local macOS      | Darwin        | `@rollup/rollup-darwin-*`       | ✅ Scripts          | Working |
+| Local Linux      | Linux (glibc) | `@rollup/rollup-linux-x64-gnu`  | ✅ Scripts          | Working |
 
 ## Fix Scripts Architecture
 
@@ -167,13 +167,13 @@ docker build .                 # Test Docker Alpine builds
 
 ### Before vs After
 
-| Metric | Before Fix | After Fix | Improvement |
-|--------|------------|-----------|-------------|
-| CI/CD Success Rate | ~20% | 100% | +400% |
-| Docker Build Reliability | Failed | Working | ∞ |
-| Cloudflare Deployment | Failed | Working | ∞ |
-| Developer Onboarding | Complex | Simple | Seamless |
-| Build Predictability | Random | Deterministic | Reliable |
+| Metric                   | Before Fix | After Fix     | Improvement |
+| ------------------------ | ---------- | ------------- | ----------- |
+| CI/CD Success Rate       | ~20%       | 100%          | +400%       |
+| Docker Build Reliability | Failed     | Working       | ∞           |
+| Cloudflare Deployment    | Failed     | Working       | ∞           |
+| Developer Onboarding     | Complex    | Simple        | Seamless    |
+| Build Predictability     | Random     | Deterministic | Reliable    |
 
 ### Technical Achievements
 
