@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * Fix for Rollup native dependencies issue in CI environments
+ * Fix for native dependencies issue in CI environments
+ * Handles: Rollup and LightningCSS native binaries
  * Cross-platform Node.js version
  */
 
@@ -9,7 +10,7 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🔧 Checking Rollup native dependencies...');
+console.log('🔧 Checking native dependencies (Rollup + LightningCSS)...');
 
 // Get platform information
 const platform = process.platform;
@@ -26,48 +27,66 @@ const platformArch =
 
 console.log(`🔍 Detected platform: ${platform}, architecture: ${arch}, Alpine: ${isAlpine}`);
 
-// Map platform/arch to Rollup package
-const rollupPackages = {
-  'linux-x64': '@rollup/rollup-linux-x64-gnu',
-  'linux-x64-musl': '@rollup/rollup-linux-x64-musl',
-  'linux-arm64': '@rollup/rollup-linux-arm64-gnu',
-  'linux-arm64-musl': '@rollup/rollup-linux-arm64-musl',
-  'darwin-x64': '@rollup/rollup-darwin-x64',
-  'darwin-arm64': '@rollup/rollup-darwin-arm64',
-  'win32-x64': '@rollup/rollup-win32-x64-msvc',
+// Map platform/arch to native packages
+const nativePackages = {
+  rollup: {
+    'linux-x64': '@rollup/rollup-linux-x64-gnu',
+    'linux-x64-musl': '@rollup/rollup-linux-x64-musl',
+    'linux-arm64': '@rollup/rollup-linux-arm64-gnu',
+    'linux-arm64-musl': '@rollup/rollup-linux-arm64-musl',
+    'darwin-x64': '@rollup/rollup-darwin-x64',
+    'darwin-arm64': '@rollup/rollup-darwin-arm64',
+    'win32-x64': '@rollup/rollup-win32-x64-msvc',
+  },
+  lightningcss: {
+    'linux-x64': 'lightningcss-linux-x64-gnu',
+    'linux-x64-musl': 'lightningcss-linux-x64-musl',
+    'linux-arm64': 'lightningcss-linux-arm64-gnu',
+    'linux-arm64-musl': 'lightningcss-linux-arm64-musl',
+    'darwin-x64': 'lightningcss-darwin-x64',
+    'darwin-arm64': 'lightningcss-darwin-arm64',
+    'win32-x64': 'lightningcss-win32-x64-msvc',
+  }
 };
 
-const rollupPackage = rollupPackages[platformArch];
+const rollupPackage = nativePackages.rollup[platformArch];
+const lightningcssPackage = nativePackages.lightningcss[platformArch];
 
-if (!rollupPackage) {
+const packagesToInstall = [];
+if (rollupPackage) packagesToInstall.push({ name: 'Rollup', package: rollupPackage });
+if (lightningcssPackage) packagesToInstall.push({ name: 'LightningCSS', package: lightningcssPackage });
+
+if (packagesToInstall.length === 0) {
   console.warn(`⚠️ Unknown platform: ${platformArch}, trying generic approach`);
   cleanAndReinstall();
   process.exit(0);
 }
 
-console.log(`📦 Installing ${rollupPackage} for platform ${platformArch}`);
+console.log(`📦 Installing native binaries for platform ${platformArch}...`);
 
-try {
-  // Check if package is already installed
+// Check and install each package
+for (const { name, package: pkg } of packagesToInstall) {
   try {
-    execSync(`npm list ${rollupPackage}`, { stdio: 'pipe' });
-    console.log(`✅ ${rollupPackage} is already installed`);
-    process.exit(0);
-  } catch {
-    // Package not installed, continue with installation
-  }
+    // Check if package is already installed
+    try {
+      execSync(`npm list ${pkg}`, { stdio: 'pipe' });
+      console.log(`✅ ${name} (${pkg}) is already installed`);
+      continue;
+    } catch {
+      // Package not installed, continue with installation
+    }
 
-  // Install the specific Rollup package
-  console.log(`📥 Installing ${rollupPackage}...`);
-  execSync(`npm install --no-save --silent ${rollupPackage}@latest`, { stdio: 'inherit' });
-  console.log(`✅ Successfully installed ${rollupPackage}`);
-} catch (error) {
-  console.error(`❌ Failed to install ${rollupPackage}:`, error.message);
-  console.log('🔄 Trying alternative approach...');
-  cleanAndReinstall();
+    // Install the specific package
+    console.log(`📥 Installing ${name}: ${pkg}...`);
+    execSync(`npm install --no-save --silent ${pkg}@latest`, { stdio: 'inherit' });
+    console.log(`✅ Successfully installed ${name}`);
+  } catch (error) {
+    console.log(`❌ Failed to install ${name}, will try cleanup approach`);
+    // Continue to next package or fallback
+  }
 }
 
-console.log('✅ Rollup dependencies check completed!');
+console.log('✅ Native dependencies check completed!');
 
 function cleanAndReinstall() {
   console.log('🧹 Clearing npm cache...');

@@ -19,9 +19,9 @@ COPY scripts/fix-rollup-quick.cjs ./scripts/
 # Install dependencies
 RUN npm ci --silent
 
-# 🔧 Fix Rollup dependencies using our comprehensive script
-RUN echo "🔧 Applying Rollup dependency fix for container environment..." && \
-  node scripts/fix-rollup-quick.cjs || echo "⚠️ Rollup fix script failed, continuing..."
+# 🔧 Fix native dependencies (Rollup + LightningCSS) using our comprehensive script
+RUN echo "🔧 Applying native dependencies fix for container environment..." && \
+    node scripts/fix-rollup-quick.cjs || echo "⚠️ Native dependencies fix script failed, continuing..."
 
 # Copy source code
 COPY . .
