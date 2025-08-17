@@ -8,11 +8,29 @@ import './main.css';
 import './styles/theme.css';
 import './index.css';
 
+// Type definitions for scheduler
+interface Scheduler {
+  unstable_now: () => number;
+  unstable_scheduleCallback: (priority: unknown, callback: () => void) => unknown;
+  unstable_cancelCallback: (id: unknown) => void;
+  unstable_shouldYield: () => boolean;
+  unstable_requestPaint: () => void;
+  unstable_getCurrentPriorityLevel?: () => number;
+  unstable_runWithPriority?: (priority: unknown, callback: () => void) => void;
+}
+
+// Extend global types
+declare global {
+  interface Window {
+    scheduler?: Scheduler;
+  }
+}
+
 console.warn('🚀 main.tsx: Starting React app initialization...');
 
 // Enhanced fix for React 19 scheduler issue with Vite
 // Create a robust scheduler polyfill that works in all environments
-const createSchedulerPolyfill = () => {
+const createSchedulerPolyfill = (): Scheduler => {
   console.warn('📦 Creating scheduler polyfill...');
   return {
     unstable_now: () => {
@@ -24,8 +42,10 @@ const createSchedulerPolyfill = () => {
     unstable_scheduleCallback: (priority: unknown, callback: () => void) => {
       return setTimeout(callback, 0);
     },
-    unstable_cancelCallback: (id: number) => {
-      clearTimeout(id);
+    unstable_cancelCallback: (id: unknown) => {
+      if (typeof id === 'number') {
+        clearTimeout(id);
+      }
     },
     unstable_shouldYield: () => false,
     unstable_requestPaint: () => {
@@ -40,10 +60,10 @@ const createSchedulerPolyfill = () => {
 
 // Ensure globalThis has scheduler
 if (typeof globalThis !== 'undefined') {
-  if (!globalThis.scheduler) {
+  const globalScheduler = (globalThis as { scheduler?: Scheduler }).scheduler;
+  if (!globalScheduler) {
     console.warn('🌐 Setting up globalThis.scheduler...');
-    // @ts-expect-error - Adding scheduler polyfill to globalThis
-    globalThis.scheduler = createSchedulerPolyfill();
+    (globalThis as { scheduler?: Scheduler }).scheduler = createSchedulerPolyfill();
   }
 }
 
@@ -51,8 +71,8 @@ if (typeof globalThis !== 'undefined') {
 if (typeof window !== 'undefined') {
   if (!window.scheduler) {
     console.warn('🪟 Setting up window.scheduler...');
-    // @ts-expect-error - Adding scheduler polyfill to window
-    window.scheduler = globalThis.scheduler || createSchedulerPolyfill();
+    const globalScheduler = (globalThis as { scheduler?: Scheduler }).scheduler;
+    window.scheduler = globalScheduler || createSchedulerPolyfill();
   }
 }
 
