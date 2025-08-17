@@ -19,15 +19,11 @@ COPY scripts/fix-rollup-quick.cjs ./scripts/
 # Install dependencies
 RUN npm ci --silent
 
-# 🔧 Fix native dependencies (Rollup + LightningCSS) using our comprehensive script
-RUN echo "🔧 Applying native dependencies fix for container environment..." && \
-  node scripts/fix-rollup-quick.cjs || echo "⚠️ Native dependencies fix script failed, continuing..."
-
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Build the application with native binary fixes
+RUN npm run build:cloudflare
 
 # Production stage with nginx
 FROM nginx:alpine AS production
