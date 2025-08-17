@@ -36,16 +36,23 @@ const nativePackages = {
     darwin: 'lightningcss-darwin-x64',
     win32: 'lightningcss-win32-x64-msvc',
   },
+  swc: {
+    linux: isAlpine ? '@swc/core-linux-x64-musl' : '@swc/core-linux-x64-gnu',
+    darwin: '@swc/core-darwin-x64',
+    win32: '@swc/core-win32-x64-msvc',
+  },
 };
 
 // Get packages for current platform
 const rollupPackage = nativePackages.rollup[platform];
 const lightningcssPackage = nativePackages.lightningcss[platform];
+const swcPackage = nativePackages.swc[platform];
 
 const packagesToInstall = [];
 if (rollupPackage) packagesToInstall.push({ name: 'Rollup', package: rollupPackage });
 if (lightningcssPackage)
   packagesToInstall.push({ name: 'LightningCSS', package: lightningcssPackage });
+if (swcPackage) packagesToInstall.push({ name: 'SWC', package: swcPackage });
 
 if (packagesToInstall.length === 0) {
   console.warn(`⚠️ Unknown platform: ${platform}, trying generic approach`);
