@@ -14,12 +14,24 @@ console.log('🔧 Checking Rollup native dependencies...');
 // Get platform information
 const platform = process.platform;
 const arch = process.arch;
-const platformArch = `${platform}-${arch}`;
+
+// Detect if we're on Alpine Linux (musl)
+const isAlpine =
+  fs.existsSync('/etc/alpine-release') ||
+  (process.env.CONTAINER && process.env.CONTAINER.includes('alpine')) ||
+  (process.env.IMAGE_NAME && process.env.IMAGE_NAME.includes('alpine'));
+
+const platformArch =
+  platform === 'linux' && isAlpine ? `${platform}-${arch}-musl` : `${platform}-${arch}`;
+
+console.log(`🔍 Detected platform: ${platform}, architecture: ${arch}, Alpine: ${isAlpine}`);
 
 // Map platform/arch to Rollup package
 const rollupPackages = {
   'linux-x64': '@rollup/rollup-linux-x64-gnu',
+  'linux-x64-musl': '@rollup/rollup-linux-x64-musl',
   'linux-arm64': '@rollup/rollup-linux-arm64-gnu',
+  'linux-arm64-musl': '@rollup/rollup-linux-arm64-musl',
   'darwin-x64': '@rollup/rollup-darwin-x64',
   'darwin-arm64': '@rollup/rollup-darwin-arm64',
   'win32-x64': '@rollup/rollup-win32-x64-msvc',

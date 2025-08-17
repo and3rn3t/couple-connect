@@ -11,7 +11,7 @@
 #### 🔧 **Rollup Dependency Resolution**
 
 - **Platform-specific binaries**: Automatic installation of `@rollup/rollup-linux-x64-gnu` for Linux CI runners
-- **Cross-platform support**: Works on Linux, macOS, and Windows environments  
+- **Cross-platform support**: Works on Linux, macOS, and Windows environments
 - **Fallback strategies**: Graceful degradation with error handling
 - **Cache management**: Intelligent npm cache clearing and dependency refresh
 

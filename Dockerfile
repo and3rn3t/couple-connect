@@ -1,14 +1,27 @@
 # Multi-stage build for production optimization
 FROM node:18-alpine AS builder
 
+# Build args for platform detection
+ARG CONTAINER=alpine
+
 # Set working directory
 WORKDIR /app
+
+# Set environment variable for Alpine detection
+ENV CONTAINER=$CONTAINER
 
 # Copy package files
 COPY package*.json ./
 
+# Copy Rollup fix script
+COPY scripts/fix-rollup-quick.cjs ./scripts/
+
 # Install dependencies
 RUN npm ci --silent
+
+# 🔧 Fix Rollup dependencies using our comprehensive script
+RUN echo "🔧 Applying Rollup dependency fix for container environment..." && \
+  node scripts/fix-rollup-quick.cjs || echo "⚠️ Rollup fix script failed, continuing..."
 
 # Copy source code
 COPY . .
