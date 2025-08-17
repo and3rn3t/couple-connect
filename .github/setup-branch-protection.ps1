@@ -33,13 +33,12 @@ $mainProtection = @{
   required_status_checks           = @{
     strict   = $true
     contexts = @(
-      "🧪 Tests & Code Quality"
-      "📱 Mobile Performance"
-      "🔒 Security Analysis"
-      "🚨 Infinite Loop Detection"
-      "📊 Bundle Analysis"
-      "🔍 TypeScript Check"
-      "🧹 Lint & Format"
+      "⚡ Enhanced Quality Gate"
+      "🧪 Comprehensive Testing"
+      "🏗️ Build & Performance Analysis"
+      "🔒 Security Scan"
+      "�️ Database Health Check"
+      "📊 Dependency Health Check"
     )
   }
   enforce_admins                   = $false
