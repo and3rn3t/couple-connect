@@ -122,8 +122,15 @@ jobs:
             quality-${{ matrix.check }}-${{ runner.os }}-
             quality-${{ runner.os }}-
 
-      - name: 📦 Install dependencies (optimized)
-        run: npm ci --omit=optional --prefer-offline --no-audit --no-fund
+      - name: 📦 Install dependencies (quality checks)
+        run: |
+          # For quality checks, we can exclude optional deps to speed up installation
+          # Only include if specific checks need build tools
+          if [[ "${{ matrix.check }}" == "quality:analyze" ]]; then
+            npm ci --prefer-offline --no-audit --no-fund
+          else
+            npm ci --omit=optional --prefer-offline --no-audit --no-fund
+          fi
 
       - name: 🔍 Run ${{ matrix.check }}
         run: npm run ${{ matrix.check }}

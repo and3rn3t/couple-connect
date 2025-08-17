@@ -24,15 +24,19 @@ foreach ($dep in $devDepsToRemove) {
   }
 }
 
-# Keep only Windows binary which we actually need
-if (-not ($packageJson.devDependencies.PSObject.Properties.Name -contains "@rollup/rollup-win32-x64-msvc")) {
-  $packageJson.devDependencies | Add-Member -MemberType NoteProperty -Name "@rollup/rollup-win32-x64-msvc" -Value "^4.29.0" -Force
-  Write-Host "✅ Ensured Windows Rollup binary is present" -ForegroundColor Green
+# Keep only Windows binary which we actually need - INSTALL TEMPORARILY, DON'T MODIFY PACKAGE.JSON
+Write-Host "🔧 Installing Windows Rollup binary temporarily..." -ForegroundColor Cyan
+try {
+  npm install --no-save "@rollup/rollup-win32-x64-msvc@^4.29.0"
+  Write-Host "✅ Windows Rollup binary installed temporarily" -ForegroundColor Green
+}
+catch {
+  Write-Host "⚠️ Failed to install Windows Rollup binary, will try after main install" -ForegroundColor Yellow
 }
 
-# Save updated package.json
+# Save updated package.json (only with removed deps, no added deps)
 $packageJson | ConvertTo-Json -Depth 10 | Set-Content "package.json"
-Write-Host "✅ package.json updated" -ForegroundColor Green
+Write-Host "✅ package.json updated (removed problematic platform deps)" -ForegroundColor Green
 
 # === 2. Clean and reinstall ===
 Write-Host "`n🧹 Cleaning existing installation..." -ForegroundColor Cyan

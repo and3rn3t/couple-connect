@@ -22,6 +22,20 @@ Rollup uses optional dependencies for platform-specific native binaries to impro
     npm ci --prefer-offline --no-audit --no-fund
 ```
 
+### ✅ For Quality Checks (Conditional Installation)
+
+```yaml
+- name: 📦 Install dependencies (quality checks)
+  run: |
+    # For quality checks, we can exclude optional deps to speed up installation
+    # Only include if specific checks need build tools
+    if [[ "${{ matrix.check }}" == "quality:analyze" ]]; then
+      npm ci --prefer-offline --no-audit --no-fund
+    else
+      npm ci --omit=optional --prefer-offline --no-audit --no-fund
+    fi
+```
+
 ### ❌ Previous Problematic Configuration
 
 ```yaml
