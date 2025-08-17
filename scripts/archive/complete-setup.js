@@ -14,7 +14,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 
 const DATABASE_NAME = 'couple-connect-db';
 const WRANGLER_CONFIG_PATH = path.join(process.cwd(), 'wrangler.toml');
@@ -132,7 +132,7 @@ async function applySchema() {
   logStep('Applying database schema...');
 
   try {
-    execSync(`wrangler d1 execute ${DATABASE_NAME} --file=${SCHEMA_PATH}`, {
+    execFileSync('wrangler', ['d1', 'execute', DATABASE_NAME, `--file=${SCHEMA_PATH}`], {
       stdio: 'inherit',
     });
     logSuccess('Database schema applied');
@@ -150,7 +150,7 @@ async function insertSeedData() {
   logStep('Inserting seed data...');
 
   try {
-    execSync(`wrangler d1 execute ${DATABASE_NAME} --file=${SEED_PATH}`, {
+    execFileSync('wrangler', ['d1', 'execute', DATABASE_NAME, `--file=${SEED_PATH}`], {
       stdio: 'inherit',
     });
     logSuccess('Seed data inserted');
