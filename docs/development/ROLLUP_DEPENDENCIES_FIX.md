@@ -125,6 +125,9 @@ npm install --no-save @rollup/rollup-darwin-arm64@latest
 
 # Windows:
 npm install --no-save @rollup/rollup-win32-x64-msvc@latest
+
+# Alpine Linux (Docker):
+npm install --no-save @rollup/rollup-linux-x64-musl@latest
 ```
 
 ### Alternative Approach
@@ -132,7 +135,28 @@ npm install --no-save @rollup/rollup-win32-x64-msvc@latest
 ```bash
 # Use our comprehensive fix script
 node scripts/fix-rollup-deps.cjs
+
+# Or for Docker builds
+node scripts/fix-rollup-quick.cjs
 ```
+
+## Docker-Specific Fixes
+
+For Docker builds using Alpine Linux, the Dockerfile now includes:
+
+```dockerfile
+# Copy Rollup fix script
+COPY scripts/fix-rollup-quick.cjs ./scripts/
+
+# Install dependencies
+RUN npm ci --silent
+
+# Fix Rollup dependencies using our comprehensive script
+RUN echo "🔧 Applying Rollup dependency fix for container environment..." && \
+    node scripts/fix-rollup-quick.cjs || echo "⚠️ Rollup fix script failed, continuing..."
+```
+
+The script automatically detects Alpine Linux and installs the correct musl binary.
 
 ## Prevention Strategies
 
@@ -166,6 +190,13 @@ npm audit fix
 - Most common environment for this issue
 - Uses `@rollup/rollup-linux-x64-gnu`
 - Fixed with cache cleaning + targeted installation
+
+### Linux (Docker Alpine)
+
+- **New Issue**: Docker containers using Alpine Linux require musl binaries
+- Uses `@rollup/rollup-linux-x64-musl` instead of `@rollup/rollup-linux-x64-gnu`
+- **Detection**: Scripts now detect Alpine via `/etc/alpine-release` or environment variables
+- **Fix**: Dockerfile includes comprehensive Rollup fix script execution
 
 ### macOS
 

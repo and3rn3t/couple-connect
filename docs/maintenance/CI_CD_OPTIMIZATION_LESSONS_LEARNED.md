@@ -137,6 +137,7 @@ Fix critical CI/CD failures due to Rollup native binary dependency issues and op
 **Lesson**: Native binaries require special handling in CI environments
 **Implication**: Cross-platform builds need platform detection and specific handling
 **Action**: Test on all target platforms and have platform-specific workarounds
+**Docker Update**: Alpine Linux containers require musl binaries (`@rollup/rollup-linux-x64-musl`) instead of glibc (`@rollup/rollup-linux-x64-gnu`)
 
 ### 4. Cache Management
 
