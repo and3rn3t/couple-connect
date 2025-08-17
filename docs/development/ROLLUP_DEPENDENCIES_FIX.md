@@ -1,46 +1,51 @@
-# Rollup Dependencies Fix for CI/CD
+# Native Dependencies Fix for CI/CD
 
 ## Problem Description
 
-When running builds in CI/CD environments (especially GitHub Actions on Linux), you may encounter errors like:
+When running builds in CI/CD environments (especially GitHub Actions on Linux or Docker Alpine), you may encounter errors like:
 
 ```bash
 Error: Cannot find module @rollup/rollup-linux-x64-gnu
+Error: Cannot find module ../lightningcss.linux-x64-musl.node
 npm has a bug related to optional dependencies (https://github.com/npm/cli/issues/4828).
 Please try `npm i` again after removing both package-lock.json and node_modules directory.
 ```
 
-This is a known npm bug with optional dependencies where Rollup's platform-specific native binaries are not properly installed in CI environments.
+This is a known npm bug with optional dependencies where native binaries for Rollup and LightningCSS are not properly installed in CI environments.
 
 ## Root Cause
 
 - **npm bug**: [npm/cli#4828](https://github.com/npm/cli/issues/4828) - Optional dependencies not properly resolved
-- **Rollup architecture**: Uses platform-specific native binaries for performance
+- **Native binary architecture**: Both Rollup and LightningCSS use platform-specific native binaries for performance
 - **CI environment**: Limited network access and dependency resolution issues
 - **Caching conflicts**: npm cache can contain stale or incomplete dependency trees
+- **Alpine Linux difference**: Docker Alpine uses musl libc instead of glibc, requiring different binaries
 
 ## Solutions Implemented
 
 ### 1. CI/CD Pipeline Fix
 
-The GitHub Actions workflow now includes a rollup dependency fix step in every job that needs build tools:
+The GitHub Actions workflow now includes a native dependencies fix step in every job that needs build tools:
 
 ```yaml
-- name: 🔧 Fix Rollup dependencies (CI fix)
+- name: 🔧 Fix native dependencies (CI fix)
   run: |
-    echo "🔧 Applying Rollup dependency fix for CI environment..."
+    echo "🔧 Applying native dependencies fix for CI environment..."
     npm cache clean --force
 
-    # Install platform-specific Rollup binary
+    # Install platform-specific binaries
     case "${{ runner.os }}" in
       "Linux")
         npm install --no-save @rollup/rollup-linux-x64-gnu@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+        npm install --no-save lightningcss-linux-x64-gnu@latest || echo "⚠️ LightningCSS binary installation failed, continuing..."
         ;;
       "macOS")
         npm install --no-save @rollup/rollup-darwin-x64@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+        npm install --no-save lightningcss-darwin-x64@latest || echo "⚠️ LightningCSS binary installation failed, continuing..."
         ;;
       "Windows")
         npm install --no-save @rollup/rollup-win32-x64-msvc@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+        npm install --no-save lightningcss-win32-x64-msvc@latest || echo "⚠️ LightningCSS binary installation failed, continuing..."
         ;;
     esac
 ```
@@ -58,24 +63,18 @@ This fix is applied to:
 
 #### `scripts/fix-rollup-quick.cjs`
 
-- Platform-aware Rollup binary installation
+- Platform-aware native binary installation for Rollup and LightningCSS
 - CI environment detection with full dependency refresh
+- Alpine Linux detection and musl binary support
 - Fallback strategies for different failure modes
 - Timeout handling for network issues
 
-#### `scripts/fix-rollup-deps.cjs`
+#### `scripts/fix-rollup-deps.cjs` (Comprehensive Version)
 
-- Comprehensive cross-platform solution
-- Automatic platform/architecture detection
-- Multiple fallback strategies
-- Clean cache and reinstall options
-
-#### `scripts/fix-rollup-deps.cjs`
-
-- Comprehensive cross-platform solution
-- Automatic platform/architecture detection
-- Multiple fallback strategies
-- Clean cache and reinstall options
+- Comprehensive cross-platform solution for all native dependencies
+- Automatic platform/architecture detection (including Alpine Linux)
+- Multiple fallback strategies for installation failures
+- Clean cache and reinstall options for complete dependency refresh
 
 ### 3. Package.json Integration
 
@@ -93,7 +92,7 @@ Pre-test hooks automatically run the fix:
 
 ## Manual Troubleshooting
 
-If you encounter this issue locally:
+If you encounter native binary issues locally:
 
 ### Quick Fix
 
@@ -128,6 +127,7 @@ npm install --no-save @rollup/rollup-win32-x64-msvc@latest
 
 # Alpine Linux (Docker):
 npm install --no-save @rollup/rollup-linux-x64-musl@latest
+npm install --no-save lightningcss-linux-x64-musl@latest
 ```
 
 ### Alternative Approach
@@ -151,12 +151,12 @@ COPY scripts/fix-rollup-quick.cjs ./scripts/
 # Install dependencies
 RUN npm ci --silent
 
-# Fix Rollup dependencies using our comprehensive script
-RUN echo "🔧 Applying Rollup dependency fix for container environment..." && \
-    node scripts/fix-rollup-quick.cjs || echo "⚠️ Rollup fix script failed, continuing..."
+# Fix native dependencies using our comprehensive script
+RUN echo "🔧 Applying native dependencies fix for container environment..." && \
+    node scripts/fix-rollup-quick.cjs || echo "⚠️ Native dependencies fix script failed, continuing..."
 ```
 
-The script automatically detects Alpine Linux and installs the correct musl binary.
+The script automatically detects Alpine Linux and installs the correct musl binaries for both Rollup and LightningCSS.
 
 ## Prevention Strategies
 
