@@ -122,7 +122,26 @@ jobs:
             quality-${{ matrix.check }}-${{ runner.os }}-
             quality-${{ runner.os }}-
 
-      - name: 📦 Install dependencies (quality checks)
+      - name: � Fix Rollup dependencies (CI fix)
+        run: |
+          # Fix known npm bug with optional Rollup dependencies
+          echo "🔧 Applying Rollup dependency fix for CI environment..."
+          npm cache clean --force
+
+          # Install platform-specific Rollup binary
+          case "${{ runner.os }}" in
+            "Linux")
+              npm install --no-save @rollup/rollup-linux-x64-gnu@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+            "macOS")
+              npm install --no-save @rollup/rollup-darwin-x64@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+            "Windows")
+              npm install --no-save @rollup/rollup-win32-x64-msvc@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+          esac
+
+      - name: �📦 Install dependencies (quality checks)
         run: |
           # For quality checks, we can exclude optional deps to speed up installation
           # Only include if specific checks need build tools
@@ -161,7 +180,25 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: 📦 Install dependencies
+      - name: � Fix Rollup dependencies (CI fix)
+        run: |
+          echo "🔧 Applying Rollup dependency fix for CI environment..."
+          npm cache clean --force
+
+          # Install platform-specific Rollup binary
+          case "${{ runner.os }}" in
+            "Linux")
+              npm install --no-save @rollup/rollup-linux-x64-gnu@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+            "macOS")
+              npm install --no-save @rollup/rollup-darwin-x64@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+            "Windows")
+              npm install --no-save @rollup/rollup-win32-x64-msvc@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+          esac
+
+      - name: �📦 Install dependencies
         run: npm ci --prefer-offline
 
       - name: 🔍 Comprehensive dependency analysis
@@ -191,7 +228,25 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: 📦 Install dependencies
+      - name: � Fix Rollup dependencies (CI fix)
+        run: |
+          echo "🔧 Applying Rollup dependency fix for CI environment..."
+          npm cache clean --force
+
+          # Install platform-specific Rollup binary
+          case "${{ runner.os }}" in
+            "Linux")
+              npm install --no-save @rollup/rollup-linux-x64-gnu@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+            "macOS")
+              npm install --no-save @rollup/rollup-darwin-x64@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+            "Windows")
+              npm install --no-save @rollup/rollup-win32-x64-msvc@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+          esac
+
+      - name: �📦 Install dependencies
         run: npm ci --prefer-offline
 
       - name: 🗄️ Database health analysis
@@ -235,7 +290,25 @@ jobs:
             .vitest/
           key: test-${{ matrix.test-type }}-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*', 'test/**/*') }}
 
-      - name: 📦 Install dependencies
+      - name: � Fix Rollup dependencies (CI fix)
+        run: |
+          echo "🔧 Applying Rollup dependency fix for CI environment..."
+          npm cache clean --force
+
+          # Install platform-specific Rollup binary
+          case "${{ runner.os }}" in
+            "Linux")
+              npm install --no-save @rollup/rollup-linux-x64-gnu@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+            "macOS")
+              npm install --no-save @rollup/rollup-darwin-x64@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+            "Windows")
+              npm install --no-save @rollup/rollup-win32-x64-msvc@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+          esac
+
+      - name: �📦 Install dependencies
         run: npm ci --prefer-offline
 
       - name: 🧪 Run ${{ matrix.test-type }} tests
@@ -282,7 +355,25 @@ jobs:
           restore-keys: |
             build-${{ runner.os }}-
 
-      - name: 📦 Install dependencies
+      - name: � Fix Rollup dependencies (CI fix)
+        run: |
+          echo "🔧 Applying Rollup dependency fix for CI environment..."
+          npm cache clean --force
+
+          # Install platform-specific Rollup binary
+          case "${{ runner.os }}" in
+            "Linux")
+              npm install --no-save @rollup/rollup-linux-x64-gnu@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+            "macOS")
+              npm install --no-save @rollup/rollup-darwin-x64@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+            "Windows")
+              npm install --no-save @rollup/rollup-win32-x64-msvc@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+          esac
+
+      - name: �📦 Install dependencies
         run: npm ci --prefer-offline
 
       - name: 🏗️ Build application
@@ -352,7 +443,25 @@ jobs:
           name: dist-${{ github.sha }}
           path: dist/
 
-      - name: 📦 Install dependencies
+      - name: � Fix Rollup dependencies (CI fix)
+        run: |
+          echo "🔧 Applying Rollup dependency fix for CI environment..."
+          npm cache clean --force
+
+          # Install platform-specific Rollup binary
+          case "${{ runner.os }}" in
+            "Linux")
+              npm install --no-save @rollup/rollup-linux-x64-gnu@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+            "macOS")
+              npm install --no-save @rollup/rollup-darwin-x64@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+            "Windows")
+              npm install --no-save @rollup/rollup-win32-x64-msvc@latest || echo "⚠️ Rollup binary installation failed, continuing..."
+              ;;
+          esac
+
+      - name: �📦 Install dependencies
         run: npm ci --prefer-offline
 
       - name: 🎭 Install Playwright browsers
