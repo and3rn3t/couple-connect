@@ -184,7 +184,9 @@ function App() {
 
     initializeApp();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array - only run once on mount // Database hooks with enhanced performance
+  }, []); // Empty dependency array - only run once on mount
+
+  // Database hooks with enhanced performance
   const { user: currentUser, error: _userError } = useCurrentUser();
   const { couple, error: _coupleError } = useCurrentCouple();
   const {
