@@ -34,7 +34,7 @@ const nativePackages = {
     linux: isAlpine ? 'lightningcss-linux-x64-musl' : 'lightningcss-linux-x64-gnu',
     darwin: 'lightningcss-darwin-x64',
     win32: 'lightningcss-win32-x64-msvc',
-  }
+  },
 };
 
 // Get packages for current platform
@@ -43,7 +43,8 @@ const lightningcssPackage = nativePackages.lightningcss[platform];
 
 const packagesToInstall = [];
 if (rollupPackage) packagesToInstall.push({ name: 'Rollup', package: rollupPackage });
-if (lightningcssPackage) packagesToInstall.push({ name: 'LightningCSS', package: lightningcssPackage });
+if (lightningcssPackage)
+  packagesToInstall.push({ name: 'LightningCSS', package: lightningcssPackage });
 
 if (packagesToInstall.length === 0) {
   console.warn(`⚠️ Unknown platform: ${platform}, trying generic approach`);
@@ -101,7 +102,7 @@ function fallbackFix() {
     // Try to install the binaries again
     const rollupPkg = nativePackages.rollup[process.platform];
     const lightningcssPkg = nativePackages.lightningcss[process.platform];
-    
+
     if (rollupPkg) {
       console.log('🔁 Retrying Rollup binary installation...');
       execSync(`npm install --no-save ${rollupPkg}@latest`, {
@@ -109,7 +110,7 @@ function fallbackFix() {
         timeout: 30000,
       });
     }
-    
+
     if (lightningcssPkg) {
       console.log('🔁 Retrying LightningCSS binary installation...');
       execSync(`npm install --no-save ${lightningcssPkg}@latest`, {
@@ -123,6 +124,8 @@ function fallbackFix() {
     console.log('1. rm -rf node_modules package-lock.json');
     console.log('2. npm install');
     console.log('3. npm install --no-save @rollup/rollup-linux-x64-gnu lightningcss-linux-x64-gnu');
-    console.log('   (or the musl variants for Alpine: @rollup/rollup-linux-x64-musl lightningcss-linux-x64-musl)');
+    console.log(
+      '   (or the musl variants for Alpine: @rollup/rollup-linux-x64-musl lightningcss-linux-x64-musl)'
+    );
   }
 }

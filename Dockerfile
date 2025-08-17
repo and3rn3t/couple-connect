@@ -21,7 +21,7 @@ RUN npm ci --silent
 
 # 🔧 Fix native dependencies (Rollup + LightningCSS) using our comprehensive script
 RUN echo "🔧 Applying native dependencies fix for container environment..." && \
-    node scripts/fix-rollup-quick.cjs || echo "⚠️ Native dependencies fix script failed, continuing..."
+  node scripts/fix-rollup-quick.cjs || echo "⚠️ Native dependencies fix script failed, continuing..."
 
 # Copy source code
 COPY . .

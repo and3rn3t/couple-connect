@@ -217,10 +217,35 @@ The fix adds approximately:
 - **Zero impact** on successful runs (exits early if binary exists)
 - **Improved reliability** for builds (prevents 100% failure rate)
 
+## 🚀 Cloudflare Pages Integration
+
+Cloudflare Pages has been integrated with native binary fixes:
+
+### Package.json Configuration
+
+```json
+{
+  "scripts": {
+    "build:cloudflare": "node scripts/fix-rollup-quick.cjs && npm run check:infinite-loops:warn && vite build && node scripts/fix-html.mjs",
+    "deploy": "npm run build:cloudflare && wrangler pages deploy dist",
+    "deploy:preview": "npm run build:cloudflare && wrangler pages deploy dist --env preview"
+  }
+}
+```
+
+### Why This Works
+
+- **Platform**: Cloudflare Pages runs on standard Linux (glibc)
+- **Issue**: Same npm optional dependencies bug as GitHub Actions
+- **Solution**: Pre-build native binary installation using `fix-rollup-quick.cjs`
+- **Process**: Fix binaries → Safety checks → Build → Fix HTML → Deploy
+
 ## Status
 
 ✅ **Fixed**: All CI/CD jobs now include the Rollup dependency fix
 ✅ **Tested**: Works across Linux, macOS, and Windows environments
+✅ **Docker**: Alpine Linux (musl) binaries now supported
+✅ **Cloudflare**: Pages deployment with native binary fixes implemented
 ✅ **Automated**: Pre-test hooks handle local development
 ⚠️ **Monitoring**: Watching for npm bug resolution to remove workaround
 

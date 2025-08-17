@@ -46,7 +46,7 @@ const nativePackages = {
     'darwin-x64': 'lightningcss-darwin-x64',
     'darwin-arm64': 'lightningcss-darwin-arm64',
     'win32-x64': 'lightningcss-win32-x64-msvc',
-  }
+  },
 };
 
 const rollupPackage = nativePackages.rollup[platformArch];
@@ -54,7 +54,8 @@ const lightningcssPackage = nativePackages.lightningcss[platformArch];
 
 const packagesToInstall = [];
 if (rollupPackage) packagesToInstall.push({ name: 'Rollup', package: rollupPackage });
-if (lightningcssPackage) packagesToInstall.push({ name: 'LightningCSS', package: lightningcssPackage });
+if (lightningcssPackage)
+  packagesToInstall.push({ name: 'LightningCSS', package: lightningcssPackage });
 
 if (packagesToInstall.length === 0) {
   console.warn(`⚠️ Unknown platform: ${platformArch}, trying generic approach`);
