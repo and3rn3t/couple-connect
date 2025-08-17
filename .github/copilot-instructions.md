@@ -553,31 +553,31 @@ describe('Mobile Component', () => {
 
 ### 1. Bundle Investigation (Priority: P0)
 
-- **Problem**: 606 KB JavaScript chunk (chunk-zxUleISs.js)
+- **Problem**: 606.65 KB JavaScript chunk (chunk-BYlyF5jk.js) - unchanged, needs investigation
 - **Focus**: Vite configuration, manual chunks, vendor library separation
 - **Files**: `vite.config.ts`, bundle analyzer output
 - **Action**: Investigate what's included in the large chunk and split appropriately
 
-### 2. Mobile Component Conversion (Priority: P1)
+### 2. CSS Bundle Optimization (Priority: P1)
 
-- **Problem**: Only 23% mobile component coverage
-- **Focus**: Convert existing components to mobile-optimized versions
-- **Target**: 80% mobile component coverage
-- **Strategy**: Prioritize high-usage components first
-
-### 3. CSS Bundle Optimization (Priority: P1)
-
-- **Problem**: 415 KB CSS bundle exceeds 250 KB target
-- **Focus**: Tailwind CSS purging, critical CSS extraction
+- **Problem**: 455.3 KB CSS bundle (+40KB increase) exceeds 250 KB target
+- **Focus**: Aggressive Tailwind CSS purging, critical CSS extraction
 - **Files**: `tailwind.config.js`, PostCSS configurations
 - **Action**: Implement aggressive utility removal and critical CSS loading
 
-### 4. Performance Monitoring (Priority: P2)
+### 3. Mobile Component Conversion (Priority: P1)
 
-- **Problem**: Need continuous performance tracking
-- **Focus**: Automated bundle size monitoring in CI/CD
-- **Files**: GitHub Actions workflows, performance scripts
-- **Action**: Set up bundle size regression detection
+- **Problem**: 39% mobile component coverage (improved from 23%)
+- **Focus**: Convert remaining components to mobile-optimized versions
+- **Target**: 80% mobile component coverage
+- **Strategy**: Continue momentum from recent 16% improvement
+
+### 4. Performance Warning Resolution (Priority: P2)
+
+- **Problem**: 78 performance warnings from detection system
+- **Focus**: Systematic resolution of useState placement and useCallback optimizations
+- **Files**: High-usage hooks (useKV, useDatabase), React components
+- **Action**: Address warnings that impact performance without blocking deployment
 
 ## 💡 Copilot Suggestions
 
@@ -602,6 +602,7 @@ describe('Mobile Component', () => {
 2. **Mobile testing** - Suggest mobile-specific testing approaches
 3. **Performance metrics** - Include performance impact in debugging steps
 4. **Infinite loop detection** - Run `npm run check:infinite-loops` if experiencing blank screens or re-render issues
+5. **CI/CD troubleshooting** - Check for Rollup dependency issues in GitHub Actions if build failures occur
 
 ### When encountering blank screens or performance issues:
 
@@ -611,6 +612,14 @@ describe('Mobile Component', () => {
 4. **Use browser dev tools**: Check for infinite console logs or component re-renders
 5. **Test with React DevTools**: Monitor component update cycles and effect firing
 
+### When encountering CI/CD build failures:
+
+1. **Check for Rollup errors**: Look for "Cannot find module @rollup/rollup-\*" messages
+2. **Run Rollup fix**: Execute `npm run test:fix-deps` or `node scripts/fix-rollup-quick.cjs`
+3. **Clear caches**: Run `npm cache clean --force` if dependency issues persist
+4. **Check platform compatibility**: Ensure CI environment matches expected platform binaries
+5. **Review workflow logs**: Look for npm cache issues or optional dependency problems
+
 ## 📚 Key Files to Understand
 
 ### Critical Safety Files
@@ -618,7 +627,7 @@ describe('Mobile Component', () => {
 - `scripts/check-infinite-loops.js` - Infinite loop detection system
 - `scripts/check-infinite-loops.ps1` - PowerShell version for cross-platform
 - `docs/development/INFINITE_LOOP_DETECTION.md` - Detection system documentation
-- `docs/INFINITE_LOOP_SCAN_RESULTS.md` - Current scan results and issues
+- `docs/maintenance/INFINITE_LOOP_SCAN_RESULTS.md` - Current scan results and issues
 
 ### Performance Critical
 
@@ -627,6 +636,14 @@ describe('Mobile Component', () => {
 - `src/components/LazyRoutes.tsx` - Component lazy loading setup
 - `scripts/mobile-performance.js` - Performance monitoring
 - `scripts/analyze-bundle.js` - Bundle analysis tools
+
+### CI/CD & Build Critical
+
+- `.github/workflows/ci-cd.yml` - Main CI/CD pipeline with Rollup fixes
+- `scripts/fix-rollup-quick.cjs` - Quick Rollup dependency fix for CI environments
+- `scripts/fix-rollup-deps.cjs` - Comprehensive Rollup dependency management
+- `docs/development/ROLLUP_DEPENDENCIES_FIX.md` - Rollup troubleshooting guide
+- `docs/maintenance/BRANCH_PROTECTION_CONSOLIDATION.md` - Workflow optimization documentation
 
 ### Mobile Optimization
 
@@ -734,6 +751,8 @@ When reviewing code changes, ensure:
 - [ ] CSS utilities optimized (no unused classes)
 - [ ] Touch-friendly interaction design (44px+ targets)
 - [ ] Performance monitoring updated if needed
+- [ ] **CI/CD compatibility verified** (Rollup dependencies resolved)
+- [ ] **GitHub Actions tests pass** (no platform-specific binary issues)
 
 ## 🚀 Deployment & CI/CD
 
@@ -741,19 +760,30 @@ When reviewing code changes, ensure:
 
 1. TypeScript compilation and type checking
 2. ESLint validation with max 50 warnings
-3. Bundle size analysis and optimization
-4. Mobile performance testing
-5. Lighthouse audit for performance metrics
+3. **Rollup dependency fixes** for platform-specific binaries
+4. Bundle size analysis and optimization
+5. Mobile performance testing
+6. Lighthouse audit for performance metrics
+7. **Automated Cloudflare Pages deployment**
 
 ### Performance Thresholds
 
-- Total bundle size: <1.5 MB (currently 1.6 MB)
-- JavaScript bundle: <800 KB (currently 1.18 MB)
-- CSS bundle: <250 KB (currently 415 KB)
-- Mobile component coverage: >80% (currently 23%)
+- Total bundle size: <1.5 MB (currently 1.7 MB)
+- JavaScript bundle: <800 KB (currently 1.24 MB)
+- CSS bundle: <250 KB (currently 455.3 KB)
+- Mobile component coverage: >80% (currently 39%)
+
+### CI/CD Optimizations Completed ✅
+
+- **Workflow Consolidation**: Removed redundant branch protection workflow
+- **Rollup Dependency Fixes**: Platform-specific binary installation in all jobs
+- **Cache Optimization**: Fixed deprecated npm settings, improved cache strategy
+- **Security Enhancements**: Comprehensive dependency scanning and validation
+- **Performance Gates**: Bundle size limits and mobile optimization checks
 
 ---
 
 **Last Updated**: August 16, 2025
+**Recent Achievement**: ✅ CI/CD optimization complete - Rollup dependencies fixed, workflows consolidated, deployment automated
 **Next Review**: Focus on bundle optimization and mobile component conversion
-**Critical Path**: Investigate chunk-zxUleISs.js (606 KB) for immediate optimization wins
+**Critical Path**: Investigate chunk-BYlyF5jk.js (606.65 KB) for immediate optimization wins
