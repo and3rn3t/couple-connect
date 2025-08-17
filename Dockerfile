@@ -14,22 +14,11 @@ ENV FORCE_ALPINE=true
 # Copy package files
 COPY package*.json ./
 
-# Copy Rollup fix script
-COPY scripts/fix-rollup-quick.cjs ./scripts/
-
-# Install dependencies
+# Install dependencies with native binaries
 RUN npm ci --silent
 
 # Copy source code
 COPY . .
-
-# Debug and fix native dependencies before build
-RUN echo "🔍 Debug: Container detection" && \
-  ls -la /etc/ | grep -E "(alpine|musl)" || echo "No Alpine markers found" && \
-  echo "🔍 Environment vars:" && \
-  env | grep -E "(CONTAINER|ALPINE|FORCE)" && \
-  echo "🔧 Running native dependencies fix..." && \
-  node scripts/fix-rollup-quick.cjs
 
 # Build the application
 RUN npm run build
