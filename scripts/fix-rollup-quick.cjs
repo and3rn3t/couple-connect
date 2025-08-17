@@ -18,6 +18,7 @@ const arch = process.arch;
 // Detect if we're on Alpine Linux (musl)
 const isAlpine =
   fs.existsSync('/etc/alpine-release') ||
+  process.env.FORCE_ALPINE === 'true' ||
   (process.env.CONTAINER && process.env.CONTAINER.includes('alpine')) ||
   (process.env.IMAGE_NAME && process.env.IMAGE_NAME.includes('alpine'));
 
@@ -53,6 +54,9 @@ if (packagesToInstall.length === 0) {
 }
 
 console.log(`📦 Installing native binaries for platform ${platform}...`);
+console.log(
+  `🎯 Selected packages: ${packagesToInstall.map((p) => `${p.name}=${p.package}`).join(', ')}`
+);
 
 // Install each required package
 for (const { name, package: pkg } of packagesToInstall) {
@@ -65,6 +69,7 @@ for (const { name, package: pkg } of packagesToInstall) {
     console.log(`✅ Successfully installed ${name} binary`);
   } catch (error) {
     console.log(`❌ ${name} installation failed, will try fallback approach...`);
+    console.log(`❌ Error: ${error.message}`);
   }
 }
 

@@ -8,7 +8,8 @@ ARG CONTAINER=alpine
 WORKDIR /app
 
 # Set environment variable for Alpine detection
-ENV CONTAINER=$CONTAINER
+ENV CONTAINER=alpine
+ENV FORCE_ALPINE=true
 
 # Copy package files
 COPY package*.json ./
@@ -22,8 +23,16 @@ RUN npm ci --silent
 # Copy source code
 COPY . .
 
-# Build the application with native binary fixes
-RUN npm run build:cloudflare
+# Debug and fix native dependencies before build
+RUN echo "🔍 Debug: Container detection" && \
+  ls -la /etc/ | grep -E "(alpine|musl)" || echo "No Alpine markers found" && \
+  echo "🔍 Environment vars:" && \
+  env | grep -E "(CONTAINER|ALPINE|FORCE)" && \
+  echo "🔧 Running native dependencies fix..." && \
+  node scripts/fix-rollup-quick.cjs
+
+# Build the application
+RUN npm run build
 
 # Production stage with nginx
 FROM nginx:alpine AS production

@@ -39,6 +39,7 @@ The primary challenge was npm's optional dependencies bug ([npm/cli#4828](https:
 **Purpose**: Universal native binary fix for all environments
 
 **Features**:
+
 - 🔍 **Platform Detection**: Automatically detects OS, architecture, and libc type
 - 🐋 **Alpine Support**: Detects musl vs glibc for Docker compatibility
 - 📦 **Dual Package**: Handles both Rollup and LightningCSS native binaries
@@ -46,6 +47,7 @@ The primary challenge was npm's optional dependencies bug ([npm/cli#4828](https:
 - 🛡️ **Error Handling**: Comprehensive fallback strategies
 
 **Usage**:
+
 ```bash
 node scripts/fix-rollup-quick.cjs    # Automatic platform detection
 FORCE_ALPINE=true node scripts/...   # Force Alpine mode
@@ -56,6 +58,7 @@ FORCE_ALPINE=true node scripts/...   # Force Alpine mode
 **Purpose**: Advanced dependency management and troubleshooting
 
 **Features**:
+
 - 🧹 **Cleanup**: Removes corrupted binary installations
 - 🔄 **Retry Logic**: Multiple installation attempts
 - 📊 **Verification**: Post-installation validation
@@ -206,16 +209,19 @@ docker build .                 # Test Docker Alpine builds
 ## Future Roadmap
 
 ### Short Term
+
 - ✅ Monitor all deployment environments for continued success
 - ✅ Update documentation as new issues arise
 - ✅ Track npm bug resolution progress
 
 ### Medium Term
+
 - 🎯 Expand to additional architectures (ARM64 support)
 - 🎯 Further optimize build performance
 - 🎯 Integrate with additional deployment platforms
 
 ### Long Term
+
 - 🎯 Remove workarounds when npm bug is officially fixed
 - 🎯 Contribute fixes back to open source community
 - 🎯 Template this solution for other projects
