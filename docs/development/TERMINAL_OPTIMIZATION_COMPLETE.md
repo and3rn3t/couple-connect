@@ -152,22 +152,22 @@ Add this optimized profile to your Windows Terminal `settings.json`:
 
 ```json
 {
-    "name": "Couple Connect Dev",
-    "commandline": "pwsh.exe -NoLogo",
-    "startingDirectory": "C:\\git\\couple-connect",
-    "icon": "💕",
-    "font": {
-        "face": "Cascadia Code",
-        "size": 11
-    },
-    "colorScheme": "One Half Dark",
-    "backgroundOpacity": 0.95,
-    "useAcrylic": true,
-    "environment": {
-        "NODE_ENV": "development",
-        "VITE_CJS_IGNORE_WARNING": "true",
-        "NODE_OPTIONS": "--max-old-space-size=8192"
-    }
+  "name": "Couple Connect Dev",
+  "commandline": "pwsh.exe -NoLogo",
+  "startingDirectory": "C:\\git\\couple-connect",
+  "icon": "💕",
+  "font": {
+    "face": "Cascadia Code",
+    "size": 11
+  },
+  "colorScheme": "One Half Dark",
+  "backgroundOpacity": 0.95,
+  "useAcrylic": true,
+  "environment": {
+    "NODE_ENV": "development",
+    "VITE_CJS_IGNORE_WARNING": "true",
+    "NODE_OPTIONS": "--max-old-space-size=8192"
+  }
 }
 ```
 
@@ -177,15 +177,15 @@ Add to your VS Code `settings.json`:
 
 ```json
 {
-    "terminal.integrated.profiles.windows": {
-        "React Dev PowerShell": {
-            "source": "PowerShell",
-            "args": ["-NoLogo", "-ExecutionPolicy", "Bypass"]
-        }
-    },
-    "terminal.integrated.defaultProfile.windows": "React Dev PowerShell",
-    "terminal.integrated.fontSize": 14,
-    "terminal.integrated.fastScrollSensitivity": 5
+  "terminal.integrated.profiles.windows": {
+    "React Dev PowerShell": {
+      "source": "PowerShell",
+      "args": ["-NoLogo", "-ExecutionPolicy", "Bypass"]
+    }
+  },
+  "terminal.integrated.defaultProfile.windows": "React Dev PowerShell",
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.fastScrollSensitivity": 5
 }
 ```
 

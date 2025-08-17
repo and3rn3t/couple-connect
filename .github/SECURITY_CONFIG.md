@@ -8,12 +8,10 @@ This document outlines the security settings and configurations for the Couple C
 
 ### Main Branch (`main`)
 
-- **Enforce admins**: ✅ Enabled (admins must follow rules)
+- **Enforce admins**: ❌ Disabled (allows admin override for solo development)
 - **Require status checks**: ✅ All must pass before merge
 - **Require branches to be up to date**: ✅ Prevents stale merges
-- **Require pull request reviews**: ✅ Minimum 1 approval required
-- **Dismiss stale reviews**: ✅ Re-review after new commits
-- **Require code owner review**: ✅ Domain experts must approve
+- **Require pull request reviews**: ❌ Disabled (allows solo development workflow)
 - **Require conversation resolution**: ✅ All comments must be resolved
 - **Restrict pushes**: ✅ No direct pushes allowed
 - **Allow force pushes**: ❌ Disabled for history protection

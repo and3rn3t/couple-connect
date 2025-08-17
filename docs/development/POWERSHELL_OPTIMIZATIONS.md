@@ -239,23 +239,23 @@ Add this to your Windows Terminal `settings.json`:
 
 ```json
 {
-    "name": "React Dev - Couple Connect",
-    "commandline": "pwsh.exe -NoLogo -ExecutionPolicy Bypass",
-    "startingDirectory": "C:\\git\\couple-connect",
-    "icon": "⚛️",
-    "font": {
-        "face": "CascadiaCode Nerd Font",
-        "size": 11
-    },
-    "colorScheme": "GitHub Dark",
-    "backgroundOpacity": 0.95,
-    "useAcrylic": true,
-    "environment": {
-        "NODE_ENV": "development",
-        "VITE_CJS_IGNORE_WARNING": "true",
-        "NPM_CONFIG_AUDIT": "false",
-        "NPM_CONFIG_FUND": "false"
-    }
+  "name": "React Dev - Couple Connect",
+  "commandline": "pwsh.exe -NoLogo -ExecutionPolicy Bypass",
+  "startingDirectory": "C:\\git\\couple-connect",
+  "icon": "⚛️",
+  "font": {
+    "face": "CascadiaCode Nerd Font",
+    "size": 11
+  },
+  "colorScheme": "GitHub Dark",
+  "backgroundOpacity": 0.95,
+  "useAcrylic": true,
+  "environment": {
+    "NODE_ENV": "development",
+    "VITE_CJS_IGNORE_WARNING": "true",
+    "NPM_CONFIG_AUDIT": "false",
+    "NPM_CONFIG_FUND": "false"
+  }
 }
 ```
 
@@ -290,16 +290,16 @@ Add to VS Code `settings.json`:
 
 ```json
 {
-    "terminal.integrated.profiles.windows": {
-        "React Dev PowerShell": {
-            "source": "PowerShell",
-            "args": ["-NoLogo", "-ExecutionPolicy", "Bypass"]
-        }
-    },
-    "terminal.integrated.defaultProfile.windows": "React Dev PowerShell",
-    "terminal.integrated.fontSize": 14,
-    "terminal.integrated.lineHeight": 1.2,
-    "terminal.integrated.fastScrollSensitivity": 5
+  "terminal.integrated.profiles.windows": {
+    "React Dev PowerShell": {
+      "source": "PowerShell",
+      "args": ["-NoLogo", "-ExecutionPolicy", "Bypass"]
+    }
+  },
+  "terminal.integrated.defaultProfile.windows": "React Dev PowerShell",
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.lineHeight": 1.2,
+  "terminal.integrated.fastScrollSensitivity": 5
 }
 ```
 

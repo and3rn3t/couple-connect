@@ -100,24 +100,24 @@ npm run build
 
 ### Active Configurations (Root)
 
-| File | Purpose | Referenced By | Size |
-|------|---------|---------------|------|
-| `tailwind.config.js` | Main Tailwind CSS | Build scripts, Vite | Primary |
-| `tailwind.minimal.config.js` | Mobile-optimized | Performance scripts | Alternative |
-| `tailwind.mobile-optimized.config.js` | Mobile variant | Mobile builds | Alternative |
-| `postcss.config.cjs` | PostCSS processing | package.json | Primary |
-| `postcss.mobile.config.cjs` | Mobile PostCSS | Mobile scripts | Alternative |
-| `vite.config.ts` | Vite bundler | Build system | Primary |
-| `wrangler.toml` | Cloudflare Workers | Deployment | Primary |
+| File                                  | Purpose            | Referenced By       | Size        |
+| ------------------------------------- | ------------------ | ------------------- | ----------- |
+| `tailwind.config.js`                  | Main Tailwind CSS  | Build scripts, Vite | Primary     |
+| `tailwind.minimal.config.js`          | Mobile-optimized   | Performance scripts | Alternative |
+| `tailwind.mobile-optimized.config.js` | Mobile variant     | Mobile builds       | Alternative |
+| `postcss.config.cjs`                  | PostCSS processing | package.json        | Primary     |
+| `postcss.mobile.config.cjs`           | Mobile PostCSS     | Mobile scripts      | Alternative |
+| `vite.config.ts`                      | Vite bundler       | Build system        | Primary     |
+| `wrangler.toml`                       | Cloudflare Workers | Deployment          | Primary     |
 
 ### Backup Configurations (config/)
 
-| File | Purpose | Status | Notes |
-|------|---------|--------|-------|
-| `tailwind.config.full.js` | Full feature backup | Inactive | Reference only |
-| `tailwind.config.js.backup` | Original backup | Inactive | Historical |
-| `wrangler.toml.pages` | Pages deployment | Alternative | Optional |
-| `wrangler.toml.workers-backup` | Workers backup | Inactive | Historical |
+| File                           | Purpose             | Status      | Notes          |
+| ------------------------------ | ------------------- | ----------- | -------------- |
+| `tailwind.config.full.js`      | Full feature backup | Inactive    | Reference only |
+| `tailwind.config.js.backup`    | Original backup     | Inactive    | Historical     |
+| `wrangler.toml.pages`          | Pages deployment    | Alternative | Optional       |
+| `wrangler.toml.workers-backup` | Workers backup      | Inactive    | Historical     |
 
 ## ✅ Verification Results
 

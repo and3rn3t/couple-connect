@@ -42,17 +42,8 @@ $mainProtection = @{
       "🧹 Lint & Format"
     )
   }
-  enforce_admins                   = $true
-  required_pull_request_reviews    = @{
-    required_approving_review_count = 1
-    dismiss_stale_reviews           = $true
-    require_code_owner_reviews      = $true
-    require_last_push_approval      = $true
-    bypass_pull_request_allowances  = @{
-      users = @()
-      teams = @()
-    }
-  }
+  enforce_admins                   = $false
+  required_pull_request_reviews    = $null
   restrictions                     = $null
   allow_force_pushes               = $false
   allow_deletions                  = $false

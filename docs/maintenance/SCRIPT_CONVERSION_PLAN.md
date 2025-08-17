@@ -92,7 +92,7 @@ Convert all platform-specific scripts (.ps1, .sh) to cross-platform Node.js scri
 ```javascript
 #!/usr/bin/env node
 
-import { /* required modules */ } from 'node:fs';
+import {} from /* required modules */ 'node:fs';
 import { spawn } from 'node:child_process';
 
 class ScriptName {
@@ -114,8 +114,10 @@ class ScriptName {
 }
 
 // Main execution check
-if (import.meta.url === `file://${process.argv[1]}` ||
-    import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/'))) {
+if (
+  import.meta.url === `file://${process.argv[1]}` ||
+  import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/'))
+) {
   const script = new ScriptName();
   script.main();
 }

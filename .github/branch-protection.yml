@@ -9,13 +9,13 @@ main:
   required_status_checks:
     strict: true
     contexts:
-      - "🧪 Tests & Code Quality"
-      - "📱 Mobile Performance"
-      - "🔒 Security Analysis"
-      - "🚨 Infinite Loop Detection"
-      - "📊 Bundle Analysis"
-      - "🔍 TypeScript Check"
-      - "🧹 Lint & Format"
+      - '🧪 Tests & Code Quality'
+      - '📱 Mobile Performance'
+      - '🔒 Security Analysis'
+      - '🚨 Infinite Loop Detection'
+      - '📊 Bundle Analysis'
+      - '🔍 TypeScript Check'
+      - '🧹 Lint & Format'
 
   # Pull Request Requirements
   required_pull_request_reviews:
@@ -46,9 +46,9 @@ develop:
   required_status_checks:
     strict: true
     contexts:
-      - "🧪 Tests & Code Quality"
-      - "🚨 Infinite Loop Detection"
-      - "🔍 TypeScript Check"
+      - '🧪 Tests & Code Quality'
+      - '🚨 Infinite Loop Detection'
+      - '🔍 TypeScript Check'
 
   required_pull_request_reviews:
     required_approving_review_count: 1
@@ -62,17 +62,17 @@ feature/*:
   required_status_checks:
     strict: false
     contexts:
-      - "🧪 Tests & Code Quality"
-      - "🚨 Infinite Loop Detection"
+      - '🧪 Tests & Code Quality'
+      - '🚨 Infinite Loop Detection'
 
 # Hotfix Branch Pattern Protection
 hotfix/*:
   required_status_checks:
     strict: true
     contexts:
-      - "🧪 Tests & Code Quality"
-      - "🔒 Security Analysis"
-      - "🚨 Infinite Loop Detection"
+      - '🧪 Tests & Code Quality'
+      - '🔒 Security Analysis'
+      - '🚨 Infinite Loop Detection'
 
   required_pull_request_reviews:
     required_approving_review_count: 1

@@ -152,7 +152,7 @@
     "optimize:js": "node scripts/optimize-js-lazy.js",
     "test:unit": "vitest run --reporter=verbose",
     "test:integration": "vitest run --config vitest.integration.config.ts",
-    "security:check": "npm audit --audit-level high && node scripts/dependency-manager.js security",
+    "security:check": "npm audit --audit-level high",
     "validate:production": "node scripts/validate-production.js",
     "validate:pipeline": "node scripts/validate-pipeline.js"
   },

@@ -184,13 +184,13 @@ npm run security:check
 
 ### 🎯 **Job Execution Matrix**
 
-| Change Type | Jobs Executed | Deployment | Duration |
-|-------------|---------------|------------|----------|
-| **Docs only** | None | ❌ | ~30s |
-| **Dependencies** | Quality, Deps Analysis, Security | ❌ | ~3-5 min |
-| **Source code** | All jobs | ✅ (main only) | ~8-12 min |
-| **Config changes** | All jobs | ✅ (main only) | ~8-12 min |
-| **Database changes** | All + DB Health | ✅ (main only) | ~10-15 min |
+| Change Type          | Jobs Executed                    | Deployment     | Duration   |
+| -------------------- | -------------------------------- | -------------- | ---------- |
+| **Docs only**        | None                             | ❌             | ~30s       |
+| **Dependencies**     | Quality, Deps Analysis, Security | ❌             | ~3-5 min   |
+| **Source code**      | All jobs                         | ✅ (main only) | ~8-12 min  |
+| **Config changes**   | All jobs                         | ✅ (main only) | ~8-12 min  |
+| **Database changes** | All + DB Health                  | ✅ (main only) | ~10-15 min |
 
 ### 📊 **Reporting & Artifacts**
 
@@ -235,11 +235,11 @@ npm run security:check
 
 ```yaml
 env:
-  NODE_VERSION: '20'           # Node.js version
-  BUNDLE_SIZE_LIMIT: 7000000   # Bundle size limit (7MB)
-  FORCE_COLOR: 3               # Colored output
-  NPM_CONFIG_FUND: false       # Disable funding messages
-  NPM_CONFIG_AUDIT: false      # Disable audit warnings
+  NODE_VERSION: '20' # Node.js version
+  BUNDLE_SIZE_LIMIT: 7000000 # Bundle size limit (7MB)
+  FORCE_COLOR: 3 # Colored output
+  NPM_CONFIG_FUND: false # Disable funding messages
+  NPM_CONFIG_AUDIT: false # Disable audit warnings
 ```
 
 ### 🎯 **Adjustable Thresholds**
@@ -252,7 +252,7 @@ BUNDLE_SIZE_LIMIT: 7000000
 COVERAGE_THRESHOLD: 80
 
 # Performance budget (can be customized)
-PERFORMANCE_BUDGET: 3000  # 3 second load time
+PERFORMANCE_BUDGET: 3000 # 3 second load time
 ```
 
 ### 📊 **Matrix Configuration**

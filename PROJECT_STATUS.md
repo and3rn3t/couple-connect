@@ -6,13 +6,13 @@
 
 ## 🎯 Current Performance Metrics
 
-| Metric            | Current    | Target      | Status                             |
-| ----------------- | ---------- | ----------- | ---------------------------------- |
-| Bundle Size       | 1.72 MB    | 1.5 MB      | ❌ 115% of target (+20KB)          |
-| JavaScript        | 1.25 MB    | 800 KB      | ❌ 156% of target (stable)         |
-| CSS               | 466.2 KB   | 250 KB      | ❌ 186% of target (+51KB growth)   |
-| Mobile Components | 39%        | 80%         | 🎯 Improved from 23%!              |
-| Largest Chunk     | 621.21 KB  | <500 KB     | ❌ Critical optimization needed    |
+| Metric            | Current   | Target  | Status                           |
+| ----------------- | --------- | ------- | -------------------------------- |
+| Bundle Size       | 1.72 MB   | 1.5 MB  | ❌ 115% of target (+20KB)        |
+| JavaScript        | 1.25 MB   | 800 KB  | ❌ 156% of target (stable)       |
+| CSS               | 466.2 KB  | 250 KB  | ❌ 186% of target (+51KB growth) |
+| Mobile Components | 39%       | 80%     | 🎯 Improved from 23%!            |
+| Largest Chunk     | 621.21 KB | <500 KB | ❌ Critical optimization needed  |
 
 ## 🛠️ Tech Stack
 
