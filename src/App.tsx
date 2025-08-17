@@ -135,7 +135,7 @@ function App() {
   const { isMobile } = useMobileDetection();
 
   // Initialize service worker and offline capabilities
-  const { status: swStatus } = useServiceWorker();
+  const { status: _swStatus } = useServiceWorker();
   const { preloadCriticalResources } = useResourceCaching();
 
   // Initialize database on app start
@@ -165,9 +165,11 @@ function App() {
           }
         }
 
-        // Preload critical resources for offline use
-        if (swStatus.active) {
+        // Preload critical resources for offline use (check if service worker is active)
+        try {
           await preloadCriticalResources();
+        } catch (error) {
+          console.warn('Service worker not available for resource preloading:', error);
         }
 
         // Log initial performance metrics in development
@@ -339,75 +341,50 @@ function App() {
 
   // Initialize default partners if none are set up
   useEffect(() => {
-    // Only run this effect once
-    if (partnersInitialized) return;
-
-    console.warn('🚀 Initializing partners...', {
+    console.warn('🔍 Partner initialization effect triggered', {
+      partnersInitialized,
       currentPartner: currentPartner?.name,
       otherPartner: otherPartner?.name,
+      timestamp: new Date().toISOString(),
     });
 
-    // Set a timeout to ensure this doesn't hang indefinitely
-    const initTimeout = setTimeout(() => {
-      console.warn('⚠️ Partner initialization timeout, forcing initialization');
-      if (!partnersInitialized) {
-        const defaultCurrentPartner: Partner = {
-          id: 'partner-1',
-          name: 'You',
-          email: 'you@example.com',
-          isCurrentUser: true,
-        };
-        const defaultOtherPartner: Partner = {
-          id: 'partner-2',
-          name: 'Your Partner',
-          email: 'partner@example.com',
-          isCurrentUser: false,
-        };
-
-        setCurrentPartner(defaultCurrentPartner);
-        setOtherPartner(defaultOtherPartner);
-        setPartnersInitialized(true);
-        console.warn('✅ Forced partner initialization complete');
-      }
-    }, 2000); // Force initialization after 2 seconds max
-
-    // If partners already exist, just mark as initialized
-    if (currentPartner && otherPartner) {
-      console.warn('✅ Partners already exist, marking as initialized');
-      setPartnersInitialized(true);
-      clearTimeout(initTimeout);
+    // Skip if already initialized
+    if (partnersInitialized) {
+      console.warn('⏭️ Partners already initialized, skipping');
       return;
     }
 
-    // Create default partners if none exist
-    try {
-      const defaultCurrentPartner: Partner = {
-        id: 'partner-1',
-        name: 'You',
-        email: 'you@example.com',
-        isCurrentUser: true,
-      };
-      const defaultOtherPartner: Partner = {
-        id: 'partner-2',
-        name: 'Your Partner',
-        email: 'partner@example.com',
-        isCurrentUser: false,
-      };
+    console.warn('🚀 Starting partner initialization...');
 
+    // Create default partners immediately
+    const defaultCurrentPartner: Partner = {
+      id: 'partner-1',
+      name: 'You',
+      email: 'you@example.com',
+      isCurrentUser: true,
+    };
+    const defaultOtherPartner: Partner = {
+      id: 'partner-2',
+      name: 'Your Partner',
+      email: 'partner@example.com',
+      isCurrentUser: false,
+    };
+
+    try {
+      console.warn('📝 Setting default partners...');
       // Set partners and mark as initialized
       setCurrentPartner(defaultCurrentPartner);
       setOtherPartner(defaultOtherPartner);
       setPartnersInitialized(true);
-      console.warn('✅ Default partners created successfully');
-      clearTimeout(initTimeout);
+      console.warn('✅ Default partners created successfully', {
+        currentPartner: defaultCurrentPartner.name,
+        otherPartner: defaultOtherPartner.name,
+      });
     } catch (error) {
       console.error('❌ Error creating default partners:', error);
       // Force initialization anyway to prevent infinite loading
       setPartnersInitialized(true);
-      clearTimeout(initTimeout);
     }
-
-    return () => clearTimeout(initTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency array - only run once on mount
 
@@ -417,6 +394,7 @@ function App() {
       partnersInitialized,
       currentPartner: currentPartner?.name,
       otherPartner: otherPartner?.name,
+      timestamp: new Date().toISOString(),
     });
     return (
       <div
