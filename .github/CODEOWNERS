@@ -1,0 +1,53 @@
+# Code Owners Configuration
+# Defines who must review changes to specific parts of the codebase
+
+# 🔒 Critical Security & Configuration Files
+/.github/                       @and3rn3t
+/scripts/check-infinite-loops.* @and3rn3t
+/scripts/security-*             @and3rn3t
+/scripts/*deploy*               @and3rn3t
+/docker*                        @and3rn3t
+/wrangler*                      @and3rn3t
+/.env*                          @and3rn3t
+/package.json                   @and3rn3t
+/package-lock.json              @and3rn3t
+
+# 🏗️ Build & Configuration
+/vite.config.ts                 @and3rn3t
+/tsconfig.json                  @and3rn3t
+/tailwind*.config.*             @and3rn3t
+/postcss.config.*               @and3rn3t
+/eslint.config.js               @and3rn3t
+/playwright.config.ts           @and3rn3t
+/vitest.config.ts               @and3rn3t
+
+# 📱 Critical Performance Files
+/src/components/LazyIcons.tsx   @and3rn3t
+/src/components/LazyRoutes.tsx  @and3rn3t
+/src/hooks/use-mobile.ts        @and3rn3t
+/scripts/mobile-*               @and3rn3t
+/scripts/perf-*                 @and3rn3t
+/scripts/analyze-*              @and3rn3t
+
+# 🗄️ Database & Schema
+/database/                      @and3rn3t
+/src/database/                  @and3rn3t
+
+# 📋 Documentation & Status
+/PROJECT_STATUS.md              @and3rn3t
+/README.md                      @and3rn3t
+/docs/                          @and3rn3t
+
+# 🧪 Testing Configuration
+/e2e/                           @and3rn3t
+/test*/                         @and3rn3t
+
+# 🎨 UI Components (Can be reviewed by team members)
+/src/components/ui/             @and3rn3t
+/src/components/mobile/         @and3rn3t
+
+# 📦 Source Code (General development)
+/src/                           @and3rn3t
+
+# Default fallback - repository owner reviews everything else
+*                               @and3rn3t
