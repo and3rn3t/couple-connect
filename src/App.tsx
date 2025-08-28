@@ -21,10 +21,8 @@ import { useServiceWorker, useResourceCaching } from '@/hooks/useServiceWorker';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // Lazy load UI components to reduce initial bundle size
-const LazyTabs = lazy(() => import('@/components/ui/tabs').then(m => ({ default: m.Tabs })));
-const LazyTabsContent = lazy(() => import('@/components/ui/tabs').then(m => ({ default: m.TabsContent })));
-const LazyTabsList = lazy(() => import('@/components/ui/tabs').then(m => ({ default: m.TabsList })));
-const LazyTabsTrigger = lazy(() => import('@/components/ui/tabs').then(m => ({ default: m.TabsTrigger })));
+const LazyTabsModule = lazy(() => import('@/components/ui/tabs'));
+// Usage: <LazyTabsModule.Tabs />, <LazyTabsModule.TabsContent />, <LazyTabsModule.TabsList />, <LazyTabsModule.TabsTrigger />
 const LazyToaster = lazy(() => import('@/components/ui/sonner').then(m => ({ default: m.Toaster })));
 
 // Lazy load heavy components to reduce initial bundle size
