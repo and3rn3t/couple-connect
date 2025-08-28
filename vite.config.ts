@@ -77,72 +77,83 @@ export default defineConfig(() => {
           tryCatchDeoptimization: false,
         },
         output: {
-          // Mobile-optimized chunk splitting
+          // Optimized chunk splitting to reduce large chunks
           manualChunks: (id) => {
             // Debug: Log what's being chunked
             if (process.env.VITE_BUILD_ANALYZE) {
-              // console.log('🔍 Chunking:', id);
+              console.log('🔍 Chunking:', id);
             }
 
-            // Log uncaught large files that go to main chunk
-            if (id.includes('node_modules') && process.env.VITE_BUILD_ANALYZE) {
-              const chunks = id.split('/');
-              const _packageName = chunks.find((chunk) => chunk.includes('@') || chunk.length > 3);
-              // console.log('📦 Package:', packageName, '- Size estimate: checking...');
+            // Vendor libraries first - most important for caching
+            if (id.includes('node_modules')) {
+              // Core React libraries - keep together for performance
+              if (id.includes('react-dom')) {
+                return 'vendor-react-dom';
+              }
+              if (id.includes('react') && !id.includes('react-dom') && !id.includes('react-hook-form')) {
+                return 'vendor-react';
+              }
+
+              // Large UI libraries - separate for better caching
+              if (id.includes('@radix-ui')) {
+                return 'vendor-radix-ui';
+              }
+
+              // State management and data fetching
+              if (id.includes('@tanstack/react-query')) {
+                return 'vendor-react-query';
+              }
+
+              // Icon libraries - lazy loaded separately
+              if (id.includes('@phosphor-icons') || id.includes('lucide-react') || id.includes('@heroicons')) {
+                return 'vendor-icons';
+              }
+
+              // Chart and visualization libraries - should be lazy loaded
+              if (id.includes('recharts') || id.includes('d3')) {
+                return 'vendor-charts';
+              }
+
+              // Animation libraries - lazy loaded
+              if (id.includes('framer-motion')) {
+                return 'vendor-animations';
+              }
+
+              // Form handling
+              if (id.includes('react-hook-form') || id.includes('@hookform')) {
+                return 'vendor-forms';
+              }
+
+              // Utility libraries
+              if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
+                return 'vendor-utils';
+              }
+
+              // Remaining smaller vendor packages
+              return 'vendor-misc';
             }
 
-            // Core React libraries - loaded early
-            if (id.includes('react') && !id.includes('react-router') && !id.includes('react-dom')) {
-              // if (process.env.VITE_BUILD_ANALYZE) console.log('  → react-vendor');
-              return 'react-vendor';
+            // Application code chunking
+            // Mobile components
+            if (id.includes('/components/Mobile') || id.includes('/mobile')) {
+              return 'app-mobile';
             }
 
-            if (id.includes('react-dom')) {
-              // if (process.env.VITE_BUILD_ANALYZE) console.log('  → react-dom');
-              return 'react-dom';
+            // Large components that should be lazy loaded
+            if (id.includes('/components/MindmapView') || 
+                id.includes('/components/GamificationCenter') ||
+                id.includes('/components/PerformanceDashboard')) {
+              return 'app-heavy-components';
             }
 
-            // Large UI libraries - separate chunks
-            if (id.includes('@radix-ui')) {
-              return 'ui-radix';
+            // Hook libraries
+            if (id.includes('/hooks/')) {
+              return 'app-hooks';
             }
 
-            if (id.includes('@tanstack/react-query')) {
-              return 'react-query';
-            }
-
-            // Icon libraries - separate chunks for lazy loading
-            if (id.includes('@phosphor-icons/react')) {
-              return 'icons-phosphor';
-            }
-
-            if (id.includes('lucide-react')) {
-              return 'icons-lucide';
-            }
-
-            // Chart libraries - definitely lazy loaded
-            if (id.includes('recharts')) {
-              return 'charts-recharts';
-            }
-
-            if (id.includes('d3')) {
-              return 'charts-d3';
-            }
-
-            // Animation libraries - lazy loaded
-            if (id.includes('framer-motion') || id.includes('motion-dom')) {
-              // if (process.env.VITE_BUILD_ANALYZE) console.log('  → animations');
-              return 'animations';
-            }
-
-            // Database and data libraries
-            if (id.includes('dexie') || id.includes('idb')) {
-              return 'database';
-            }
-
-            // Service worker and PWA libraries
-            if (id.includes('workbox') || id.includes('sw-')) {
-              return 'pwa';
+            // Services and utilities
+            if (id.includes('/services/') || id.includes('/utils/')) {
+              return 'app-services';
             }
 
             // Testing and development libraries (should not be in production)

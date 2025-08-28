@@ -12,21 +12,26 @@ import { migrateLocalStorageData, shouldMigrate } from './utils/migrateLocalStor
 import { updateDatabaseConfig } from './services/databaseConfig';
 import { performanceMonitor } from './utils/performanceMonitor';
 import './utils/performanceDemo'; // Initialize performance utilities
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EssentialIcons } from '@/components/LazyIcons';
 import { LazyProgressView } from '@/components/LazyRoutes';
 import { ResponsivePartnerProfile } from '@/components/ResponsivePartnerProfile';
-import { ResponsiveActionDashboard } from '@/components/ResponsiveActionDashboard';
-import { ResponsiveProgressView } from '@/components/ResponsiveProgressView';
-import { Toaster } from '@/components/ui/sonner';
 import { MobileTabBar, MobileNavBar } from '@/components/ui/mobile-navigation';
 import { useMobileDetection } from '@/hooks/use-mobile';
 import { useServiceWorker, useResourceCaching } from '@/hooks/useServiceWorker';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
+// Lazy load UI components to reduce initial bundle size
+const LazyTabs = lazy(() => import('@/components/ui/tabs').then(m => ({ default: m.Tabs })));
+const LazyTabsContent = lazy(() => import('@/components/ui/tabs').then(m => ({ default: m.TabsContent })));
+const LazyTabsList = lazy(() => import('@/components/ui/tabs').then(m => ({ default: m.TabsList })));
+const LazyTabsTrigger = lazy(() => import('@/components/ui/tabs').then(m => ({ default: m.TabsTrigger })));
+const LazyToaster = lazy(() => import('@/components/ui/sonner').then(m => ({ default: m.Toaster })));
+
 // Lazy load heavy components to reduce initial bundle size
 const LazyMindmapView = lazy(() => import('@/components/MindmapView'));
 const LazyMobileActionDashboard = lazy(() => import('@/components/MobileActionDashboardOptimized'));
+const LazyResponsiveActionDashboard = lazy(() => import('@/components/ResponsiveActionDashboard'));
+const LazyResponsiveProgressView = lazy(() => import('@/components/ResponsiveProgressView'));
 const LazyOfflineNotification = lazy(() =>
   import('@/components/OfflineNotification').then((m) => ({ default: m.OfflineNotification }))
 );
@@ -783,23 +788,24 @@ function App() {
             />
           </Suspense>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8">
-              <TabsTrigger value="mindmap" className="flex items-center gap-2">
+        <Suspense fallback={<ComponentLoader message="Loading main interface..." />}>
+          <LazyTabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <LazyTabsList className="grid w-full grid-cols-3 mb-8">
+              <LazyTabsTrigger value="mindmap" className="flex items-center gap-2">
                 <EssentialIcons.Heart size={ICON_SIZES.SMALL} />
                 Issues Map
-              </TabsTrigger>
-              <TabsTrigger value="actions" className="flex items-center gap-2">
+              </LazyTabsTrigger>
+              <LazyTabsTrigger value="actions" className="flex items-center gap-2">
                 <EssentialIcons.Target size={ICON_SIZES.SMALL} />
                 Action Plans
-              </TabsTrigger>
-              <TabsTrigger value="progress" className="flex items-center gap-2">
+              </LazyTabsTrigger>
+              <LazyTabsTrigger value="progress" className="flex items-center gap-2">
                 <EssentialIcons.ChartBar size={ICON_SIZES.SMALL} />
                 Progress
-              </TabsTrigger>
-            </TabsList>
+              </LazyTabsTrigger>
+            </LazyTabsList>
 
-            <TabsContent value="mindmap" className="space-y-6">
+            <LazyTabsContent value="mindmap" className="space-y-6">
               <Suspense fallback={<ComponentLoader message="Loading mindmap..." />}>
                 <LazyMindmapView
                   issues={issues || []}
@@ -811,47 +817,54 @@ function App() {
                   viewingAsPartner={activePartner}
                 />
               </Suspense>
-            </TabsContent>
+            </LazyTabsContent>
 
-            <TabsContent value="actions" className="space-y-6">
-              <ResponsiveActionDashboard
-                issues={issues || []}
-                actions={getPersonalizedActions()}
-                setActions={setActionsWrapper}
-                currentPartner={currentPartner}
-                otherPartner={otherPartner}
-                viewingAsPartner={activePartner}
-              />
-            </TabsContent>
+            <LazyTabsContent value="actions" className="space-y-6">
+              <Suspense fallback={<ComponentLoader message="Loading action dashboard..." />}>
+                <LazyResponsiveActionDashboard
+                  issues={issues || []}
+                  actions={getPersonalizedActions()}
+                  setActions={setActionsWrapper}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  viewingAsPartner={activePartner}
+                />
+              </Suspense>
+            </LazyTabsContent>
 
-            <TabsContent value="progress" className="space-y-6">
-              <ResponsiveProgressView
-                issues={issues || []}
-                actions={actions || []}
-                healthScore={
-                  healthScore || {
-                    overallScore: 0,
-                    categories: {
-                      communication: 0,
-                      intimacy: 0,
-                      finance: 0,
-                      time: 0,
-                      family: 0,
-                      personalGrowth: 0,
-                    },
-                    lastUpdated: new Date().toISOString(),
+            <LazyTabsContent value="progress" className="space-y-6">
+              <Suspense fallback={<ComponentLoader message="Loading progress view..." />}>
+                <LazyResponsiveProgressView
+                  issues={issues || []}
+                  actions={actions || []}
+                  healthScore={
+                    healthScore || {
+                      overallScore: 0,
+                      categories: {
+                        communication: 0,
+                        intimacy: 0,
+                        finance: 0,
+                        time: 0,
+                        family: 0,
+                        personalGrowth: 0,
+                      },
+                      lastUpdated: new Date().toISOString(),
+                    }
                   }
-                }
-                setHealthScore={setHealthScoreWrapper}
-                currentPartner={currentPartner}
-                otherPartner={otherPartner}
-                viewingAsPartner={activePartner}
-              />
-            </TabsContent>
-          </Tabs>
+                  setHealthScore={setHealthScoreWrapper}
+                  currentPartner={currentPartner}
+                  otherPartner={otherPartner}
+                  viewingAsPartner={activePartner}
+                />
+              </Suspense>
+            </LazyTabsContent>
+          </LazyTabs>
+        </Suspense>
         </div>
       )}
-      <Toaster />
+      <Suspense fallback={null}>
+        <LazyToaster />
+      </Suspense>
     </div>
   );
 }
