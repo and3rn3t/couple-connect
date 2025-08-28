@@ -335,14 +335,14 @@ function App() {
     partnersInitialized,
   });
 
-  // Debug logging for partner state
+  // Debug logging for partner state - use specific properties to avoid unnecessary re-renders
   useEffect(() => {
     console.warn('🔍 Partner state changed:', {
       currentPartner: currentPartner?.name,
       otherPartner: otherPartner?.name,
       partnersInitialized,
     });
-  }, [currentPartner, otherPartner, partnersInitialized]);
+  }, [currentPartner?.name, otherPartner?.name, partnersInitialized]);
 
   // Initialize default partners if none are set up
   useEffect(() => {
