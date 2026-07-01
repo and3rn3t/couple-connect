@@ -157,7 +157,7 @@ jobs:
       # 📊 Upload enhanced reports for analysis
       - name: 📊 Upload quality reports
         if: matrix.check == 'quality:analyze' && always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: quality-reports-${{ github.sha }}
           path: |
@@ -205,7 +205,7 @@ jobs:
         run: npm run deps:analyze
 
       - name: 📊 Upload dependency reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dependency-reports-${{ github.sha }}
           path: |
@@ -256,7 +256,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: 📊 Upload database reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: database-reports-${{ github.sha }}
           path: |
@@ -321,7 +321,7 @@ jobs:
 
       - name: 📊 Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-${{ matrix.test-type }}-${{ github.sha }}
           path: |
@@ -402,14 +402,14 @@ jobs:
         run: npm run pwa:optimize
 
       - name: 📦 Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dist-${{ github.sha }}
           path: dist/
           retention-days: 7
 
       - name: 📊 Upload performance reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: performance-reports-${{ github.sha }}
           path: |
@@ -472,7 +472,7 @@ jobs:
 
       - name: 📊 Upload E2E results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: e2e-results-shard-${{ matrix.shard }}-${{ github.sha }}
           path: |
@@ -505,7 +505,7 @@ jobs:
 
       - name: 📊 Upload security reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: security-reports-${{ github.sha }}
           path: |
@@ -551,7 +551,7 @@ jobs:
           echo "- Security Scan: ${{ needs.security.result }}" >> pipeline-report.md
 
       - name: 📊 Upload comprehensive report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pipeline-report-${{ github.sha }}
           path: |
